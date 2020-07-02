@@ -1,0 +1,9 @@
+<ul>
+  <ng-container *ngFor="let user of users_data">
+    <li *ngIf="user.accumulatedGold > 0"
+      routerLink="/field/{{user.name}}"
+      >
+      {{user.name}} has accumulated {{user.accumulatedGold | number:'0.0-1'}} gold.
+    </li>
+  </ng-container>
+</ul>

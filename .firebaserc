@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "infinitd": {
+      "hosting": {
+        "InfiniTD": [
+          "infinitd"
+        ]
+      }
+    }
+  }
+}
