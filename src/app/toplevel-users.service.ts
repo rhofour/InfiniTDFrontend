@@ -21,8 +21,8 @@ export class ToplevelUsersService {
       map(resp => {
         // Unwrap the value.
         let decoded = toplevelUsersContainerDecoder.decode(resp);
-        if ((decoded as Ok<ToplevelUsersContainer>).value !== undefined) {
-          return (decoded as Ok<ToplevelUsersContainer>).value.users;
+        if (decoded.isOk()) {
+          return decoded.value.users;
         }
         console.warn('/users replied without users property');
         console.warn(resp);
@@ -39,8 +39,8 @@ export class ToplevelUsersService {
     return ajax.getJSON(environment.serverAddress + '/user/' + username).pipe(
       map(resp => {
         let decoded = toplevelUserDecoder.decode(resp);
-        if ((decoded as Ok<ToplevelUser>).value !== undefined) {
-          return (decoded as Ok<ToplevelUser>).value;
+        if (decoded.isOk()) {
+          return decoded.value;
         }
         console.warn('/user/' + username + ' replied without user');
         console.warn(resp);
