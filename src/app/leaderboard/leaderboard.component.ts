@@ -15,7 +15,9 @@ export class LeaderboardComponent implements OnInit {
   ) { }
 
   getUsers(): void {
-    this.toplevelUsersService.getUsers().subscribe(users => this.users_data = users);
+    this.toplevelUsersService.getUsers().subscribe(users => {
+      this.users_data = users
+    });
   }
 
   ngOnInit(): void {
