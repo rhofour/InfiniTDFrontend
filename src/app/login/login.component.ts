@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { auth } from 'firebase/app';
+import { FormControl, Validators } from '@angular/forms';
 
 import { UserService } from '../user.service';
 
@@ -11,6 +12,10 @@ import { UserService } from '../user.service';
 })
 export class LoginComponent implements OnInit {
   loginErrorMsg: string = "";
+  desiredName = new FormControl('', [
+    Validators.minLength(2),
+  ]);
+  desireNameErrors
 
   constructor(
     public afAuth: AngularFireAuth,
@@ -24,6 +29,9 @@ export class LoginComponent implements OnInit {
 
   googleLogin() {
     this.afAuth.signInWithPopup(new auth.GoogleAuthProvider()).catch(this.loginError);
+  }
+
+  setName() {
   }
 
   logout() {

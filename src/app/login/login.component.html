@@ -1,5 +1,19 @@
 <div *ngIf="userService.getUser() | async as user; else showLogin">
-  <h1>Hello {{ user.displayName }}!</h1>
+  <ng-template *ngIf="user.displayName; else showChooseName">
+    <h1>Hello {{ user.displayName }}!</h1>
+  </ng-template>
+  <ng-template #showChooseName>
+    Please choose a display name:
+    <input type="text" id="desiredName" name="desireName" [formControl]="desiredName">
+    <p><button (click)="setName()">Set Name</button></p>
+    <div *ngIf="desiredName.invalid && (desiredName.dirty || desiredName.touched)"
+      class="alert alert-danger">
+      <div *ngIf="desiredName.errors.minlength">
+        Your display name must be at least 2 characters long.
+      </div>
+    </div>
+  </ng-template>
+  <br />
   <button (click)="logout()">Logout</button>
 </div>
 <ng-template #showLogin>
