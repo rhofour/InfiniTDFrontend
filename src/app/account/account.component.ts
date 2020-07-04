@@ -34,6 +34,7 @@ export class AccountComponent implements OnInit {
   }
 
   logout() {
+    console.log("Signing out.");
     this.afAuth.signOut();
   }
 

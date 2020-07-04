@@ -1,8 +1,11 @@
-<div *ngIf="backend.getUser() | async as user; else showLogin">
-  <ng-template *ngIf="user.displayName; else showChooseName">
-    <h1>Hello {{ user.displayName }}!</h1>
-  </ng-template>
-  <ng-template #showChooseName>
+<div *ngIf="backend.getUser() | async as user; else showLoginOrRegister">
+  <h1>Hello {{ user.name }}!</h1>
+  <br />
+  <button (click)="logout()">Logout</button>
+</div>
+<ng-template #showLoginOrRegister>
+  <div *ngIf="backend.getUnregistered() | async as unregistered;
+                       else showLogin">
     Please choose a display name:
     <input type="text" id="desiredName" name="desireName" [formControl]="desiredName">
     <p><button (click)="setName()">Set Name</button></p>
@@ -12,11 +15,11 @@
         Your display name must be at least 2 characters long.
       </div>
     </div>
+    <br />
+    <button (click)="logout()">Logout</button>
+  </div>
+  <ng-template #showLogin>
+    <p>Please login.</p>
+    <button (click)="googleLogin()">Login with Google</button>
   </ng-template>
-  <br />
-  <button (click)="logout()">Logout</button>
-</div>
-<ng-template #showLogin>
-  <p>Please login.</p>
-  <button (click)="googleLogin()">Login with Google</button>
 </ng-template>
