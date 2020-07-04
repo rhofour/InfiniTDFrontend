@@ -4,11 +4,10 @@
   <button (click)="logout()">Logout</button>
 </div>
 <ng-template #showLoginOrRegister>
-  <div *ngIf="backend.getUnregistered() | async as unregistered;
-                       else showLogin">
+  <div *ngIf="backend.getUnregistered() | async; else showLogin">
     Please choose a display name:
     <input type="text" id="desiredName" name="desireName" [formControl]="desiredName">
-    <p><button (click)="setName()">Set Name</button></p>
+    <p><button (click)="setName()" [disabled]="desiredName.invalid || desiredName.pristine">Set Name</button></p>
     <div *ngIf="desiredName.invalid && (desiredName.dirty || desiredName.touched)"
       class="alert alert-danger">
       <div *ngIf="desiredName.errors && desiredName.errors.minlength">

@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { auth, User as FbUser } from 'firebase/app';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -21,6 +21,7 @@ export class BackendService {
   constructor(
     private http: HttpClient,
     private afAuth: AngularFireAuth,
+    private ngZone: NgZone,
   ) {
     afAuth.currentUser.then((fbUser) => this.updateUser(fbUser));
     afAuth.onAuthStateChanged((fbUser) => this.updateUser(fbUser));
@@ -28,28 +29,27 @@ export class BackendService {
 
   // Update the user$ attribute from the Firebase user.
   updateUser(fbUser: FbUser | null) {
-    console.log("updateUser:");
-    console.log(fbUser);
-    if (fbUser === null) {
-      console.log("User not signed in.");
-      this.unregistered$.next(false);
-      this.user$.next(null);
-      return
-    }
-    // Send request to get info to build a User.
-    console.log("About to attempt an authenticated request.");
-    this.authenticatedHttp(environment.serverAddress + '/thisUser').then((user) => {
-      console.log("Got promise response from /thisUser promise");
-      let decoded = decoders.user.decode(user);
-      if (decoded.isOk()) {
+    this.ngZone.run(() => {
+      if (fbUser === null) {
+        console.log("User not signed in.");
         this.unregistered$.next(false);
-        this.user$.next(decoded.value);
-      } else {
-        // We have a Firebase user, but no associated user in our backend.
-        console.log("Found unregistered user.")
-        this.unregistered$.next(true);
         this.user$.next(null);
+        return
       }
+      // Send request to get info to build a User.
+      this.authenticatedHttp(environment.serverAddress + '/thisUser').then((user) => {
+        let decoded = decoders.user.decode(user);
+        if (decoded.isOk()) {
+          console.log("Found registered user.")
+          this.unregistered$.next(false);
+          this.user$.next(decoded.value);
+        } else {
+          // We have a Firebase user, but no associated user in our backend.
+          console.log("Found unregistered user.")
+          this.unregistered$.next(true);
+          this.user$.next(null);
+        }
+      });
     });
   }
 
@@ -61,7 +61,6 @@ export class BackendService {
         return;
       }
       fbUser.getIdToken().then((idToken) => {
-        console.log("idToken updated");
         if (idToken) {
           const httpOptions = {
             headers: new HttpHeaders({
@@ -70,9 +69,9 @@ export class BackendService {
             })
           };
           console.log("Actually sending request to " + url);
-          return this.http.get(url, httpOptions)
+          return this.http.get(url, httpOptions);
         }
-        return throwError('No authenticated user.')
+        return throwError('No authenticated user.');
       }, (err) => {
         console.warn(err);
       });
