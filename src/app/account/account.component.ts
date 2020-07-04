@@ -3,23 +3,22 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { auth } from 'firebase/app';
 import { FormControl, Validators } from '@angular/forms';
 
-import { UserService } from '../user.service';
+import { BackendService } from '../backend.service';
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  selector: 'app-account',
+  templateUrl: './account.component.html',
+  styleUrls: ['./account.component.css']
 })
-export class LoginComponent implements OnInit {
+export class AccountComponent implements OnInit {
   loginErrorMsg: string = "";
   desiredName = new FormControl('', [
     Validators.minLength(2),
   ]);
-  desireNameErrors
 
   constructor(
     public afAuth: AngularFireAuth,
-    public userService: UserService,
+    public backend: BackendService,
   ) { }
 
   loginError(err: auth.Error) {

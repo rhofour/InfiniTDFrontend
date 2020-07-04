@@ -13,7 +13,7 @@ export interface User {
 @Injectable({
   providedIn: 'root'
 })
-export class UserService {
+export class BackendService {
   user$: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
 
   constructor(
@@ -42,5 +42,4 @@ export class UserService {
   }
 
   getUser() { return this.user$; }
-
 }

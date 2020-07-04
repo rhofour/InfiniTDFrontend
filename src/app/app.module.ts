@@ -12,7 +12,7 @@ import { TopBarComponent } from './top-bar/top-bar.component';
 import { UserFieldComponent } from './user-field/user-field.component';
 import { environment } from '../environments/environment';
 import { firebase } from './firebase';
-import { LoginComponent } from './login/login.component';
+import { AccountComponent } from './account/account.component';
 
 @NgModule({
   declarations: [
@@ -20,7 +20,7 @@ import { LoginComponent } from './login/login.component';
     LeaderboardComponent,
     TopBarComponent,
     UserFieldComponent,
-    LoginComponent
+    AccountComponent,
   ],
   imports: [
     BrowserModule,
