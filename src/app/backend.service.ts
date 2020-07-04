@@ -23,8 +23,12 @@ export class BackendService {
     private afAuth: AngularFireAuth,
     private ngZone: NgZone,
   ) {
-    afAuth.currentUser.then((fbUser) => this.updateUser(fbUser));
+    this.updateCurrentUser();
     afAuth.onAuthStateChanged((fbUser) => this.updateUser(fbUser));
+  }
+
+  updateCurrentUser() {
+    this.afAuth.currentUser.then((fbUser) => this.updateUser(fbUser));
   }
 
   // Update the user$ attribute from the Firebase user.
@@ -40,12 +44,12 @@ export class BackendService {
       this.authenticatedHttp(environment.serverAddress + '/thisUser').then((user) => {
         let decoded = decoders.user.decode(user);
         if (decoded.isOk()) {
-          console.log("Found registered user.")
+          console.log("Found registered user.");
           this.unregistered$.next(false);
           this.user$.next(decoded.value);
         } else {
           // We have a Firebase user, but no associated user in our backend.
-          console.log("Found unregistered user.")
+          console.log("Found unregistered user.");
           this.unregistered$.next(true);
           this.user$.next(null);
         }
@@ -71,7 +75,7 @@ export class BackendService {
           })
         };
         console.log("Actually sending request to " + url);
-        return this.http.request(method, url, httpOptions);
+        return this.http.request(method, url, httpOptions).toPromise();
       }
       throw new Error("No authenticated user.");
     }, (err) => {
@@ -150,6 +154,7 @@ export class BackendService {
       environment.serverAddress + '/register/' + name, 'post').then((resp: HttpResponse<Object>) => {
         if (resp.status == 201) {
           console.log("Registration successful.");
+          this.updateCurrentUser();
           return null;
         }
         return "Unknown success.";
