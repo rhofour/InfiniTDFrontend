@@ -1,7 +1,7 @@
 import { Injectable, NgZone } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { auth, User as FbUser } from 'firebase/app';
-import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { of, throwError, Observable, BehaviorSubject } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import { map, catchError } from 'rxjs/operators';
@@ -148,8 +148,16 @@ export class BackendService {
   register(name: string): Promise<string | null> {
     return this.authenticatedHttpWithResponse(
       environment.serverAddress + '/register/' + name, 'post').then((resp: HttpResponse<Object>) => {
-        console.log("Received back: ", resp.status)
-        return resp.statusText
+        if (resp.status == 201) {
+          console.log("Registration successful.");
+          return null;
+        }
+        return "Unknown success.";
+    }, (resp: HttpErrorResponse) => {
+      if (resp.status == 412) {
+        return "Name already taken.";
+      }
+      return "Unknown error.";
     });
   }
 }

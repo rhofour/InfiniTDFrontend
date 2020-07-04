@@ -13,7 +13,7 @@ import { BackendService } from '../backend.service';
 })
 export class AccountComponent implements OnInit {
   loginErrorMsg: string = "";
-  registerErrorMsg: string = "";
+  registrationErrorMsg: string = "";
   desiredName = new FormControl('', [
     Validators.minLength(2),
   ]);
@@ -42,7 +42,12 @@ export class AccountComponent implements OnInit {
     this.backend.isNameTaken(name).then(isTaken => {
       console.log("Is name taken: " + isTaken);
     });
-    this.backend.register(name).then(console.log);
+    this.backend.register(name).then(registrationError => {
+      if (registrationError) {
+        this.registrationErrorMsg = registrationError;
+        console.log("registrationErrorMsg is now: " + this.registrationErrorMsg);
+      }
+    });
   }
 
   logout() {

@@ -14,6 +14,9 @@
         Your display name must be at least 2 characters long.
       </div>
     </div>
+    <div class="alert alert-danger">
+      {{registrationErrorMsg}}
+    </div>
     <br />
     <button (click)="logout()">Logout</button>
   </div>
