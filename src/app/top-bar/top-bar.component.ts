@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Location } from '@angular/common';
 import { Router } from '@angular/router';
 
 
@@ -10,7 +11,10 @@ import { Router } from '@angular/router';
 export class TopBarComponent implements OnInit {
   navLinks: {label: string, link: string,}[]
 
-  constructor(private router: Router) {
+  constructor(
+    private router: Router,
+    public location: Location,
+  ) {
     this.navLinks = [
       {
         label: "Leaderboard",

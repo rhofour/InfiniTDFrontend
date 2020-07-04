@@ -1,7 +1,9 @@
 <h1>InfiniTD</h1>
 <nav mat-tab-nav-bar>
   <a mat-tab-link *ngFor="let link of navLinks"
-     [routerLink]="link.link">
+     [routerLink]="link.link"
+     [active]="link.link == location.path()">
     {{ link.label }}
   </a>
 </nav>
+At: {{location.path()}}
