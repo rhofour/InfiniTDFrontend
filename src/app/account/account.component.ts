@@ -13,6 +13,7 @@ import { BackendService } from '../backend.service';
 })
 export class AccountComponent implements OnInit {
   loginErrorMsg: string = "";
+  registerErrorMsg: string = "";
   desiredName = new FormControl('', [
     Validators.minLength(2),
   ]);
@@ -38,6 +39,10 @@ export class AccountComponent implements OnInit {
       return;
     }
     console.log("Attempting to set name to " + name);
+    this.backend.isNameTaken(name).then(isTaken => {
+      console.log("Is name taken: " + isTaken);
+    });
+    this.backend.register(name).then(console.log);
   }
 
   logout() {

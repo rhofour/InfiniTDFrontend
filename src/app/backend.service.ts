@@ -1,7 +1,7 @@
 import { Injectable, NgZone } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { auth, User as FbUser } from 'firebase/app';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
 import { of, throwError, Observable, BehaviorSubject } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import { map, catchError } from 'rxjs/operators';
@@ -53,30 +53,55 @@ export class BackendService {
     });
   }
 
-  authenticatedHttp(url: string): Promise<unknown> {
+  authenticatedHttp(url: string, method = "get"): Promise<Object> {
     console.log('Sending authenticated request to ' + url);
     return this.afAuth.currentUser.then((fbUser) => {
       if (fbUser === null) {
-        console.warn("Could not send authenticated HTTP because there is no Firebase user logged in.");
-        return;
+        throw new Error("Could not send authenticated HTTP because there is no Firebase user logged in.");
       }
-      fbUser.getIdToken().then((idToken) => {
-        if (idToken) {
-          const httpOptions = {
-            headers: new HttpHeaders({
-              'Content-Type': 'application/json',
-              'Authorization': 'Bearer ' + idToken,
-            })
-          };
-          console.log("Actually sending request to " + url);
-          return this.http.get(url, httpOptions);
-        }
-        return throwError('No authenticated user.');
-      }, (err) => {
-        console.warn(err);
-      });
+      return fbUser.getIdToken()
     }, (err) => {
-      console.warn("Error getting current Firebase user: " + err);
+      throw new Error("Error getting current Firebase user: " + err);
+    }).then((idToken) => {
+      if (idToken) {
+        const httpOptions = {
+          headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + idToken,
+          })
+        };
+        console.log("Actually sending request to " + url);
+        return this.http.request(method, url, httpOptions);
+      }
+      throw new Error("No authenticated user.");
+    }, (err) => {
+      throw new Error("Error getting ID token user: " + err);
+    });
+  }
+
+  authenticatedHttpWithResponse(url: string, method = "get"): Promise<HttpResponse<Object>> {
+    console.log('Sending authenticated request to ' + url);
+    return this.afAuth.currentUser.then((fbUser) => {
+      if (fbUser === null) {
+        throw new Error("Could not send authenticated HTTP because there is no Firebase user logged in.");
+      }
+      return fbUser.getIdToken()
+    }, (err) => {
+      throw new Error("Error getting current Firebase user: " + err);
+    }).then((idToken) => {
+      if (idToken) {
+        console.log("Actually sending request to " + url);
+        return this.http.request(method, url, {
+          headers: new HttpHeaders({
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + idToken,
+          }),
+          observe: "response"
+        }).toPromise();
+      }
+      throw new Error("No authenticated user.");
+    }, (err) => {
+      throw new Error("Error getting ID token user: " + err);
     });
   }
 
@@ -101,5 +126,30 @@ export class BackendService {
         return of(err);
       })
     );
+  }
+
+  isNameTaken(name: string): Promise<boolean> {
+    // This will be greatly simplified when
+    // https://github.com/microsoft/TypeScript/issues/21732 is fixed.
+    interface IsTakenResponse {
+      isTaken: boolean,
+    };
+    return this.http.get<IsTakenResponse>(environment.serverAddress + '/isNameTaken/' + name).toPromise().then(resp => {
+      if (resp && resp.isTaken !== undefined && typeof resp.isTaken === "boolean") {
+        return resp.isTaken;
+      }
+      return Promise.reject(new Error("Could not parse response from isNameTaken: " + resp));
+    }, error => {
+      console.error("Error in response from isNameTaken/" + name + ": " + error);
+      return Promise.reject(error);
+    });
+  }
+
+  register(name: string): Promise<string | null> {
+    return this.authenticatedHttpWithResponse(
+      environment.serverAddress + '/register/' + name, 'post').then((resp: HttpResponse<Object>) => {
+        console.log("Received back: ", resp.status)
+        return resp.statusText
+    });
   }
 }
