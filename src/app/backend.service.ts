@@ -48,6 +48,8 @@ export class BackendService {
           this.unregistered$.next(false);
           this.user$.next(decoded.value);
         } else {
+          console.log("Decoding Error: ");
+          console.log(decoded);
           // We have a Firebase user, but no associated user in our backend.
           console.log("Found unregistered user.");
           this.unregistered$.next(true);
@@ -109,7 +111,22 @@ export class BackendService {
     });
   }
 
-  getUser() { return this.user$; }
+  getUser(name: string): Promise<User | null> {
+    return this.http.get(environment.serverAddress + '/user/' + name).toPromise()
+      .then(resp => decoders.user.decodePromise(resp), (resp => {
+        if (resp.status == 404) {
+          console.log("User " + name + " not found.");
+          return null;
+        }
+        console.warn("Unexpected failure looking up user " + name);
+        console.log(resp);
+        return null;
+      }));
+  }
+
+  getCurrentUser() {
+    return this.user$;
+  }
 
   getUnregistered() { return this.unregistered$; }
 

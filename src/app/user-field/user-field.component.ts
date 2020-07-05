@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { ToplevelUser } from '../toplevel-user'
 import { ActivatedRoute } from '@angular/router';
-import { Location } from '@angular/common';
-import { ToplevelUsersService } from '../toplevel-users.service';
+
+import { User } from '../user';
+import { BackendService } from '../backend.service';
 
 
 @Component({
@@ -11,12 +11,11 @@ import { ToplevelUsersService } from '../toplevel-users.service';
   styleUrls: ['./user-field.component.css']
 })
 export class UserFieldComponent implements OnInit {
-  user: ToplevelUser | null = null;
+  user: User | null = null;
 
   constructor(
     private route: ActivatedRoute,
-    private toplevelUsersService: ToplevelUsersService,
-    private location: Location,
+    private backend: BackendService,
   ) { }
 
   ngOnInit(): void {
@@ -26,7 +25,7 @@ export class UserFieldComponent implements OnInit {
   getUser(): void {
     const username = this.route.snapshot.paramMap.get('username');
     if(username) {
-      this.toplevelUsersService.getUser(username).subscribe(user => this.user = user);
+      this.backend.getUser(username).then(user => this.user = user);
     }
   }
 

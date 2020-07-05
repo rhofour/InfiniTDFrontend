@@ -1,4 +1,4 @@
-<div *ngIf="backend.getUser() | async as user; else showLoginOrRegister">
+<div *ngIf="backend.getCurrentUser() | async as user; else showLoginOrRegister">
   <h1>Hello {{ user.name }}!</h1>
   <br />
   <button mat-stroked-button (click)="logout()">Logout</button>

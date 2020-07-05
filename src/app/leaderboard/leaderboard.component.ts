@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ToplevelUser } from '../toplevel-user';
-import { ToplevelUsersService } from '../toplevel-users.service';
+
+import { User } from '../user'
+import { BackendService } from '../backend.service'
 
 @Component({
   selector: 'app-leaderboard',
@@ -8,20 +9,16 @@ import { ToplevelUsersService } from '../toplevel-users.service';
   styleUrls: ['./leaderboard.component.css']
 })
 export class LeaderboardComponent implements OnInit {
-  users_data: ToplevelUser[] = [];
+  users: User[] = [];
 
   constructor(
-    private toplevelUsersService: ToplevelUsersService
+    private backend: BackendService
   ) { }
 
-  getUsers(): void {
-    this.toplevelUsersService.getUsers().subscribe(users => {
-      this.users_data = users
-    });
-  }
-
   ngOnInit(): void {
-    this.getUsers();
+    this.backend.getUsers().subscribe(users => {
+      this.users = users;
+    });
   }
 
 }
