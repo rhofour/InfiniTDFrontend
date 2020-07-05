@@ -6,12 +6,13 @@ import { BackendService } from '../backend.service';
 
 
 @Component({
-  selector: 'app-user-field',
-  templateUrl: './user-field.component.html',
-  styleUrls: ['./user-field.component.css']
+  selector: 'app-towers',
+  templateUrl: './towers.component.html',
+  styleUrls: ['./towers.component.css']
 })
-export class UserFieldComponent implements OnInit {
+export class TowersComponent implements OnInit {
   user: User | null = null;
+  username: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -23,9 +24,9 @@ export class UserFieldComponent implements OnInit {
   }
 
   getUser(): void {
-    const username = this.route.snapshot.paramMap.get('username');
-    if(username) {
-      this.backend.getUser(username).then(user => this.user = user);
+    this.username = this.route.snapshot.paramMap.get('username');
+    if(this.username) {
+      this.backend.getUser(this.username).then(user => this.user = user);
     }
   }
 

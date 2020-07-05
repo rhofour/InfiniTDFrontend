@@ -1,0 +1,15 @@
+<div *ngIf="user; else noUser">
+<mat-toolbar>
+  <span>{{user.name}}</span>
+  <span class="spacer"></span>
+  {{user.accumulatedGold}} accumulated gold ({{user.goldPerMinute}} / min)
+</mat-toolbar>
+</div>
+<ng-template #noUser>
+  <div *ngIf="username; else noUsername">
+    No user with the name {{username}} found.
+  </div>
+  <ng-template #noUsername>
+    No username found.
+  </ng-template>
+</ng-template>

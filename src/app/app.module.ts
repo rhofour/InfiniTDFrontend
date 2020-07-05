@@ -12,7 +12,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LeaderboardComponent } from './leaderboard/leaderboard.component';
 import { TopBarComponent } from './top-bar/top-bar.component';
-import { UserFieldComponent } from './user-field/user-field.component';
+import { TowersComponent } from './towers/towers.component';
 import { environment } from '../environments/environment';
 import { firebase } from './firebase';
 import { AccountComponent } from './account/account.component';
@@ -23,7 +23,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     AppComponent,
     LeaderboardComponent,
     TopBarComponent,
-    UserFieldComponent,
+    TowersComponent,
     AccountComponent,
   ],
   imports: [
