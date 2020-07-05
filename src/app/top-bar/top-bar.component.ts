@@ -1,7 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
-import { Router } from '@angular/router';
 
+import { BackendService } from '../backend.service';
+
+interface TopLink {
+  label: string,
+  link: string,
+}
 
 @Component({
   selector: 'app-top-bar',
@@ -9,11 +14,12 @@ import { Router } from '@angular/router';
   styleUrls: ['./top-bar.component.css']
 })
 export class TopBarComponent implements OnInit {
-  navLinks: {label: string, link: string,}[]
+  navLinks: TopLink[]
+  accountLink: TopLink;
 
   constructor(
-    private router: Router,
     public location: Location,
+    private backend: BackendService,
   ) {
     this.navLinks = [
       {
@@ -25,9 +31,17 @@ export class TopBarComponent implements OnInit {
         link: "/account",
       },
     ];
+    this.accountLink = this.navLinks[1];
   }
 
   ngOnInit(): void {
+    this.backend.getCurrentUser().subscribe(user => {
+      if (user) {
+        this.accountLink.label = "Account";
+      } else {
+        this.accountLink.label = "Login";
+      }
+    });
   }
 
 }
