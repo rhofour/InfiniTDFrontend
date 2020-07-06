@@ -3,6 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 
 import { User } from '../user';
 import { BackendService } from '../backend.service';
+import { GameConfig } from '../game-config';
+import { GameConfigService } from '../game-config.service';
 
 
 @Component({
