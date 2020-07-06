@@ -23,6 +23,7 @@
     "@angular/platform-browser-dynamic": "~10.0.0",
     "@angular/router": "~10.0.0",
     "firebase": "^7.15.5",
+    "konva": "^7.0.2",
     "rxjs": "~6.6.0",
     "ts.data.json": "^1.1.0",
     "tslib": "^2.0.0",
