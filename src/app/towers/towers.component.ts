@@ -1,6 +1,7 @@
 import { Component, OnInit, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import Konva from 'konva';
+import { ResizedEvent } from 'angular-resize-event';
 
 import { User } from '../user';
 import { BackendService } from '../backend.service';
@@ -17,6 +18,8 @@ export class TowersComponent implements OnInit {
   user: User | null = null;
   username: string | null = null;
   gameConfig: GameConfig;
+  konvaStage: Konva.Stage | null = null;
+  towersLayer!: Konva.Layer;
 
   @ViewChild("canvasDiv") canvasDiv!: ElementRef;
 
@@ -28,22 +31,13 @@ export class TowersComponent implements OnInit {
     this.gameConfig = gameConfigService.config;
   }
 
-  setupKonva() {
-    let width = this.canvasDiv.nativeElement.offsetWidth;
-    let height = this.canvasDiv.nativeElement.offsetHeight;
-    console.log("Setting up Konva with dimensions: " + width + " x " + height);
-    let stage = new Konva.Stage({
-      container: "canvasDiv",
-      width: width,
-      height: height,
-    });
-    let layer = new Konva.Layer();
-    stage.add(layer);
+  onResize(event: ResizedEvent) {
+    console.log(event);
+    this.renderPlayfield();
+  }
 
-    let maxWidth = Math.floor(width / this.gameConfig.playfield.width);
-    let maxHeight = Math.floor(height / this.gameConfig.playfield.height);
-    let cellSize = Math.min(maxWidth, maxHeight);
-
+  renderTowers(cellSize: number) {
+    this.towersLayer.destroyChildren();
     for (let row = 0; row < this.gameConfig.playfield.height; row++) {
       for (let col = 0; col < this.gameConfig.playfield.width; col++) {
         let i = col + row * (this.gameConfig.playfield.width + 1);
@@ -56,11 +50,55 @@ export class TowersComponent implements OnInit {
             stroke: 'red',
             strokeWidth: 2,
         });
-        layer.add(box);
+        this.towersLayer.add(box);
       }
     }
 
-    layer.draw();
+    this.towersLayer.draw();
+  }
+
+  renderPlayfield() {
+    if (!this.konvaStage) {
+      return;
+    }
+    let divSize = {
+      width: this.canvasDiv.nativeElement.offsetWidth,
+      height: this.canvasDiv.nativeElement.offsetHeight,
+    }
+    let konvaSize = this.konvaStage.size();
+    let resized = false;
+    if (divSize.width !== konvaSize.width && divSize.height !== konvaSize.height) {
+      resized = true;
+      console.log("Resizing konva from " + konvaSize.width + " x " + konvaSize.height +
+        " to " + divSize.width + " x " + divSize.height);
+      this.konvaStage.size(divSize);
+    }
+
+    konvaSize = this.konvaStage.size();
+    let maxWidth = Math.floor(konvaSize.width / this.gameConfig.playfield.width);
+    let maxHeight = Math.floor(konvaSize.height / this.gameConfig.playfield.height);
+    let cellSize = Math.min(maxWidth, maxHeight);
+
+    if (resized) {
+      this.renderTowers(cellSize);
+      return;
+    } 
+
+    this.towersLayer.draw();
+  }
+
+  setupKonva() {
+    let width = this.canvasDiv.nativeElement.offsetWidth;
+    let height = this.canvasDiv.nativeElement.offsetHeight;
+    this.konvaStage = new Konva.Stage({
+      container: "canvasDiv",
+      width: 0,
+      height: 0,
+    });
+    this.towersLayer = new Konva.Layer();
+    this.konvaStage.add(this.towersLayer);
+
+    this.renderPlayfield();
   }
 
   ngOnInit(): void {
@@ -79,7 +117,8 @@ export class TowersComponent implements OnInit {
   ngAfterViewInit() {
     // TODO(rofer): Figure out why this timeout is needed and replace it with
     // responsive code.
-    setTimeout(() => this.setupKonva(), 1000);
+    this.setupKonva();
+    setTimeout(() => this.renderPlayfield(), 250);
   }
 
 }
