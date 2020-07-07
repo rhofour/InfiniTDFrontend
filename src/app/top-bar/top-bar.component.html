@@ -3,8 +3,8 @@
 </mat-toolbar>
 <nav mat-tab-nav-bar>
   <a mat-tab-link *ngFor="let link of navLinks"
-     [routerLink]="link.link"
-     [active]="link.link == location.path()">
+    [routerLink]="link.link"
+    [active]="link.link == location.path()">
     {{ link.label }}
   </a>
 </nav>

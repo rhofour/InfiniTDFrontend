@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import Konva from 'konva';
 
@@ -17,6 +17,8 @@ export class TowersComponent implements OnInit {
   user: User | null = null;
   username: string | null = null;
 
+  @ViewChild("canvasDiv") canvasDiv!: ElementRef;
+
   constructor(
     private route: ActivatedRoute,
     private backend: BackendService,
@@ -24,10 +26,12 @@ export class TowersComponent implements OnInit {
 
   setupKonva() {
     // Basic konva test
+    console.log("Width: " + this.canvasDiv.nativeElement.offsetWidth);
+    console.log("Height: " + this.canvasDiv.nativeElement.offsetHeight);
     let stage = new Konva.Stage({
-      container: 'canvasDiv',
-      width: 500,
-      height: 500
+      container: "canvasDiv",
+      width: this.canvasDiv.nativeElement.offsetWidth,
+      height: this.canvasDiv.nativeElement.offsetHeight,
     });
     let layer = new Konva.Layer();
     stage.add(layer);
@@ -56,9 +60,14 @@ export class TowersComponent implements OnInit {
     if(this.username) {
       this.backend.getUser(this.username).then(user => {
         this.user = user;
-        this.setupKonva();
       });
     }
+  }
+
+  ngAfterViewInit() {
+    // TODO(rofer): Figure out why this timeout is needed and replace it with
+    // responsive code.
+    setTimeout(() => this.setupKonva(), 1000);
   }
 
 }
