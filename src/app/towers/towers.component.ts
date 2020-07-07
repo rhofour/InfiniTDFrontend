@@ -16,37 +16,49 @@ import { GameConfigService } from '../game-config.service';
 export class TowersComponent implements OnInit {
   user: User | null = null;
   username: string | null = null;
+  gameConfig: GameConfig;
 
   @ViewChild("canvasDiv") canvasDiv!: ElementRef;
 
   constructor(
     private route: ActivatedRoute,
     private backend: BackendService,
-  ) { }
+    private gameConfigService: GameConfigService,
+  ) {
+    this.gameConfig = gameConfigService.config;
+  }
 
   setupKonva() {
-    // Basic konva test
-    console.log("Width: " + this.canvasDiv.nativeElement.offsetWidth);
-    console.log("Height: " + this.canvasDiv.nativeElement.offsetHeight);
+    let width = this.canvasDiv.nativeElement.offsetWidth;
+    let height = this.canvasDiv.nativeElement.offsetHeight;
+    console.log("Setting up Konva with dimensions: " + width + " x " + height);
     let stage = new Konva.Stage({
       container: "canvasDiv",
-      width: this.canvasDiv.nativeElement.offsetWidth,
-      height: this.canvasDiv.nativeElement.offsetHeight,
+      width: width,
+      height: height,
     });
     let layer = new Konva.Layer();
     stage.add(layer);
 
-    let box = new Konva.Rect({
-        x: 50,
-        y: 50,
-        width: 100,
-        height: 50,
-        fill: '#00D2FF',
-        stroke: 'black',
-        strokeWidth: 4,
-        draggable: true
-    });
-    layer.add(box);
+    let maxWidth = Math.floor(width / this.gameConfig.playfield.width);
+    let maxHeight = Math.floor(height / this.gameConfig.playfield.height);
+    let cellSize = Math.min(maxWidth, maxHeight);
+
+    for (let row = 0; row < this.gameConfig.playfield.height; row++) {
+      for (let col = 0; col < this.gameConfig.playfield.width; col++) {
+        let i = col + row * (this.gameConfig.playfield.width + 1);
+        let box = new Konva.Rect({
+            x: col * cellSize,
+            y: row * cellSize,
+            width: cellSize,
+            height: cellSize,
+            fill: i % 2 == 1 ? 'black' : 'white',
+            stroke: 'red',
+            strokeWidth: 2,
+        });
+        layer.add(box);
+      }
+    }
 
     layer.draw();
   }
