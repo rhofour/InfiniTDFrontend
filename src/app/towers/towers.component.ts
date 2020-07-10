@@ -4,6 +4,9 @@ import Konva from 'konva';
 
 import { User } from '../user';
 import { BackendService } from '../backend.service';
+import { GameConfig } from '../game-config';
+import { GameConfigService } from '../game-config.service';
+import { GameState, TowerState } from '../game-state';
 
 
 @Component({
@@ -14,11 +17,35 @@ import { BackendService } from '../backend.service';
 export class TowersComponent implements OnInit {
   user: User | null = null;
   username: string | null = null;
+  gameConfig: GameConfig;
+  gameState: GameState;
 
   constructor(
     private route: ActivatedRoute,
     private backend: BackendService,
-  ) { }
+    private gameConfigService: GameConfigService,
+  ) {
+    this.gameConfig = gameConfigService.config;
+
+    const towerState1: TowerState = {
+      id: 1,
+    }
+    const towerState2: TowerState = {
+      id: 2,
+    }
+
+    this.gameState = {
+      playfield: {
+        towers: [],
+      },
+    };
+    for (var row = 0; row < this.gameConfig.playfield.numRows; row++) {
+      this.gameState.playfield.towers[row] = [];
+      for (var col = 0; col < this.gameConfig.playfield.numCols; col++) {
+        this.gameState.playfield.towers[row][col] = (row % 3 == 0 ? towerState1 : towerState2);
+      }
+    }
+  }
 
   ngOnInit(): void {
     this.getUser();

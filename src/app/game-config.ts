@@ -1,8 +1,8 @@
 export interface CellPos { row: number, col: number }
 
 export interface PlayfieldConfig {
-  width: number,
-  height: number,
+  numRows: number,
+  numCols: number,
   monsterEnter: CellPos,
   monsterExit: CellPos,
 }

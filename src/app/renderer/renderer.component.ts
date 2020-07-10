@@ -1,8 +1,9 @@
-import { Component, OnInit, ElementRef, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ElementRef, AfterViewInit, Input } from '@angular/core';
 import Konva from 'konva';
 
 import { GameConfig } from '../game-config';
 import { GameConfigService } from '../game-config.service';
+import { GameState } from '../game-state';
 
 @Component({
   selector: 'app-renderer',
@@ -10,6 +11,7 @@ import { GameConfigService } from '../game-config.service';
   styleUrls: ['./renderer.component.css']
 })
 export class RendererComponent implements OnInit, AfterViewInit {
+  @Input() gameState!: GameState;
   gameConfig: GameConfig;
   konvaStage: Konva.Stage | null = null;
   towersLayer!: Konva.Layer;
@@ -43,17 +45,17 @@ export class RendererComponent implements OnInit, AfterViewInit {
   }
 
   renderTowers(cellSize: number) {
-    console.log("cellSize: " + cellSize)
+    console.log(this.gameState);
     this.towersLayer.destroyChildren();
-    for (let row = 0; row < this.gameConfig.playfield.height; row++) {
-      for (let col = 0; col < this.gameConfig.playfield.width; col++) {
-        let i = col + row * (this.gameConfig.playfield.width + 1);
+    for (let row = 0; row < this.gameConfig.playfield.numRows; row++) {
+      for (let col = 0; col < this.gameConfig.playfield.numCols; col++) {
+        const tower: TowerState = this.gameState.playfield.towers[row][col];
         let box = new Konva.Rect({
             x: col * cellSize,
             y: row * cellSize,
             width: cellSize,
             height: cellSize,
-            fill: i % 2 == 1 ? 'black' : 'white',
+            fill: tower.id == 1 ? 'black' : 'white',
             stroke: 'red',
             strokeWidth: 2,
         });
@@ -65,8 +67,8 @@ export class RendererComponent implements OnInit, AfterViewInit {
   }
 
   calcCellSize(size: { width: number, height: number }) {
-    let maxWidth = Math.floor(size.width / this.gameConfig.playfield.width);
-    let maxHeight = Math.floor(size.height / this.gameConfig.playfield.height);
+    let maxWidth = Math.floor(size.width / this.gameConfig.playfield.numCols);
+    let maxHeight = Math.floor(size.height / this.gameConfig.playfield.numRows);
     return Math.min(maxWidth, maxHeight);
   }
 
@@ -86,8 +88,8 @@ export class RendererComponent implements OnInit, AfterViewInit {
     resized = cellSize !== divCellSize;
     if (resized) {
       const newSize = {
-        width: divCellSize * this.gameConfig.playfield.width,
-        height: divCellSize * this.gameConfig.playfield.height,
+        width: divCellSize * this.gameConfig.playfield.numCols,
+        height: divCellSize * this.gameConfig.playfield.numRows,
       }
       this.konvaStage.size(newSize);
       console.log("Resizing to " + newSize.width + " x " + newSize.height);
