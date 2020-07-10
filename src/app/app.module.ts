@@ -18,6 +18,7 @@ import { environment } from '../environments/environment';
 import { firebase } from './firebase';
 import { AccountComponent } from './account/account.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RendererComponent } from './renderer/renderer.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +27,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
     TopBarComponent,
     TowersComponent,
     AccountComponent,
+    RendererComponent,
   ],
   imports: [
     BrowserModule,
