@@ -12,8 +12,8 @@ import { BackendService } from '../backend.service';
   styleUrls: ['./account.component.css'],
 })
 export class AccountComponent implements OnInit {
-  loginErrorMsg: string = "";
-  registrationErrorMsg: string = "";
+  loginErrorMsg = '';
+  registrationErrorMsg = '';
   desiredName = new FormControl('', [
     Validators.minLength(2),
   ]);
@@ -25,7 +25,7 @@ export class AccountComponent implements OnInit {
 
   loginError(err: auth.Error) {
     console.log(err);
-    this.loginErrorMsg = "Login error: " + err.message;
+    this.loginErrorMsg = 'Login error: ' + err.message;
   }
 
   googleLogin() {
@@ -35,23 +35,23 @@ export class AccountComponent implements OnInit {
   setName() {
     const name = this.desiredName.value;
     if (this.desiredName.invalid) {
-      console.log("Attemping to set name with invalid value: " + name);
+      console.log('Attemping to set name with invalid value: ' + name);
       return;
     }
-    console.log("Attempting to set name to " + name);
+    console.log('Attempting to set name to ' + name);
     this.backend.isNameTaken(name).then(isTaken => {
-      console.log("Is name taken: " + isTaken);
+      console.log('Is name taken: ' + isTaken);
     });
     this.backend.register(name).then(registrationError => {
       if (registrationError) {
         this.registrationErrorMsg = registrationError;
-        console.log("registrationErrorMsg is now: " + this.registrationErrorMsg);
+        console.log('registrationErrorMsg is now: ' + this.registrationErrorMsg);
       }
     });
   }
 
   logout() {
-    console.log("Signing out.");
+    console.log('Signing out.');
     this.afAuth.signOut();
   }
 

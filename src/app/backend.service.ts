@@ -35,7 +35,7 @@ export class BackendService {
   updateUser(fbUser: FbUser | null) {
     this.ngZone.run(() => {
       if (fbUser === null) {
-        console.log("User not signed in.");
+        console.log('User not signed in.');
         this.unregistered$.next(false);
         this.user$.next(null);
         return
@@ -44,14 +44,14 @@ export class BackendService {
       this.authenticatedHttp(environment.serverAddress + '/thisUser').then((user) => {
         let decoded = decoders.user.decode(user);
         if (decoded.isOk()) {
-          console.log("Found registered user.");
+          console.log('Found registered user.');
           this.unregistered$.next(false);
           this.user$.next(decoded.value);
         } else {
-          console.log("Decoding Error: ");
+          console.log('Decoding Error: ');
           console.log(decoded);
           // We have a Firebase user, but no associated user in our backend.
-          console.log("Found unregistered user.");
+          console.log('Found unregistered user.');
           this.unregistered$.next(true);
           this.user$.next(null);
         }
@@ -59,55 +59,55 @@ export class BackendService {
     });
   }
 
-  authenticatedHttp(url: string, method = "get"): Promise<Object> {
+  authenticatedHttp(url: string, method = 'get'): Promise<Object> {
     console.log('Sending authenticated request to ' + url);
     return this.afAuth.currentUser.then((fbUser) => {
       if (fbUser === null) {
-        throw new Error("Could not send authenticated HTTP because there is no Firebase user logged in.");
+        throw new Error('Could not send authenticated HTTP because there is no Firebase user logged in.');
       }
       return fbUser.getIdToken()
     }, (err) => {
-      throw new Error("Error getting current Firebase user: " + err);
+      throw new Error('Error getting current Firebase user: ' + err);
     }).then((idToken) => {
       if (idToken) {
         const httpOptions = {
           headers: new HttpHeaders({
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + idToken,
+            Authorization: 'Bearer ' + idToken,
           })
         };
-        console.log("Actually sending request to " + url);
+        console.log('Actually sending request to ' + url);
         return this.http.request(method, url, httpOptions).toPromise();
       }
-      throw new Error("No authenticated user.");
+      throw new Error('No authenticated user.');
     }, (err) => {
-      throw new Error("Error getting ID token user: " + err);
+      throw new Error('Error getting ID token user: ' + err);
     });
   }
 
-  authenticatedHttpWithResponse(url: string, method = "get"): Promise<HttpResponse<Object>> {
+  authenticatedHttpWithResponse(url: string, method = 'get'): Promise<HttpResponse<Object>> {
     console.log('Sending authenticated request to ' + url);
     return this.afAuth.currentUser.then((fbUser) => {
       if (fbUser === null) {
-        throw new Error("Could not send authenticated HTTP because there is no Firebase user logged in.");
+        throw new Error('Could not send authenticated HTTP because there is no Firebase user logged in.');
       }
       return fbUser.getIdToken()
     }, (err) => {
-      throw new Error("Error getting current Firebase user: " + err);
+      throw new Error('Error getting current Firebase user: ' + err);
     }).then((idToken) => {
       if (idToken) {
-        console.log("Actually sending request to " + url);
+        console.log('Actually sending request to ' + url);
         return this.http.request(method, url, {
           headers: new HttpHeaders({
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + idToken,
+            Authorization: 'Bearer ' + idToken,
           }),
-          observe: "response"
+          observe: 'response'
         }).toPromise();
       }
-      throw new Error("No authenticated user.");
+      throw new Error('No authenticated user.');
     }, (err) => {
-      throw new Error("Error getting ID token user: " + err);
+      throw new Error('Error getting ID token user: ' + err);
     });
   }
 
@@ -115,10 +115,10 @@ export class BackendService {
     return this.http.get(environment.serverAddress + '/user/' + name).toPromise()
       .then(resp => decoders.user.decodePromise(resp), (resp => {
         if (resp.status == 404) {
-          console.log("User " + name + " not found.");
+          console.log('User ' + name + ' not found.');
           return null;
         }
-        console.warn("Unexpected failure looking up user " + name);
+        console.warn('Unexpected failure looking up user ' + name);
         console.log(resp);
         return null;
       }));
@@ -156,12 +156,12 @@ export class BackendService {
       isTaken: boolean,
     };
     return this.http.get<IsTakenResponse>(environment.serverAddress + '/isNameTaken/' + name).toPromise().then(resp => {
-      if (resp && resp.isTaken !== undefined && typeof resp.isTaken === "boolean") {
+      if (resp && resp.isTaken !== undefined && typeof resp.isTaken === 'boolean') {
         return resp.isTaken;
       }
-      return Promise.reject(new Error("Could not parse response from isNameTaken: " + resp));
+      return Promise.reject(new Error('Could not parse response from isNameTaken: ' + resp));
     }, error => {
-      console.error("Error in response from isNameTaken/" + name + ": " + error);
+      console.error('Error in response from isNameTaken/' + name + ': ' + error);
       return Promise.reject(error);
     });
   }
@@ -170,16 +170,16 @@ export class BackendService {
     return this.authenticatedHttpWithResponse(
       environment.serverAddress + '/register/' + name, 'post').then((resp: HttpResponse<Object>) => {
         if (resp.status == 201) {
-          console.log("Registration successful.");
+          console.log('Registration successful.');
           this.updateCurrentUser();
           return null;
         }
-        return "Unknown success.";
+        return 'Unknown success.';
     }, (resp: HttpErrorResponse) => {
       if (resp.status == 412) {
-        return "Name already taken.";
+        return 'Name already taken.';
       }
-      return "Unknown error.";
+      return 'Unknown error.';
     });
   }
 }

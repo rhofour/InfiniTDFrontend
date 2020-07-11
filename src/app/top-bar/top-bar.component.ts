@@ -23,12 +23,12 @@ export class TopBarComponent implements OnInit {
   ) {
     this.navLinks = [
       {
-        label: "Leaderboard",
-        link: "/leaderboard",
+        label: 'Leaderboard',
+        link: '/leaderboard',
       },
       {
-        label: "Account",
-        link: "/account",
+        label: 'Account',
+        link: '/account',
       },
     ];
     this.accountLink = this.navLinks[1];
@@ -37,9 +37,9 @@ export class TopBarComponent implements OnInit {
   ngOnInit(): void {
     this.backend.getCurrentUser().subscribe(user => {
       if (user) {
-        this.accountLink.label = "Account";
+        this.accountLink.label = 'Account';
       } else {
-        this.accountLink.label = "Login";
+        this.accountLink.label = 'Login';
       }
     });
   }

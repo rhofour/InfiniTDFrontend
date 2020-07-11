@@ -74,7 +74,7 @@ export class RendererComponent implements OnInit, AfterViewInit {
 
   renderPlayfield() {
     if (!this.konvaStage) {
-      console.warn("renderPlayfield called when konvaStage doesn't exist.");
+      console.warn('renderPlayfield called when konvaStage doesn\'t exist.');
       return;
     }
     let divSize = {
@@ -92,7 +92,7 @@ export class RendererComponent implements OnInit, AfterViewInit {
         height: divCellSize * this.gameConfig.playfield.numRows,
       }
       this.konvaStage.size(newSize);
-      console.log("Resizing to " + newSize.width + " x " + newSize.height);
+      console.log('Resizing to ' + newSize.width + ' x ' + newSize.height);
       this.renderTowers(divCellSize);
     }
   }
