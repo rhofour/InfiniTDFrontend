@@ -5,6 +5,7 @@ import { GameConfig } from '../game-config';
 import { GameConfigService } from '../game-config.service';
 import { GameState, TowerState } from '../game-state';
 import { LayerRenderer } from './layer-renderer';
+import { BackgroundLayerRenderer } from './background-layer-renderer';
 import { TowerLayerRenderer } from './tower-layer-renderer';
 
 @Component({
@@ -16,7 +17,9 @@ export class RendererComponent implements OnInit, AfterViewInit {
   @Input() gameState!: GameState;
   gameConfig: GameConfig;
   konvaStage: Konva.Stage | null = null;
-  towerRenderer: TowerLayerRenderer = new TowerLayerRenderer();
+  backgroundRenderer = new BackgroundLayerRenderer();
+  towerRenderer = new TowerLayerRenderer();
+  ready = false;
 
   constructor(
     private hostElem: ElementRef,
@@ -42,7 +45,13 @@ export class RendererComponent implements OnInit, AfterViewInit {
       width: 0,
       height: 0,
     });
-    this.towerRenderer.init(this.gameConfig, this.konvaStage);
+    let backgroundReady = this.backgroundRenderer.init(this.gameConfig, this.konvaStage);
+    let towerReady = this.towerRenderer.init(this.gameConfig, this.konvaStage);
+    // Render when all layers are ready.
+    Promise.all([towerReady, backgroundReady]).then(() => {
+      this.ready = true;
+      this.render();
+    });
   }
 
   calcCellSize(size: { width: number, height: number }) {
@@ -54,6 +63,10 @@ export class RendererComponent implements OnInit, AfterViewInit {
   render() {
     if (!this.konvaStage) {
       console.warn('renderPlayfield called when konvaStage doesn\'t exist.');
+      return;
+    }
+    if (!this.ready) {
+      console.log('Render called before it\'s ready.');
       return;
     }
     let divSize = {
@@ -72,6 +85,7 @@ export class RendererComponent implements OnInit, AfterViewInit {
       }
       this.konvaStage.size(newSize);
       console.log('Resizing to ' + newSize.width + ' x ' + newSize.height);
+      this.backgroundRenderer.render(this.gameState.background, divCellSize);
       this.towerRenderer.render(this.gameState.towers, divCellSize);
     }
   }

@@ -8,25 +8,26 @@ export class TowerLayerRenderer implements LayerRenderer<TowersState, GameConfig
   private layer = new Konva.Layer();
   private gameConfig!: GameConfig;
 
-  init(gameConfig: GameConfig, stage: Konva.Stage) {
+  init(gameConfig: GameConfig, stage: Konva.Stage): Promise<void> {
     this.gameConfig = gameConfig;
     stage.add(this.layer);
+    return Promise.resolve();
   }
 
   render(towersState: TowersState, cellSize: number): void {
     console.log(towersState);
     this.layer.destroyChildren();
+    const padding = Math.floor(cellSize / 4);
     for (let row = 0; row < this.gameConfig.playfield.numRows; row++) {
       for (let col = 0; col < this.gameConfig.playfield.numCols; col++) {
         const tower: TowerState = towersState.towers[row][col];
         let box = new Konva.Rect({
-            x: col * cellSize,
-            y: row * cellSize,
-            width: cellSize,
-            height: cellSize,
+            x: col * cellSize + padding,
+            y: row * cellSize + padding,
+            width: cellSize - (2 * padding),
+            height: cellSize - (2 * padding),
             fill: tower.id == 1 ? 'black' : 'white',
-            stroke: 'red',
-            strokeWidth: 2,
+            strokeWidth: 0,
         });
         this.layer.add(box);
       }

@@ -1,3 +1,7 @@
+export interface BackgroundState {
+  ids: number[][],
+}
+
 export interface TowerState {
   id: number,
 }
@@ -7,5 +11,6 @@ export interface TowersState {
 }
 
 export interface GameState {
+  background: BackgroundState,
   towers: TowersState,
 }
