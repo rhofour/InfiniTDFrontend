@@ -3,7 +3,7 @@ import Konva from 'konva';
 
 import { GameConfig } from '../game-config';
 import { GameConfigService } from '../game-config.service';
-import { GameState } from '../game-state';
+import { GameState, TowerState } from '../game-state';
 
 @Component({
   selector: 'app-renderer',
