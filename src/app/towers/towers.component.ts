@@ -35,14 +35,14 @@ export class TowersComponent implements OnInit {
     }
 
     this.gameState = {
-      playfield: {
+      towers: {
         towers: [],
       },
     };
     for (var row = 0; row < this.gameConfig.playfield.numRows; row++) {
-      this.gameState.playfield.towers[row] = [];
+      this.gameState.towers.towers[row] = [];
       for (var col = 0; col < this.gameConfig.playfield.numCols; col++) {
-        this.gameState.playfield.towers[row][col] = (row % 3 == 0 ? towerState1 : towerState2);
+        this.gameState.towers.towers[row][col] = (row % 3 == 0 ? towerState1 : towerState2);
       }
     }
   }

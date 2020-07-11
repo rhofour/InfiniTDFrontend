@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 
+import { environment } from '../environments/environment';
 import { PlayfieldConfig, MonsterConfig, TowerConfig, GameConfig } from './game-config';
 
 @Injectable({
@@ -8,6 +9,10 @@ import { PlayfieldConfig, MonsterConfig, TowerConfig, GameConfig } from './game-
 export class GameConfigService {
 
   config: GameConfig = {
+    tiles: [
+      { id: 0, url: environment.serverAddress + '/static/CrappyGrass.png' },
+      { id: 1, url: environment.serverAddress + '/static/CrappyDirt.png' },
+    ],
     playfield: {
       numCols: 10,
       numRows: 14,

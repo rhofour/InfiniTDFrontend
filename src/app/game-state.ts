@@ -2,10 +2,10 @@ export interface TowerState {
   id: number,
 }
 
-export interface PlayfieldState {
+export interface TowersState {
   towers: TowerState[][],
 }
 
 export interface GameState {
-  playfield: PlayfieldState,
+  towers: TowersState,
 }

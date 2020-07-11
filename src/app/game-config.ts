@@ -1,5 +1,10 @@
 export interface CellPos { row: number, col: number }
 
+export interface TileConfig {
+  id: number,
+  url: string,
+}
+
 export interface PlayfieldConfig {
   numRows: number,
   numCols: number,
@@ -25,6 +30,7 @@ export interface TowerConfig {
 }
 
 export interface GameConfig {
+  tiles: TileConfig[],
   playfield: PlayfieldConfig,
   monsters: MonsterConfig[],
   towers: TowerConfig[],

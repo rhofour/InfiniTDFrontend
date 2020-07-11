@@ -4,6 +4,8 @@ import Konva from 'konva';
 import { GameConfig } from '../game-config';
 import { GameConfigService } from '../game-config.service';
 import { GameState, TowerState } from '../game-state';
+import { LayerRenderer } from './layer-renderer';
+import { TowerLayerRenderer } from './tower-layer-renderer';
 
 @Component({
   selector: 'app-renderer',
@@ -14,7 +16,7 @@ export class RendererComponent implements OnInit, AfterViewInit {
   @Input() gameState!: GameState;
   gameConfig: GameConfig;
   konvaStage: Konva.Stage | null = null;
-  towersLayer!: Konva.Layer;
+  towerRenderer: TowerLayerRenderer = new TowerLayerRenderer();
 
   constructor(
     private hostElem: ElementRef,
@@ -28,7 +30,7 @@ export class RendererComponent implements OnInit, AfterViewInit {
 
   ngAfterViewInit() {
     let resizeObserver = new ResizeObserver(entries => {
-      this.renderPlayfield();
+      this.render();
     });
     this.setupKonva();
     resizeObserver.observe(this.hostElem.nativeElement);
@@ -40,30 +42,7 @@ export class RendererComponent implements OnInit, AfterViewInit {
       width: 0,
       height: 0,
     });
-    this.towersLayer = new Konva.Layer();
-    this.konvaStage.add(this.towersLayer);
-  }
-
-  renderTowers(cellSize: number) {
-    console.log(this.gameState);
-    this.towersLayer.destroyChildren();
-    for (let row = 0; row < this.gameConfig.playfield.numRows; row++) {
-      for (let col = 0; col < this.gameConfig.playfield.numCols; col++) {
-        const tower: TowerState = this.gameState.playfield.towers[row][col];
-        let box = new Konva.Rect({
-            x: col * cellSize,
-            y: row * cellSize,
-            width: cellSize,
-            height: cellSize,
-            fill: tower.id == 1 ? 'black' : 'white',
-            stroke: 'red',
-            strokeWidth: 2,
-        });
-        this.towersLayer.add(box);
-      }
-    }
-
-    this.towersLayer.draw();
+    this.towerRenderer.init(this.gameConfig, this.konvaStage);
   }
 
   calcCellSize(size: { width: number, height: number }) {
@@ -72,7 +51,7 @@ export class RendererComponent implements OnInit, AfterViewInit {
     return Math.min(maxWidth, maxHeight);
   }
 
-  renderPlayfield() {
+  render() {
     if (!this.konvaStage) {
       console.warn('renderPlayfield called when konvaStage doesn\'t exist.');
       return;
@@ -93,7 +72,7 @@ export class RendererComponent implements OnInit, AfterViewInit {
       }
       this.konvaStage.size(newSize);
       console.log('Resizing to ' + newSize.width + ' x ' + newSize.height);
-      this.renderTowers(divCellSize);
+      this.towerRenderer.render(this.gameState.towers, divCellSize);
     }
   }
 }
