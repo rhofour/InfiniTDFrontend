@@ -8,6 +8,8 @@ import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule} from '@angular/material/toolbar';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatDividerModule } from '@angular/material/divider';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -41,6 +43,8 @@ import { RendererComponent } from './renderer/renderer.component';
     MatButtonModule,
     MatToolbarModule,
     FlexLayoutModule,
+    MatSidenavModule,
+    MatDividerModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

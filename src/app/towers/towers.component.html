@@ -15,5 +15,14 @@
   </ng-template>
 </ng-template>
 
-<app-renderer [hidden]="!user"  fxFlex="1 1 100%" [gameState]="gameState">
-</app-renderer>
+<mat-drawer-container [hidden]="!user" fxFlex="1 1 100%" autosize>
+  <mat-drawer opened mode="side" position="end">
+    <h1>Selection goes here</h1>
+    <mat-divider></mat-divider>
+    <h1>Build</h1>
+  </mat-drawer>
+  <mat-drawer-content>
+    <app-renderer fxFlex="1 1 100%" [gameState]="gameState">
+    </app-renderer>
+  </mat-drawer-content>
+</mat-drawer-container>
