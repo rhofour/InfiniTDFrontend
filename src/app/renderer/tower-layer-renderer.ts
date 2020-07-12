@@ -5,7 +5,7 @@ import { GameConfig } from '../game-config';
 import { TowersState, TowerState } from '../game-state';
 
 export class TowerLayerRenderer implements LayerRenderer<TowersState, GameConfig> {
-  private layer = new Konva.Layer();
+  private layer = new Konva.Layer({ listening: false });
   private gameConfig!: GameConfig;
 
   init(gameConfig: GameConfig, stage: Konva.Stage): Promise<void> {

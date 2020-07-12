@@ -5,9 +5,14 @@ import { GameConfig } from '../game-config';
 import { BackgroundState } from '../game-state';
 
 export class BackgroundLayerRenderer implements LayerRenderer<BackgroundState, GameConfig> {
-  private layer = new Konva.Layer();
+  private layer = new Konva.Layer({ listening: true });
   private gameConfig!: GameConfig;
   private images = new Map();
+  private clickCallback: (row: number, col: number) => void;
+
+  constructor(clickCallback: (row: number, col: number) => void) {
+    this.clickCallback = clickCallback;
+  }
 
   init(gameConfig: GameConfig, stage: Konva.Stage): Promise<void>  {
     this.gameConfig = gameConfig;
@@ -37,6 +42,10 @@ export class BackgroundLayerRenderer implements LayerRenderer<BackgroundState, G
             width: cellSize,
             height: cellSize,
             image: this.images.get(tileId),
+        });
+        tileImg.on('click', (evt) => {
+          this.clickCallback(row, col);
+          evt.cancelBubble = true;
         });
         this.layer.add(tileImg);
       }
