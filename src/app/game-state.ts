@@ -7,7 +7,7 @@ export interface TowerState {
 }
 
 export interface TowersState {
-  towers: TowerState[][],
+  towers: (TowerState | null)[][],
 }
 
 export interface GameState {

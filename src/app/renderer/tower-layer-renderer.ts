@@ -20,16 +20,18 @@ export class TowerLayerRenderer implements LayerRenderer<TowersState, GameConfig
     const padding = Math.floor(cellSize / 4);
     for (let row = 0; row < this.gameConfig.playfield.numRows; row++) {
       for (let col = 0; col < this.gameConfig.playfield.numCols; col++) {
-        const tower: TowerState = towersState.towers[row][col];
-        let box = new Konva.Rect({
-            x: col * cellSize + padding,
-            y: row * cellSize + padding,
-            width: cellSize - (2 * padding),
-            height: cellSize - (2 * padding),
-            fill: tower.id == 1 ? 'black' : 'white',
-            strokeWidth: 0,
-        });
-        this.layer.add(box);
+        const tower: TowerState | null = towersState.towers[row][col];
+        if (tower) {
+          let box = new Konva.Rect({
+              x: col * cellSize + padding,
+              y: row * cellSize + padding,
+              width: cellSize - (2 * padding),
+              height: cellSize - (2 * padding),
+              fill: tower.id == 1 ? 'black' : 'white',
+              strokeWidth: 0,
+          });
+          this.layer.add(box);
+        }
       }
     }
 

@@ -46,8 +46,10 @@ export class TowersComponent implements OnInit {
       this.gameState.towers.towers[row] = [];
       this.gameState.background.ids[row] = [];
       for (var col = 0; col < this.gameConfig.playfield.numCols; col++) {
-        this.gameState.towers.towers[row][col] = (row % 3 == 0 ? towerState1 : towerState2);
-        this.gameState.background.ids[row][col] = col % 2;
+        if (Math.random() < 0.25) {
+          this.gameState.towers.towers[row][col] = (row % 3 == 0 ? towerState1 : towerState2);
+        }
+        this.gameState.background.ids[row][col] = Math.random() > 0.1 ? 0 : 1;
       }
     }
   }
