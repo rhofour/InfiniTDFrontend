@@ -21,6 +21,8 @@ import { firebase } from './firebase';
 import { AccountComponent } from './account/account.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RendererComponent } from './renderer/renderer.component';
+import { BaseLayerRendererComponent } from './base-layer-renderer/base-layer-renderer.component';
+import { BackgroundLayerRendererComponent } from './background-layer-renderer/background-layer-renderer.component';
 
 @NgModule({
   declarations: [
@@ -30,6 +32,7 @@ import { RendererComponent } from './renderer/renderer.component';
     TowersComponent,
     AccountComponent,
     RendererComponent,
+    BackgroundLayerRendererComponent,
   ],
   imports: [
     BrowserModule,

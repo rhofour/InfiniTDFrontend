@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, AfterViewInit, Input } from '@angular/core';
+import { Component, OnInit, ElementRef, Input } from '@angular/core';
 import Konva from 'konva';
 
 import { GameConfig } from '../game-config';
@@ -6,7 +6,6 @@ import { GameConfigService } from '../game-config.service';
 import { GameState, TowerState } from '../game-state';
 import { UiState } from './ui-state';
 import { LayerRenderer } from './layer-renderer';
-import { BackgroundLayerRenderer } from './background-layer-renderer';
 import { TowerLayerRenderer } from './tower-layer-renderer';
 import { UiLayerRenderer } from './ui-layer-renderer';
 
@@ -15,11 +14,11 @@ import { UiLayerRenderer } from './ui-layer-renderer';
   templateUrl: './renderer.component.html',
   styleUrls: ['./renderer.component.css']
 })
-export class RendererComponent implements OnInit, AfterViewInit {
+export class RendererComponent implements OnInit {
   @Input() gameState!: GameState;
-  gameConfig: GameConfig;
-  konvaStage: Konva.Stage | null = null;
-  backgroundRenderer = new BackgroundLayerRenderer((row, col) => this.onClick(row, col));
+  public cellSize: number = 0;
+  public gameConfig: GameConfig;
+  public stage: Konva.Stage | null = null;
   towerRenderer = new TowerLayerRenderer();
   uiRenderer = new UiLayerRenderer();
   uiState: UiState;
@@ -34,9 +33,6 @@ export class RendererComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-  }
-
-  ngAfterViewInit() {
     let resizeObserver = new ResizeObserver(entries => {
       this.render();
     });
@@ -45,16 +41,15 @@ export class RendererComponent implements OnInit, AfterViewInit {
   }
 
   setupKonva() {
-    this.konvaStage = new Konva.Stage({
+    this.stage = new Konva.Stage({
       container: this.hostElem.nativeElement,
       width: 0,
       height: 0,
     });
-    let backgroundReady = this.backgroundRenderer.init(this.gameConfig, this.konvaStage);
-    let towerReady = this.towerRenderer.init(this.gameConfig, this.konvaStage);
-    let uiReady = this.uiRenderer.init(this.gameConfig, this.konvaStage);
+    let towerReady = this.towerRenderer.init(this.gameConfig, this.stage);
+    let uiReady = this.uiRenderer.init(this.gameConfig, this.stage);
     // Render when all layers are ready.
-    Promise.all([towerReady, backgroundReady, uiReady]).then(() => {
+    Promise.all([towerReady, uiReady]).then(() => {
       this.ready = true;
       this.render();
     });
@@ -76,8 +71,8 @@ export class RendererComponent implements OnInit, AfterViewInit {
   }
 
   render() {
-    if (!this.konvaStage) {
-      console.warn('renderPlayfield called when konvaStage doesn\'t exist.');
+    if (!this.stage) {
+      console.warn('renderPlayfield called when stage doesn\'t exist.');
       return;
     }
     if (!this.ready) {
@@ -88,19 +83,18 @@ export class RendererComponent implements OnInit, AfterViewInit {
       width: this.hostElem.nativeElement.offsetWidth,
       height: this.hostElem.nativeElement.offsetHeight,
     }
-    let konvaSize = this.konvaStage.size();
+    let konvaSize = this.stage.size();
     let resized = false;
-    let cellSize = this.calcCellSize(konvaSize);
     let divCellSize = this.calcCellSize(divSize);
-    resized = cellSize !== divCellSize;
+    resized = this.cellSize !== divCellSize;
     if (resized) {
+      this.cellSize = divCellSize;
       const newSize = {
         width: divCellSize * this.gameConfig.playfield.numCols,
         height: divCellSize * this.gameConfig.playfield.numRows,
       }
-      this.konvaStage.size(newSize);
+      this.stage.size(newSize);
       console.log('Resizing to ' + newSize.width + ' x ' + newSize.height);
-      this.backgroundRenderer.render(this.gameState.background, divCellSize);
       this.towerRenderer.render(this.gameState.towers, divCellSize);
     }
     this.uiRenderer.render(this.uiState, divCellSize);
