@@ -6,6 +6,7 @@ export const user = JsonDecoder.object<User>(
   {
     name: JsonDecoder.string,
     accumulatedGold: JsonDecoder.number,
+    gold: JsonDecoder.number,
     goldPerMinute: JsonDecoder.number,
     active: JsonDecoder.boolean,
   },
