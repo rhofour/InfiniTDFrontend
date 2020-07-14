@@ -23,6 +23,8 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RendererComponent } from './renderer/renderer.component';
 import { BaseLayerRendererComponent } from './base-layer-renderer/base-layer-renderer.component';
 import { BackgroundLayerRendererComponent } from './background-layer-renderer/background-layer-renderer.component';
+import { TowerLayerRendererComponent } from './tower-layer-renderer/tower-layer-renderer.component';
+import { UiLayerRendererComponent } from './ui-layer-renderer/ui-layer-renderer.component';
 
 @NgModule({
   declarations: [
@@ -33,6 +35,8 @@ import { BackgroundLayerRendererComponent } from './background-layer-renderer/ba
     AccountComponent,
     RendererComponent,
     BackgroundLayerRendererComponent,
+    TowerLayerRendererComponent,
+    UiLayerRendererComponent,
   ],
   imports: [
     BrowserModule,

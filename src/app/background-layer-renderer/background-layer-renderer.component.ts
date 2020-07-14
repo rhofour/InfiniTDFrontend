@@ -18,7 +18,6 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
   ngOnInit(): void {
     super.ngOnInit();
 
-    console.log("ngOnInit");
     if (this.gameConfig === undefined) {
       throw new Error("Attribute 'gameConfig' is required.");
     }
