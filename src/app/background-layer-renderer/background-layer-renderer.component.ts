@@ -4,6 +4,7 @@ import Konva from 'konva';
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
 import { GameConfig } from '../game-config';
 import { BackgroundState } from '../game-state';
+import { GameUiService } from '../game-ui.service';
 
 @Component({
   selector: 'app-background-layer-renderer',
@@ -15,6 +16,10 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
   @Input() backgroundState!: BackgroundState;
   private images = new Map();
 
+  constructor(
+    private uiService: GameUiService,
+  ) { super(); }
+
   ngOnInit(): void {
     super.ngOnInit();
 
@@ -24,6 +29,9 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
     if (this.backgroundState === undefined) {
       throw new Error("Attribute 'backgroundState' is required.");
     }
+
+    // Allow the layer to listen for clicks.
+    this.layer.listening(true);
 
     // Load the background images.
     let promises: Promise<void>[] = [];
@@ -42,9 +50,7 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
   }
 
   render() {
-    console.log(this);
     this.layer.destroyChildren();
-    console.log(this.backgroundState);
     for (let row = 0; row < this.gameConfig.playfield.numRows; row++) {
       for (let col = 0; col < this.gameConfig.playfield.numCols; col++) {
         const tileId = this.backgroundState.ids[row][col];
@@ -55,11 +61,10 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
             height: this.cellSize_,
             image: this.images.get(tileId),
         });
-        // TODO(rofer): Replace this with communicating with a UI service.
-        // tileImg.on('click', (evt) => {
-        //   this.clickCallback(row, col);
-        //   evt.cancelBubble = true;
-        // });
+        tileImg.on('click', (evt) => {
+          this.uiService.select({row: row, col: col});
+          evt.cancelBubble = true;
+        });
         this.layer.add(tileImg);
       }
     }
