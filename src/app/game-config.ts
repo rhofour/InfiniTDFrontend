@@ -36,3 +36,17 @@ export interface GameConfig {
   monsters: MonsterConfig[],
   towers: TowerConfig[],
 }
+
+const emptyPlayfieldConfig: PlayfieldConfig = {
+  numRows: 0,
+  numCols: 0,
+  monsterEnter: { row: 0, col: 0 },
+  monsterExit: { row: 0, col: 0 },
+};
+
+export const emptyGameConfig: GameConfig = {
+  tiles: [],
+  playfield: emptyPlayfieldConfig,
+  monsters: [],
+  towers: [],
+};

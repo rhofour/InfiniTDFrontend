@@ -4,7 +4,7 @@ import Konva from 'konva';
 
 import { User } from '../user';
 import { BackendService } from '../backend.service';
-import { GameConfig } from '../game-config';
+import { GameConfig, emptyGameConfig } from '../game-config';
 import { GameConfigService } from '../game-config.service';
 import { GameState, TowerState } from '../game-state';
 import { GameStateService } from '../game-state.service';
@@ -18,7 +18,7 @@ import { GameStateService } from '../game-state.service';
 export class TowersComponent implements OnInit {
   user: User | null = null;
   username: string | null = null;
-  gameConfig: GameConfig;
+  gameConfig: GameConfig = emptyGameConfig;
   gameState: GameState;
 
   constructor(
@@ -27,7 +27,7 @@ export class TowersComponent implements OnInit {
     private gameConfigService: GameConfigService,
     private gameStateService: GameStateService,
   ) {
-    this.gameConfig = gameConfigService.config;
+    gameConfigService.getConfig().subscribe((config) => this.gameConfig = config);
 
     const towerState1: TowerState = {
       id: 0,

@@ -2,7 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import Konva from 'konva';
 
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
-import { GameConfig } from '../game-config';
+import { GameConfig, TileConfig } from '../game-config';
 import { GameConfigService } from '../game-config.service';
 import { BackgroundState } from '../game-state';
 import { GameStateService } from '../game-state.service';
@@ -15,6 +15,9 @@ import { GameUiService } from '../game-ui.service';
 export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent implements OnInit {
   private images = new Map();
   private state!: BackgroundState;
+  private rows = 0;
+  private cols = 0;
+  private tilesConfig: TileConfig[] = [];
 
   constructor(
     private uiService: GameUiService,
@@ -25,6 +28,14 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
   ngOnInit(): void {
     super.ngOnInit();
 
+    this.gameConfigService.getConfig().subscribe((gameConfig) => {
+      this.rows = gameConfig.playfield.numRows;
+      this.cols = gameConfig.playfield.numCols;
+      this.tilesConfig = gameConfig.tiles;
+
+      this.loadTiles(this.tilesConfig);
+    });
+
     this.gameStateService.getBackground$().subscribe((newBgState) => {
       this.state = newBgState;
       this.render();
@@ -32,10 +43,15 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
 
     // Allow the layer to listen for clicks.
     this.layer.listening(true);
+  }
+
+  loadTiles(tilesConfig: TileConfig[]) {
+    // Reset the map.
+    this.images = new Map();
 
     // Load the background images.
     let promises: Promise<void>[] = [];
-    for (let tile of this.gameConfigService.config.tiles) {
+    for (let tile of tilesConfig) {
       let img = new Image();
       this.images.set(tile.id, img);
       let loadPromise: Promise<void> = new Promise((resolve, reject) => {
@@ -54,8 +70,8 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
       return;
     }
     this.layer.destroyChildren();
-    for (let row = 0; row < this.gameConfigService.config.playfield.numRows; row++) {
-      for (let col = 0; col < this.gameConfigService.config.playfield.numCols; col++) {
+    for (let row = 0; row < this.rows; row++) {
+      for (let col = 0; col < this.cols; col++) {
         const tileId = this.state.ids[row][col];
 
         let tileImg = new Konva.Image({

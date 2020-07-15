@@ -1,7 +1,7 @@
 import { Component, OnInit, ElementRef, Input } from '@angular/core';
 import Konva from 'konva';
 
-import { GameConfig } from '../game-config';
+import { GameConfig, emptyGameConfig } from '../game-config';
 import { GameConfigService } from '../game-config.service';
 import { GameState, TowerState } from '../game-state';
 
@@ -13,14 +13,14 @@ import { GameState, TowerState } from '../game-state';
 export class RendererComponent implements OnInit {
   @Input() gameState!: GameState;
   public cellSize: number = 0;
-  public gameConfig: GameConfig;
+  public gameConfig: GameConfig = emptyGameConfig;
   public stage!: Konva.Stage;
 
   constructor(
     private hostElem: ElementRef,
     private gameConfigService: GameConfigService,
   ) {
-    this.gameConfig = gameConfigService.config;
+    gameConfigService.getConfig().subscribe((config) => this.gameConfig = config);
   }
 
   ngOnInit(): void {
