@@ -2,38 +2,57 @@ import { Component, OnInit, Input } from '@angular/core';
 import Konva from 'konva';
 
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
-import { GameConfig } from '../game-config';
+import { GameConfig, TowerConfig } from '../game-config';
+import { GameConfigService } from '../game-config.service';
 import { TowersState, TowerState } from '../game-state';
+import { GameStateService } from '../game-state.service';
 
 @Component({
   selector: 'app-tower-layer-renderer',
   template: ``,
 })
 export class TowerLayerRendererComponent extends BaseLayerRendererComponent implements OnInit {
-  @Input() gameConfig!: GameConfig;
-  // TODO(rofer): Replace this with a game state service.
-  @Input() towersState!: TowersState;
   private images = new Map();
+  private state!: TowersState;
+  private rows = 0;
+  private cols = 0;
+  private towersConfig: TowerConfig[] = [];
+
+  constructor(
+    private gameConfigService: GameConfigService,
+    private gameStateService: GameStateService,
+  ) { super(); }
 
   ngOnInit(): void {
     super.ngOnInit();
 
-    if (this.gameConfig === undefined) {
-      throw new Error("Attribute 'gameConfig' is required.");
-    }
-    if (this.towersState === undefined) {
-      throw new Error("Attribute 'towersState' is required.");
-    }
+    this.gameConfigService.getConfig().subscribe((gameConfig) => {
+      this.rows = gameConfig.playfield.numRows;
+      this.cols = gameConfig.playfield.numCols;
+      this.towersConfig = gameConfig.towers;
 
-    // Load the tower images.
+      this.loadTowers(this.towersConfig);
+    });
+
+    this.gameStateService.getTowers$().subscribe((newTowerState) => {
+      this.state = newTowerState;
+      this.render();
+    });
+  }
+
+  loadTowers(towersConfig: TowerConfig[]) {
+    // Reset the map.
+    this.images = new Map();
+
+    // Load the background images.
     let promises: Promise<void>[] = [];
-    for (let tile of this.gameConfig.towers) {
+    for (let tower of towersConfig) {
       let img = new Image();
-      this.images.set(tile.id, img);
+      this.images.set(tower.id, img);
       let loadPromise: Promise<void> = new Promise((resolve, reject) => {
         img.onload = () => resolve();
       });
-      img.src = tile.url;
+      img.src = tower.url;
       promises.push(loadPromise);
     }
 
@@ -42,10 +61,13 @@ export class TowerLayerRendererComponent extends BaseLayerRendererComponent impl
   }
 
   render() {
+    if (this.state === undefined) {
+      return;
+    }
     this.layer.destroyChildren();
-    for (let row = 0; row < this.gameConfig.playfield.numRows; row++) {
-      for (let col = 0; col < this.gameConfig.playfield.numCols; col++) {
-        const tower: TowerState | null = this.towersState.towers[row][col];
+    for (let row = 0; row < this.rows; row++) {
+      for (let col = 0; col < this.cols; col++) {
+        const tower: TowerState | null = this.state.towers[row][col];
         if (tower) {
           let box = new Konva.Image({
               x: col * this.cellSize_,
