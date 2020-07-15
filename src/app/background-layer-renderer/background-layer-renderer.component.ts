@@ -3,7 +3,9 @@ import Konva from 'konva';
 
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
 import { GameConfig } from '../game-config';
+import { GameConfigService } from '../game-config.service';
 import { BackgroundState } from '../game-state';
+import { GameStateService } from '../game-state.service';
 import { GameUiService } from '../game-ui.service';
 
 @Component({
@@ -11,31 +13,29 @@ import { GameUiService } from '../game-ui.service';
   template: ``,
 })
 export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent implements OnInit {
-  @Input() gameConfig!: GameConfig;
-  // TODO(rofer): Replace this with a game state service.
-  @Input() backgroundState!: BackgroundState;
   private images = new Map();
+  private state!: BackgroundState;
 
   constructor(
     private uiService: GameUiService,
+    private gameConfigService: GameConfigService,
+    private gameStateService: GameStateService,
   ) { super(); }
 
   ngOnInit(): void {
     super.ngOnInit();
 
-    if (this.gameConfig === undefined) {
-      throw new Error("Attribute 'gameConfig' is required.");
-    }
-    if (this.backgroundState === undefined) {
-      throw new Error("Attribute 'backgroundState' is required.");
-    }
+    this.gameStateService.getBackground$().subscribe((newBgState) => {
+      this.state = newBgState;
+      this.render();
+    });
 
     // Allow the layer to listen for clicks.
     this.layer.listening(true);
 
     // Load the background images.
     let promises: Promise<void>[] = [];
-    for (let tile of this.gameConfig.tiles) {
+    for (let tile of this.gameConfigService.config.tiles) {
       let img = new Image();
       this.images.set(tile.id, img);
       let loadPromise: Promise<void> = new Promise((resolve, reject) => {
@@ -50,10 +50,14 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
   }
 
   render() {
+    if (this.state === undefined) {
+      return;
+    }
     this.layer.destroyChildren();
-    for (let row = 0; row < this.gameConfig.playfield.numRows; row++) {
-      for (let col = 0; col < this.gameConfig.playfield.numCols; col++) {
-        const tileId = this.backgroundState.ids[row][col];
+    for (let row = 0; row < this.gameConfigService.config.playfield.numRows; row++) {
+      for (let col = 0; col < this.gameConfigService.config.playfield.numCols; col++) {
+        const tileId = this.state.ids[row][col];
+
         let tileImg = new Konva.Image({
             x: col * this.cellSize_,
             y: row * this.cellSize_,

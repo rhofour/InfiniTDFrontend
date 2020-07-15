@@ -7,6 +7,7 @@ import { BackendService } from '../backend.service';
 import { GameConfig } from '../game-config';
 import { GameConfigService } from '../game-config.service';
 import { GameState, TowerState } from '../game-state';
+import { GameStateService } from '../game-state.service';
 
 
 @Component({
@@ -24,6 +25,7 @@ export class TowersComponent implements OnInit {
     private route: ActivatedRoute,
     private backend: BackendService,
     private gameConfigService: GameConfigService,
+    private gameStateService: GameStateService,
   ) {
     this.gameConfig = gameConfigService.config;
 
@@ -64,6 +66,7 @@ export class TowersComponent implements OnInit {
       this.backend.getUser(this.username).then(user => {
         this.user = user;
       });
+      this.gameStateService.changeUser(this.username);
     }
   }
 }
