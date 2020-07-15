@@ -4,9 +4,6 @@ import Konva from 'konva';
 
 import { User } from '../user';
 import { BackendService } from '../backend.service';
-import { GameConfig, emptyGameConfig } from '../game-config';
-import { GameConfigService } from '../game-config.service';
-import { GameState, TowerState } from '../game-state';
 import { GameStateService } from '../game-state.service';
 
 
@@ -18,43 +15,12 @@ import { GameStateService } from '../game-state.service';
 export class TowersComponent implements OnInit {
   user: User | null = null;
   username: string | null = null;
-  gameConfig: GameConfig = emptyGameConfig;
-  gameState: GameState;
 
   constructor(
     private route: ActivatedRoute,
     private backend: BackendService,
-    private gameConfigService: GameConfigService,
     private gameStateService: GameStateService,
-  ) {
-    gameConfigService.getConfig().subscribe((config) => this.gameConfig = config);
-
-    const towerState1: TowerState = {
-      id: 0,
-    }
-    const towerState2: TowerState = {
-      id: 1,
-    }
-
-    this.gameState = {
-      background: {
-        ids: [],
-      },
-      towers: {
-        towers: [],
-      },
-    };
-    for (var row = 0; row < this.gameConfig.playfield.numRows; row++) {
-      this.gameState.towers.towers[row] = [];
-      this.gameState.background.ids[row] = [];
-      for (var col = 0; col < this.gameConfig.playfield.numCols; col++) {
-        if (Math.random() < 0.25) {
-          this.gameState.towers.towers[row][col] = (row % 3 == 0 ? towerState1 : towerState2);
-        }
-        this.gameState.background.ids[row][col] = Math.random() > 0.1 ? 0 : 1;
-      }
-    }
-  }
+  ) { }
 
   ngOnInit(): void {
     this.getUser();

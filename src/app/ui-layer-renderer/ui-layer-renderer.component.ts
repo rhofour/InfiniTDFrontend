@@ -1,8 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import Konva from 'konva';
 
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
-import { GameConfig } from '../game-config';
 import { GameUiService, Selection } from '../game-ui.service';
 
 @Component({
@@ -10,8 +9,9 @@ import { GameUiService, Selection } from '../game-ui.service';
   template: ``,
 })
 export class UiLayerRendererComponent extends BaseLayerRendererComponent implements OnInit {
-  @Input() gameConfig!: GameConfig;
   private selection?: Selection;
+  private rows = 0;
+  private cols = 0;
 
   constructor(
     private uiService: GameUiService,
@@ -20,9 +20,6 @@ export class UiLayerRendererComponent extends BaseLayerRendererComponent impleme
   ngOnInit(): void {
     super.ngOnInit();
 
-    if (this.gameConfig === undefined) {
-      throw new Error("Attribute 'gameConfig' is required.");
-    }
     this.uiService.getSelection().subscribe((newSelection) => {
       this.selection = newSelection;
       this.render();

@@ -1,9 +1,8 @@
-import { Component, OnInit, ElementRef, Input } from '@angular/core';
+import { Component, OnInit, ElementRef } from '@angular/core';
 import Konva from 'konva';
 
 import { GameConfig, emptyGameConfig } from '../game-config';
 import { GameConfigService } from '../game-config.service';
-import { GameState, TowerState } from '../game-state';
 
 @Component({
   selector: 'app-renderer',
@@ -11,7 +10,6 @@ import { GameState, TowerState } from '../game-state';
   styleUrls: ['./renderer.component.css']
 })
 export class RendererComponent implements OnInit {
-  @Input() gameState!: GameState;
   public cellSize: number = 0;
   public gameConfig: GameConfig = emptyGameConfig;
   public stage!: Konva.Stage;
@@ -19,16 +17,19 @@ export class RendererComponent implements OnInit {
   constructor(
     private hostElem: ElementRef,
     private gameConfigService: GameConfigService,
-  ) {
-    gameConfigService.getConfig().subscribe((config) => this.gameConfig = config);
-  }
+  ) { }
 
   ngOnInit(): void {
-    let resizeObserver = new ResizeObserver(entries => {
-      this.render();
-    });
     this.setupKonva();
+
+    let resizeObserver = new ResizeObserver(entries => {
+      this.adjustCanvas();
+    });
     resizeObserver.observe(this.hostElem.nativeElement);
+    this.gameConfigService.getConfig().subscribe((config) => {
+      this.gameConfig = config;
+      this.adjustCanvas();
+    });
   }
 
   setupKonva() {
@@ -45,7 +46,7 @@ export class RendererComponent implements OnInit {
     return Math.min(maxWidth, maxHeight);
   }
 
-  render() {
+  adjustCanvas() {
     let divSize = {
       width: this.hostElem.nativeElement.offsetWidth,
       height: this.hostElem.nativeElement.offsetHeight,
