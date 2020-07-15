@@ -1,8 +1,9 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 
 import { GameUiService, Selection } from '../game-ui.service';
-import { TowerConfig } from '../game-config';
+import { GameConfig, TowerConfig, emptyGameConfig } from '../game-config';
 import { GameConfigService } from '../game-config.service';
+import { TowersState, TowerState } from '../game-state';
 import { GameStateService } from '../game-state.service';
 
 @Component({
@@ -13,15 +14,39 @@ import { GameStateService } from '../game-state.service';
 export class GameDrawerComponent implements OnInit {
   public selection?: Selection;
   public selectedTower?: TowerConfig;
+  private gameConfig: GameConfig = emptyGameConfig;
+  private towersState: TowersState = { towers: [] };
 
   constructor(
     uiService: GameUiService,
     gameConfigService: GameConfigService,
     gameStateService: GameStateService,
   ) {
+    gameConfigService.getConfig().subscribe((gameConfig) => {
+      this.gameConfig = gameConfig;
+      this.updateFromSelection(this.selection);
+    })
     uiService.getSelection().subscribe((newSelection) => {
       this.selection = newSelection;
+      this.updateFromSelection(this.selection);
     });
+    gameStateService.getTowers$().subscribe((newTowersState) => {
+      this.towersState = newTowersState;
+      this.updateFromSelection(this.selection);
+    });
+  }
+
+  updateFromSelection(selection?: Selection) {
+    if (selection === undefined) {
+      return;
+    }
+
+    let selectedTowerId = this.towersState.towers[selection.row][selection.col]?.id;
+    if (selectedTowerId === undefined) {
+      return;
+    }
+
+    console.log("Selected tower ID: " + selectedTowerId);
   }
 
   ngOnInit(): void {
