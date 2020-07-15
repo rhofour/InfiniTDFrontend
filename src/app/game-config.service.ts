@@ -20,7 +20,26 @@ export class GameConfigService {
       monsterExit: { row:9, col: 0 },
     },
     monsters: [],
-    towers: [],
+    towers: [
+      {
+        id: 0,
+        url: environment.serverAddress + '/static/CrappyTowerSmall.png',
+        name: "Boring Tower",
+        cost: 1,
+        firingRate: 2,
+        range: 300,
+        damage: 5,
+      },
+      {
+        id: 1,
+        url: environment.serverAddress + '/static/CrappyTower.png',
+        name: "Better Tower",
+        cost: 5,
+        firingRate: 2.5,
+        range: 500,
+        damage: 15,
+      },
+    ],
   }
   constructor() { }
 }

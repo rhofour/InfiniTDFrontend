@@ -22,6 +22,7 @@ export interface MonsterConfig {
 
 export interface TowerConfig {
   id: number,
+  url: string,
   name: string,
   cost: number,
   firingRate: number,

@@ -13,6 +13,7 @@ export class TowerLayerRendererComponent extends BaseLayerRendererComponent impl
   @Input() gameConfig!: GameConfig;
   // TODO(rofer): Replace this with a game state service.
   @Input() towersState!: TowersState;
+  private images = new Map();
 
   ngOnInit(): void {
     super.ngOnInit();
@@ -23,23 +24,35 @@ export class TowerLayerRendererComponent extends BaseLayerRendererComponent impl
     if (this.towersState === undefined) {
       throw new Error("Attribute 'towersState' is required.");
     }
-    this.render();
+
+    // Load the tower images.
+    let promises: Promise<void>[] = [];
+    for (let tile of this.gameConfig.towers) {
+      let img = new Image();
+      this.images.set(tile.id, img);
+      let loadPromise: Promise<void> = new Promise((resolve, reject) => {
+        img.onload = () => resolve();
+      });
+      img.src = tile.url;
+      promises.push(loadPromise);
+    }
+
+    // Render once everything is loaded.
+    Promise.all(promises).then(() => this.render());
   }
 
   render() {
     this.layer.destroyChildren();
-    const padding = Math.floor(this.cellSize_ / 4);
     for (let row = 0; row < this.gameConfig.playfield.numRows; row++) {
       for (let col = 0; col < this.gameConfig.playfield.numCols; col++) {
         const tower: TowerState | null = this.towersState.towers[row][col];
         if (tower) {
-          let box = new Konva.Rect({
-              x: col * this.cellSize_ + padding,
-              y: row * this.cellSize_ + padding,
-              width: this.cellSize_ - (2 * padding),
-              height: this.cellSize_ - (2 * padding),
-              fill: tower.id == 1 ? 'black' : 'white',
-              strokeWidth: 0,
+          let box = new Konva.Image({
+              x: col * this.cellSize_,
+              y: row * this.cellSize_,
+              width: this.cellSize_,
+              height: this.cellSize_,
+              image: this.images.get(tower.id),
           });
           this.layer.add(box);
         }

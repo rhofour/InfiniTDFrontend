@@ -28,10 +28,10 @@ export class TowersComponent implements OnInit {
     this.gameConfig = gameConfigService.config;
 
     const towerState1: TowerState = {
-      id: 1,
+      id: 0,
     }
     const towerState2: TowerState = {
-      id: 2,
+      id: 1,
     }
 
     this.gameState = {

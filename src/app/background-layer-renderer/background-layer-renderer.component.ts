@@ -44,7 +44,7 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
       img.src = tile.url;
       promises.push(loadPromise);
     }
-    this.stage.add(this.layer);
+
     // Render once everything is loaded.
     Promise.all(promises).then(() => this.render());
   }
