@@ -2,13 +2,15 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import { environment } from '../environments/environment';
-import { PlayfieldConfig, MonsterConfig, TowerConfig, GameConfig, emptyGameConfig } from './game-config';
+import { PlayfieldConfig, MonsterConfig, TowerConfig, GameConfig, emptyGameConfig, GameConfigClass } from './game-config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameConfigService {
   private config$: BehaviorSubject<GameConfig> = new BehaviorSubject<GameConfig>(emptyGameConfig);
+  private configClass$: BehaviorSubject<GameConfigClass> =
+    new BehaviorSubject<GameConfigClass>(GameConfigClass.makeEmpty());
 
   constructor() {
     let mockGameConfig = {
@@ -46,9 +48,15 @@ export class GameConfigService {
     }
 
     this.config$.next(mockGameConfig);
+
+    GameConfigClass.fromConfig(mockGameConfig).then((x) => this.configClass$.next(x));
   }
 
   getConfig(): Observable<GameConfig> {
     return this.config$.asObservable();
+  }
+
+  getConfigClass(): Observable<GameConfigClass> {
+    return this.configClass$.asObservable();
   }
 }

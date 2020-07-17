@@ -45,6 +45,7 @@ export const playfieldConfig = JsonDecoder.object<PlayfieldConfig>(
 export const monsterConfig = JsonDecoder.object<MonsterConfig>(
   {
     id: JsonDecoder.number,
+    url: JsonDecoder.string,
     name: JsonDecoder.string,
     health: JsonDecoder.number,
     speed: JsonDecoder.number,
