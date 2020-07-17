@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import Konva from 'konva';
 
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
-import { GameConfig, TowerConfig } from '../game-config';
+import { GameConfig, TowerConfig, ConfigImageMap } from '../game-config';
 import { GameConfigService } from '../game-config.service';
 import { TowersState, TowerState } from '../game-state';
 import { GameStateService } from '../game-state.service';
@@ -12,11 +12,10 @@ import { GameStateService } from '../game-state.service';
   template: ``,
 })
 export class TowerLayerRendererComponent extends BaseLayerRendererComponent implements OnInit {
-  private images = new Map();
-  private state!: TowersState;
   private rows = 0;
   private cols = 0;
-  private towersConfig: TowerConfig[] = [];
+  private state!: TowersState;
+  private towersConfig!: ConfigImageMap<TowerConfig>;
 
   constructor(
     private gameConfigService: GameConfigService,
@@ -26,12 +25,12 @@ export class TowerLayerRendererComponent extends BaseLayerRendererComponent impl
   ngOnInit(): void {
     super.ngOnInit();
 
-    this.gameConfigService.getConfig().subscribe((gameConfig) => {
+    this.gameConfigService.getConfigClass().subscribe((gameConfig) => {
       this.rows = gameConfig.playfield.numRows;
       this.cols = gameConfig.playfield.numCols;
       this.towersConfig = gameConfig.towers;
 
-      this.loadTowers(this.towersConfig);
+      this.render();
     });
 
     this.gameStateService.getTowers$().subscribe((newTowerState) => {
@@ -40,41 +39,22 @@ export class TowerLayerRendererComponent extends BaseLayerRendererComponent impl
     });
   }
 
-  loadTowers(towersConfig: TowerConfig[]) {
-    // Reset the map.
-    this.images = new Map();
-
-    // Load the background images.
-    let promises: Promise<void>[] = [];
-    for (let tower of towersConfig) {
-      let img = new Image();
-      this.images.set(tower.id, img);
-      let loadPromise: Promise<void> = new Promise((resolve, reject) => {
-        img.onload = () => resolve();
-      });
-      img.src = tower.url;
-      promises.push(loadPromise);
-    }
-
-    // Render once everything is loaded.
-    Promise.all(promises).then(() => this.render());
-  }
-
   render() {
-    if (this.state === undefined) {
+    if (this.state === undefined || this.towersConfig === undefined) {
       return;
     }
     this.layer.destroyChildren();
     for (let row = 0; row < this.rows; row++) {
       for (let col = 0; col < this.cols; col++) {
-        const tower: TowerState | null = this.state.towers[row][col];
-        if (tower) {
+        const towerId = this.state.towers[row][col]?.id;
+        const towerImg = towerId === undefined ? undefined : this.towersConfig.get(towerId)?.img;
+        if (towerImg) {
           let box = new Konva.Image({
               x: col * this.cellSize_,
               y: row * this.cellSize_,
               width: this.cellSize_,
               height: this.cellSize_,
-              image: this.images.get(tower.id),
+              image: towerImg,
           });
           this.layer.add(box);
         }
