@@ -21,6 +21,8 @@ export class GameStateService {
     gameConfigService.getConfig().subscribe((config) => {
       this.rows = config.playfield.numRows;
       this.cols = config.playfield.numCols;
+
+      this.requestState();
     });
   }
 
@@ -33,6 +35,10 @@ export class GameStateService {
   }
 
   changeUser(username: string) {
+    this.requestState();
+  }
+
+  requestState() {
     // Initial mock data.
     let background: BackgroundState = { ids: [] };
     let towers: TowersState = { towers: [] };
@@ -50,6 +56,8 @@ export class GameStateService {
       for (var col = 0; col < this.cols; col++) {
         if (Math.random() < 0.25) {
           towers.towers[row][col] = (row % 3 == 0 ? towerState1 : towerState2);
+        } else {
+          towers.towers[row][col] = undefined;
         }
         background.ids[row][col] = Math.random() > 0.1 ? 0 : 1;
       }

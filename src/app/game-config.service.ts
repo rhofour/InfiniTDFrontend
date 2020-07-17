@@ -2,18 +2,18 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
 import { environment } from '../environments/environment';
-import { PlayfieldConfig, MonsterConfig, TowerConfig, GameConfig, emptyGameConfig, GameConfigClass } from './game-config';
+import { PlayfieldConfig, MonsterConfig, TowerConfig, GameConfigData, emptyGameConfigData, GameConfig } from './game-config';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameConfigService {
-  private config$: BehaviorSubject<GameConfig> = new BehaviorSubject<GameConfig>(emptyGameConfig);
-  private configClass$: BehaviorSubject<GameConfigClass> =
-    new BehaviorSubject<GameConfigClass>(GameConfigClass.makeEmpty());
+  private configData$: BehaviorSubject<GameConfigData> = new BehaviorSubject<GameConfigData>(emptyGameConfigData);
+  private config$: BehaviorSubject<GameConfig> =
+    new BehaviorSubject<GameConfig>(GameConfig.makeEmpty());
 
   constructor() {
-    let mockGameConfig = {
+    let mockGameConfigData: GameConfigData = {
       tiles: [
         { id: 0, url: environment.serverAddress + '/static/CrappyGrass.png' },
         { id: 1, url: environment.serverAddress + '/static/CrappyDirt.png' },
@@ -47,16 +47,16 @@ export class GameConfigService {
       ],
     }
 
-    this.config$.next(mockGameConfig);
+    this.configData$.next(mockGameConfigData);
 
-    GameConfigClass.fromConfig(mockGameConfig).then((x) => this.configClass$.next(x));
+    GameConfig.fromConfig(mockGameConfigData).then((x) => this.config$.next(x));
+  }
+
+  getConfigData(): Observable<GameConfigData> {
+    return this.configData$.asObservable();
   }
 
   getConfig(): Observable<GameConfig> {
     return this.config$.asObservable();
-  }
-
-  getConfigClass(): Observable<GameConfigClass> {
-    return this.configClass$.asObservable();
   }
 }

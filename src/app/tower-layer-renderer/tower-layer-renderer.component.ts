@@ -25,7 +25,7 @@ export class TowerLayerRendererComponent extends BaseLayerRendererComponent impl
   ngOnInit(): void {
     super.ngOnInit();
 
-    this.gameConfigService.getConfigClass().subscribe((gameConfig) => {
+    this.gameConfigService.getConfig().subscribe((gameConfig) => {
       this.rows = gameConfig.playfield.numRows;
       this.cols = gameConfig.playfield.numCols;
       this.towersConfig = gameConfig.towers;
@@ -40,11 +40,16 @@ export class TowerLayerRendererComponent extends BaseLayerRendererComponent impl
   }
 
   render() {
-    if (this.state === undefined || this.towersConfig === undefined) {
+    if (this.state === undefined || this.towersConfig === undefined ||
+      this.state.towers.length !== this.rows) { // Exit early if our game state doesn't match our expectations.
       return;
     }
     this.layer.destroyChildren();
     for (let row = 0; row < this.rows; row++) {
+      if (this.state.towers[row].length !== this.cols) {
+        // Exit early if our game state doesn't match our expectations.
+        return;
+      }
       for (let col = 0; col < this.cols; col++) {
         const towerId = this.state.towers[row][col]?.id;
         const towerImg = towerId === undefined ? undefined : this.towersConfig.get(towerId)?.img;

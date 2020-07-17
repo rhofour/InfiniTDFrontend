@@ -1,7 +1,7 @@
 import { Component, OnInit, ElementRef } from '@angular/core';
 import Konva from 'konva';
 
-import { GameConfig, emptyGameConfig } from '../game-config';
+import { GameConfig } from '../game-config';
 import { GameConfigService } from '../game-config.service';
 
 @Component({
@@ -11,7 +11,7 @@ import { GameConfigService } from '../game-config.service';
 })
 export class RendererComponent implements OnInit {
   public cellSize: number = 0;
-  public gameConfig: GameConfig = emptyGameConfig;
+  public gameConfig: GameConfig = GameConfig.makeEmpty();
   public stage!: Konva.Stage;
 
   constructor(
@@ -47,6 +47,9 @@ export class RendererComponent implements OnInit {
   }
 
   adjustCanvas() {
+    if (this.gameConfig.playfield.numRows === 0 || this.gameConfig.playfield.numCols === 0) {
+      return;
+    }
     let divSize = {
       width: this.hostElem.nativeElement.offsetWidth,
       height: this.hostElem.nativeElement.offsetHeight,
@@ -62,7 +65,7 @@ export class RendererComponent implements OnInit {
         height: divCellSize * this.gameConfig.playfield.numRows,
       }
       this.stage.size(newSize);
-      console.log('Resizing to ' + newSize.width + ' x ' + newSize.height);
+      console.log(newSize);
     }
   }
 }

@@ -1,7 +1,7 @@
 import { JsonDecoder } from 'ts.data.json';
 
 import { User, UsersContainer } from './user';
-import { CellPos, TileConfig, PlayfieldConfig, MonsterConfig, TowerConfig, GameConfig } from './game-config';
+import { CellPos, TileConfig, PlayfieldConfig, MonsterConfig, TowerConfig, GameConfigData } from './game-config';
 
 export const user = JsonDecoder.object<User>(
   {
@@ -65,11 +65,11 @@ export const towerConfig = JsonDecoder.object<TowerConfig>(
   },
   'TowerConfig');
 
-export const gameConfig = JsonDecoder.object<GameConfig>(
+export const gameConfigData = JsonDecoder.object<GameConfigData>(
   {
     tiles: JsonDecoder.array<TileConfig>(tileConfig, 'TileConfig[]'),
     playfield: playfieldConfig,
     monsters: JsonDecoder.array<MonsterConfig>(monsterConfig, 'MonsterConfig[]'),
     towers: JsonDecoder.array<TowerConfig>(towerConfig, 'TowerConfig[]'),
   },
-  'GameConfig');
+  'GameConfigData');

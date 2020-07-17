@@ -27,7 +27,7 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
   ngOnInit(): void {
     super.ngOnInit();
 
-    this.gameConfigService.getConfigClass().subscribe((gameConfig) => {
+    this.gameConfigService.getConfig().subscribe((gameConfig) => {
       this.rows = gameConfig.playfield.numRows;
       this.cols = gameConfig.playfield.numCols;
       this.tilesConfig = gameConfig.tiles;
@@ -45,11 +45,16 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
   }
 
   render() {
-    if (this.state === undefined || this.tilesConfig === undefined) {
+    if (this.state === undefined || this.tilesConfig === undefined ||
+      this.state.ids.length !== this.rows) { // Exit early if our game state doesn't match our expectations.
       return;
     }
     this.layer.destroyChildren();
     for (let row = 0; row < this.rows; row++) {
+      if (this.state.ids[row].length !== this.cols) {
+        // Exit early if our game state doesn't match our expectations.
+        return;
+      }
       for (let col = 0; col < this.cols; col++) {
         const tileId = this.state.ids[row][col];
         const tile = this.tilesConfig.get(tileId);

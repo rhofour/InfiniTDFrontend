@@ -31,7 +31,7 @@ export interface TowerConfig {
   damage: number,
 }
 
-export interface GameConfig {
+export interface GameConfigData {
   playfield: PlayfieldConfig,
   tiles: TileConfig[],
   towers: TowerConfig[],
@@ -63,22 +63,21 @@ function configArrayToMap<T extends {id: number, url: string}>(arr: T[]): Promis
   return Promise.all(promises).then(() => map);
 }
 
-export class GameConfigClass {
-  // Replace these Maps with MapWithImage
+export class GameConfig {
   readonly playfield: PlayfieldConfig;
   readonly tiles: ConfigImageMap<TileConfig>;
   readonly towers: ConfigImageMap<TowerConfig>;
   readonly monsters: ConfigImageMap<MonsterConfig>;
 
-  static fromConfig(configData: GameConfig): Promise<GameConfigClass> {
+  static fromConfig(configData: GameConfigData): Promise<GameConfig> {
     return Promise.all([configArrayToMap(configData.tiles), configArrayToMap(configData.towers),
       configArrayToMap(configData.monsters)]).then(([tiles, towers, monsters]) => {
-        return new GameConfigClass(configData.playfield, tiles, towers, monsters);
+        return new GameConfig(configData.playfield, tiles, towers, monsters);
       });
   }
 
-  static makeEmpty(): GameConfigClass {
-    return new GameConfigClass(emptyPlayfieldConfig, new Map(), new Map(), new Map());
+  static makeEmpty(): GameConfig{
+    return new GameConfig(emptyPlayfieldConfig, new Map(), new Map(), new Map());
   }
 
   constructor(playfield: PlayfieldConfig, tiles: ConfigImageMap<TileConfig>, towers: ConfigImageMap<TowerConfig>,
@@ -90,14 +89,14 @@ export class GameConfigClass {
   }
 }
 
-const emptyPlayfieldConfig: PlayfieldConfig = {
+export const emptyPlayfieldConfig: PlayfieldConfig = {
   numRows: 0,
   numCols: 0,
   monsterEnter: { row: 0, col: 0 },
   monsterExit: { row: 0, col: 0 },
 };
 
-export const emptyGameConfig: GameConfig = {
+export const emptyGameConfigData: GameConfigData = {
   tiles: [],
   playfield: emptyPlayfieldConfig,
   monsters: [],

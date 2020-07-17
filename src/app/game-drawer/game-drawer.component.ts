@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { GameUiService, Selection } from '../game-ui.service';
-import { GameConfig, TowerConfig, emptyGameConfig } from '../game-config';
+import { GameConfigData, TowerConfig, emptyGameConfigData } from '../game-config';
 import { GameConfigService } from '../game-config.service';
 import { TowersState, TowerState } from '../game-state';
 import { GameStateService } from '../game-state.service';
@@ -14,7 +14,7 @@ import { GameStateService } from '../game-state.service';
 export class GameDrawerComponent implements OnInit {
   public selection?: Selection;
   public selectedTower?: TowerConfig;
-  private gameConfig: GameConfig = emptyGameConfig;
+  private gameConfig: GameConfigData = emptyGameConfigData;
   private towersState: TowersState = { towers: [] };
 
   constructor(
@@ -22,7 +22,7 @@ export class GameDrawerComponent implements OnInit {
     gameConfigService: GameConfigService,
     gameStateService: GameStateService,
   ) {
-    gameConfigService.getConfig().subscribe((gameConfig) => {
+    gameConfigService.getConfigData().subscribe((gameConfig) => {
       this.gameConfig = gameConfig;
       this.updateFromSelection(this.selection);
     })
