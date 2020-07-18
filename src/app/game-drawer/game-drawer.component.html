@@ -1,5 +1,26 @@
-<div *ngIf="selection">
-  <h1>Row {{selection.row+1}}, Col {{selection.col+1}}</h1>
+<div *ngIf="selectedTower">
+  <h1>{{selectedTower.config.name}}</h1>
+  <div fxLayout=row>
+    <div>
+      <img class="selectedImg" [src]="selectedTower.config.url">
+    </div>
+    <div>
+      <span class="stat">Damage:</span>
+      {{selectedTower.config.damage}}<br />
+      <span class="stat">Firing Rate:</span>
+      {{selectedTower.config.firingRate}} <br />
+      <span class="stat">Range:</span>
+      {{selectedTower.config.range}} <br />
+    </div>
+  </div>
   <mat-divider></mat-divider>
 </div>
 <h1>Build</h1>
+<mat-selection-list [multiple]="false">
+  <mat-list-option *ngFor="let towerPair of gameConfig.towers | keyvalue"
+  [value]="towerPair.key">
+    <img matListAvatar [src]="towerPair.value.config.url">
+    <span >{{towerPair.value.config.name}}</span>
+    <span style="font-weight: lighter">Cost: {{towerPair.value.config.cost}}</span>
+  </mat-list-option>
+</mat-selection-list>

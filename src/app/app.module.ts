@@ -10,6 +10,7 @@ import { MatToolbarModule} from '@angular/material/toolbar';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatDividerModule } from '@angular/material/divider';
+import {MatListModule} from '@angular/material/list';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -54,6 +55,7 @@ import { GameDrawerComponent } from './game-drawer/game-drawer.component';
     FlexLayoutModule,
     MatSidenavModule,
     MatDividerModule,
+    MatListModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
