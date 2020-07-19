@@ -29,17 +29,25 @@ export class UiLayerRendererComponent extends BaseLayerRendererComponent impleme
 
   render() {
     this.layer.destroyChildren();
+
     if (this.selection !== undefined) {
-      let selectionBox = new Konva.Rect({
-          x: this.selection.col * this.cellSize_,
-          y: this.selection.row * this.cellSize_,
-          width: this.cellSize_,
-          height: this.cellSize_,
-          fillEnabled: false,
-          stroke: 'red',
-          strokeWidth: 2,
-      });
-      this.layer.add(selectionBox);
+      switch (this.selection.kind) {
+        case 'grid':
+          let selectionBox = new Konva.Rect({
+              x: this.selection.col * this.cellSize_,
+              y: this.selection.row * this.cellSize_,
+              width: this.cellSize_,
+              height: this.cellSize_,
+              fillEnabled: false,
+              stroke: 'red',
+              strokeWidth: 2,
+          });
+          this.layer.add(selectionBox);
+          break;
+        case 'tower':
+          break; // Don't render anything on the game UI here.
+        default: const _exhaustiveCheck: never = this.selection;
+      }
     }
 
     this.layer.batchDraw();

@@ -6,7 +6,7 @@ import { GameConfig, TileConfig, ConfigImageMap } from '../game-config';
 import { GameConfigService } from '../game-config.service';
 import { BackgroundState } from '../game-state';
 import { GameStateService } from '../game-state.service';
-import { GameUiService } from '../game-ui.service';
+import { GameUiService, GridSelection } from '../game-ui.service';
 
 @Component({
   selector: 'app-background-layer-renderer',
@@ -68,7 +68,10 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
               image: tile.img,
           });
           tileImg.on('click', (evt) => {
-            this.uiService.select({row: row, col: col});
+            const selection: GridSelection = {
+              kind: 'grid', row: row, col: col
+            }
+            this.uiService.select(selection);
             evt.cancelBubble = true;
           });
           this.layer.add(tileImg);
