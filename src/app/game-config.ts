@@ -38,19 +38,16 @@ export interface GameConfigData {
   monsters: MonsterConfig[],
 }
 
-export interface ConfigImagePair<T> {
-  config: T;
-  img: HTMLImageElement;
-}
+export type ConfigAndImage<T> = T & { img: HTMLImageElement };
 
-export type ConfigImageMap<T> = Map<number, ConfigImagePair<T>>;
+export type ConfigImageMap<T> = Map<number, ConfigAndImage<T>>;
 
 function configArrayToMap<T extends {id: number, url: string}>(arr: T[]): Promise<ConfigImageMap<T>> {
   let map = new Map();
   let promises: Promise<void>[] = [];
   for (let elem of arr) {
     let configImagePair = {
-      config: elem,
+      ...elem,
       img: new Image(),
     }
     let loadPromise: Promise<void> = new Promise((resolve, reject) => {

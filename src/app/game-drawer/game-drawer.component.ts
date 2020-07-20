@@ -2,7 +2,7 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatSelectionList, MatSelectionListChange } from '@angular/material/list';
 
 import { GameUiService, Selection, TowerSelection } from '../game-ui.service';
-import { GameConfig, TowerConfig, ConfigImagePair } from '../game-config';
+import { GameConfig, TowerConfig } from '../game-config';
 import { GameConfigService } from '../game-config.service';
 import { TowersState, TowerState } from '../game-state';
 import { GameStateService } from '../game-state.service';
@@ -14,7 +14,7 @@ import { GameStateService } from '../game-state.service';
 })
 export class GameDrawerComponent implements OnInit {
   public selection?: Selection;
-  public selectedTower?: ConfigImagePair<TowerConfig>;
+  public selectedTower?: TowerConfig;
   public gameConfig: GameConfig = GameConfig.makeEmpty();
   private towersState: TowersState = { towers: [] };
   @ViewChild(MatSelectionList) buildList?: MatSelectionList;
