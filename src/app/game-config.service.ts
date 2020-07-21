@@ -45,6 +45,7 @@ export class GameConfigService {
           damage: 15,
         },
       ],
+      hash: "mock",
     }
 
     this.configData$.next(mockGameConfigData);

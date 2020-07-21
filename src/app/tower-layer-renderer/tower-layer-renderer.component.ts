@@ -4,7 +4,7 @@ import Konva from 'konva';
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
 import { GameConfig, TowerConfig, ConfigImageMap } from '../game-config';
 import { GameConfigService } from '../game-config.service';
-import { TowersState, TowerState } from '../game-state';
+import { TowersState, TowerState, ConfigHash } from '../game-state';
 import { GameStateService } from '../game-state.service';
 
 @Component({
@@ -14,8 +14,9 @@ import { GameStateService } from '../game-state.service';
 export class TowerLayerRendererComponent extends BaseLayerRendererComponent implements OnInit {
   private rows = 0;
   private cols = 0;
-  private state!: TowersState;
+  private state!: TowersState & ConfigHash;
   private towersConfig!: ConfigImageMap<TowerConfig>;
+  private configHash: string = 'empty';
 
   constructor(
     private gameConfigService: GameConfigService,
@@ -29,21 +30,27 @@ export class TowerLayerRendererComponent extends BaseLayerRendererComponent impl
       this.rows = gameConfig.playfield.numRows;
       this.cols = gameConfig.playfield.numCols;
       this.towersConfig = gameConfig.towers;
+      this.configHash = gameConfig.hash;
 
-      this.render();
+      if (this.configHash === this.state?.configHash) {
+        this.render();
+      } else {
+        this.clearRendering();
+      }
     });
 
     this.gameStateService.getTowers$().subscribe((newTowerState) => {
       this.state = newTowerState;
-      this.render();
+
+      if (this.configHash === this.state?.configHash) {
+        this.render();
+      } else {
+        this.clearRendering();
+      }
     });
   }
 
   render() {
-    if (this.state === undefined || this.towersConfig === undefined ||
-      this.state.towers.length !== this.rows) { // Exit early if our game state doesn't match our expectations.
-      return;
-    }
     this.layer.destroyChildren();
     for (let row = 0; row < this.rows; row++) {
       if (this.state.towers[row].length !== this.cols) {

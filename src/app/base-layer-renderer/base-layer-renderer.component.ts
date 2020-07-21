@@ -31,4 +31,8 @@ export abstract class BaseLayerRendererComponent implements OnInit {
     this.stage.add(this.layer);
     this.initialized = true;
   }
+
+  clearRendering() {
+    this.layer.destroyChildren();
+  }
 }

@@ -71,5 +71,6 @@ export const gameConfigData = JsonDecoder.object<GameConfigData>(
     playfield: playfieldConfig,
     monsters: JsonDecoder.array<MonsterConfig>(monsterConfig, 'MonsterConfig[]'),
     towers: JsonDecoder.array<TowerConfig>(towerConfig, 'TowerConfig[]'),
+    hash: JsonDecoder.string,
   },
   'GameConfigData');
