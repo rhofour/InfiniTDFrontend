@@ -8,13 +8,16 @@ import { GameConfigService } from './game-config.service';
   providedIn: 'root'
 })
 export class GameStateService {
+  private emptyBackground: BackgroundState & ConfigHash = {ids: [], configHash: 'empty'};
   private background$: BehaviorSubject<BackgroundState & ConfigHash> =
-    new BehaviorSubject<BackgroundState & ConfigHash>({ids: [], configHash: 'empty'});
+    new BehaviorSubject<BackgroundState & ConfigHash>(this.emptyBackground);
+  private emptyTowers: TowersState & ConfigHash = {towers: [], configHash: 'empty'};
   private towers$: BehaviorSubject<TowersState & ConfigHash> =
-    new BehaviorSubject<TowersState & ConfigHash>({towers: [], configHash: 'empty'});
+    new BehaviorSubject<TowersState & ConfigHash>(this.emptyTowers);
   private hash: ConfigHash = { configHash: 'empty' };
   private rows = 0;
   private cols = 0;
+  private username: string | null = null;
 
   constructor(
     private gameConfigService: GameConfigService,
@@ -36,8 +39,22 @@ export class GameStateService {
     return this.towers$.asObservable();
   }
 
-  changeUser(username: string) {
-    this.requestState();
+  changeUser(username: string | null) {
+    const prevUsername = this.username;
+    this.username = username;
+    if (username) {
+      if (username !== prevUsername) {
+        this.requestState();
+      }
+    } else {
+      this.resetState();
+    }
+  }
+
+  resetState() {
+    this.background$.next(this.emptyBackground);
+    this.towers$.next(this.emptyTowers);
+    this.hash = { configHash: 'empty' };
   }
 
   requestState() {

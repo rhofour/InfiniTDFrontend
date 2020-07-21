@@ -28,11 +28,13 @@ export class TowersComponent implements OnInit {
 
   getUser(): void {
     this.username = this.route.snapshot.paramMap.get('username');
+
+    this.gameStateService.changeUser(this.username);
+
     if(this.username) {
       this.backend.getUser(this.username).then(user => {
         this.user = user;
       });
-      this.gameStateService.changeUser(this.username);
     }
   }
 }
