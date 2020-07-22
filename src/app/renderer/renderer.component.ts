@@ -65,7 +65,6 @@ export class RendererComponent implements OnInit {
         height: divCellSize * this.gameConfig.playfield.numRows,
       }
       this.stage.size(newSize);
-      console.log(newSize);
     }
   }
 }
