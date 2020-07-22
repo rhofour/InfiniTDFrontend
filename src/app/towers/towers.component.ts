@@ -13,7 +13,7 @@ import { GameStateService } from '../game-state.service';
   styleUrls: ['./towers.component.css']
 })
 export class TowersComponent implements OnInit {
-  user: User | null = null;
+  public user: User | null = null;
   username: string | null = null;
 
   constructor(

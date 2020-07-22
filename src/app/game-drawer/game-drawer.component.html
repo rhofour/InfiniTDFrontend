@@ -15,13 +15,15 @@
   </div>
   <mat-divider></mat-divider>
 </div>
-<h1>Build</h1>
-<mat-selection-list id="buildList" [multiple]="false"
-    (selectionChange)="selectionChange($event)">
-  <mat-list-option *ngFor="let tower of gameConfig.towers | keyvalue"
-  [value]="tower.key">
-    <img matListAvatar [src]="tower.value.url">
-    <span >{{tower.value.name}}</span>
-    <span style="font-weight: lighter">Cost: {{tower.value.cost}}</span>
-  </mat-list-option>
-</mat-selection-list>
+<div *ngIf="loggedInUser && user && loggedInUser.name === user.name">
+  <h1>Build</h1>
+  <mat-selection-list id="buildList" [multiple]="false"
+      (selectionChange)="selectionChange($event)">
+    <mat-list-option *ngFor="let tower of gameConfig.towers | keyvalue"
+    [value]="tower.key">
+      <img matListAvatar [src]="tower.value.url">
+      <span >{{tower.value.name}}</span>
+      <span style="font-weight: lighter">Cost: {{tower.value.cost}}</span>
+    </mat-list-option>
+  </mat-selection-list>
+</div>

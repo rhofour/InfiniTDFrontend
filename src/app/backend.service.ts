@@ -7,8 +7,8 @@ import { ajax } from 'rxjs/ajax';
 import { map, catchError } from 'rxjs/operators';
 
 import { environment } from '../environments/environment';
-import { User, UsersContainer } from './user'
-import * as decoders from './decode'
+import { User, UsersContainer } from './user';
+import * as decoders from './decode';
 
 @Injectable({
   providedIn: 'root'
@@ -124,8 +124,8 @@ export class BackendService {
       }));
   }
 
-  getCurrentUser() {
-    return this.user$;
+  getCurrentUser(): Observable<User | null> {
+    return this.user$.asObservable();
   }
 
   getUnregistered() { return this.unregistered$; }
