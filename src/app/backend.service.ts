@@ -8,6 +8,7 @@ import { map, catchError } from 'rxjs/operators';
 
 import { environment } from '../environments/environment';
 import { User, UsersContainer } from './user';
+import { GameConfig, GameConfigData } from './game-config';
 import * as decoders from './decode';
 
 @Injectable({
@@ -181,5 +182,10 @@ export class BackendService {
       }
       return 'Unknown error.';
     });
+  }
+
+  getGameConfig(): Promise<GameConfigData> {
+    return this.http.get(environment.serverAddress + '/gameConfig').toPromise()
+      .then((resp) => decoders.gameConfigData.decodePromise(resp));
   }
 }

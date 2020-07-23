@@ -17,7 +17,7 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
   private cols = 0;
   private state!: BackgroundState & ConfigHash;
   private tilesConfig!: ConfigImageMap<TileConfig>;
-  private configHash: string = 'empty';
+  private configHash: number = 0;
 
   constructor(
     private uiService: GameUiService,

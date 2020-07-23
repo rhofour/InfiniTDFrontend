@@ -11,11 +11,11 @@ export interface TowersState {
 }
 
 export interface ConfigHash {
-  configHash: string,
+  configHash: number,
 }
 
 export interface GameState {
   background: BackgroundState,
   towers: TowersState,
-  configHash: string,
+  configHash: number,
 }

@@ -16,7 +16,7 @@ export class TowerLayerRendererComponent extends BaseLayerRendererComponent impl
   private cols = 0;
   private state!: TowersState & ConfigHash;
   private towersConfig!: ConfigImageMap<TowerConfig>;
-  private configHash: string = 'empty';
+  private configHash: number = 0;
 
   constructor(
     private gameConfigService: GameConfigService,
