@@ -1,20 +1,19 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 
-import { BackgroundState, TowersState, TowerState, GameState, ConfigHash } from './game-state';
+import { BackgroundState, TowersState, TowerState, GameState } from './game-state';
 import { GameConfigService } from './game-config.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class GameStateService {
-  private emptyBackground: BackgroundState & ConfigHash = { ids: [], configHash: 0};
-  private background$: BehaviorSubject<BackgroundState & ConfigHash> =
-    new BehaviorSubject<BackgroundState & ConfigHash>(this.emptyBackground);
-  private emptyTowers: TowersState & ConfigHash = { towers: [], configHash: 0};
-  private towers$: BehaviorSubject<TowersState & ConfigHash> =
-    new BehaviorSubject<TowersState & ConfigHash>(this.emptyTowers);
-  private hash: ConfigHash = { configHash: 0 };
+  private emptyBackground: BackgroundState = { ids: []};
+  private background$: BehaviorSubject<BackgroundState> =
+    new BehaviorSubject<BackgroundState>(this.emptyBackground);
+  private emptyTowers: TowersState = { towers: []};
+  private towers$: BehaviorSubject<TowersState> =
+    new BehaviorSubject<TowersState>(this.emptyTowers);
   private rows = 0;
   private cols = 0;
   private username: string | null = null;
@@ -25,17 +24,16 @@ export class GameStateService {
     gameConfigService.getConfig().subscribe((config) => {
       this.rows = config.playfield.numRows;
       this.cols = config.playfield.numCols;
-      this.hash.configHash = config.hash;
 
       this.requestState();
     });
   }
 
-  getBackground$(): Observable<BackgroundState & ConfigHash> {
+  getBackground$(): Observable<BackgroundState> {
     return this.background$.asObservable();
   }
 
-  getTowers$(): Observable<TowersState & ConfigHash> {
+  getTowers$(): Observable<TowersState> {
     return this.towers$.asObservable();
   }
 
@@ -54,14 +52,12 @@ export class GameStateService {
   resetState() {
     this.background$.next(this.emptyBackground);
     this.towers$.next(this.emptyTowers);
-    this.hash = { configHash: 0 };
   }
 
   requestState() {
     // Initial mock data.
     let background: BackgroundState = { ids: [] };
     let towers: TowersState = { towers: [] };
-    const hash: ConfigHash = { configHash: 1 };
 
     const towerState1: TowerState = {
       id: 0,
@@ -83,15 +79,14 @@ export class GameStateService {
       }
     }
 
-    this.background$.next({...background, ...hash});
-    this.towers$.next({...towers, ...hash});
+    this.background$.next(background);
+    this.towers$.next(towers);
   }
 
   getState(): GameState {
     return {
       background: this.background$.getValue(),
       towers: this.towers$.getValue(),
-      ...this.hash,
     }
   }
 }

@@ -4,7 +4,7 @@ import Konva from 'konva';
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
 import { GameConfig, TileConfig, ConfigImageMap } from '../game-config';
 import { GameConfigService } from '../game-config.service';
-import { BackgroundState, ConfigHash } from '../game-state';
+import { BackgroundState } from '../game-state';
 import { GameStateService } from '../game-state.service';
 import { GameUiService, GridSelection } from '../game-ui.service';
 
@@ -15,9 +15,8 @@ import { GameUiService, GridSelection } from '../game-ui.service';
 export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent implements OnInit {
   private rows = 0;
   private cols = 0;
-  private state!: BackgroundState & ConfigHash;
+  private state!: BackgroundState;
   private tilesConfig!: ConfigImageMap<TileConfig>;
-  private configHash: number = 0;
 
   constructor(
     private uiService: GameUiService,
@@ -32,23 +31,12 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
       this.rows = gameConfig.playfield.numRows;
       this.cols = gameConfig.playfield.numCols;
       this.tilesConfig = gameConfig.tiles;
-      this.configHash = gameConfig.hash;
-
-      if (this.configHash === this.state?.configHash) {
-        this.render();
-      } else {
-        this.clearRendering();
-      }
     });
 
     this.gameStateService.getBackground$().subscribe((newBgState) => {
       this.state = newBgState;
 
-      if (this.configHash === this.state?.configHash) {
-        this.render();
-      } else {
-        this.clearRendering();
-      }
+      this.render();
     });
 
     // Allow the layer to listen for clicks.

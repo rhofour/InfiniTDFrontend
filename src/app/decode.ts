@@ -2,6 +2,7 @@ import { JsonDecoder } from 'ts.data.json';
 
 import { User, UsersContainer } from './user';
 import { CellPos, TileConfig, PlayfieldConfig, MonsterConfig, TowerConfig, GameConfigData } from './game-config';
+import { TowerBgState, TowersBgState, BattlegroundState } from './battleground-state';
 
 export const user = JsonDecoder.object<User>(
   {
@@ -71,6 +72,24 @@ export const gameConfigData = JsonDecoder.object<GameConfigData>(
     playfield: playfieldConfig,
     monsters: JsonDecoder.array<MonsterConfig>(monsterConfig, 'MonsterConfig[]'),
     towers: JsonDecoder.array<TowerConfig>(towerConfig, 'TowerConfig[]'),
-    hash: JsonDecoder.number,
   },
   'GameConfigData');
+
+export const towerBgState = JsonDecoder.object<TowerBgState>(
+  {
+    id: JsonDecoder.number,
+  },
+  'TowerBgState');
+
+export const towersBgState = JsonDecoder.object<TowersBgState>(
+  {
+    towers: JsonDecoder.array<TowerBgState | undefined>(
+      JsonDecoder.optional(towerBgState), '(TowerBgState | undefined)[]'),
+  },
+  'TowersBgState');
+
+export const battlegroundState = JsonDecoder.object<BattlegroundState>(
+  {
+    towers: towersBgState,
+  },
+  'BattlegroundState');

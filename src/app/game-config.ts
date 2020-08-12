@@ -36,7 +36,6 @@ export interface GameConfigData {
   tiles: TileConfig[],
   towers: TowerConfig[],
   monsters: MonsterConfig[],
-  hash: number,
 }
 
 export type ConfigAndImage<T> = T & { img: HTMLImageElement };
@@ -66,26 +65,24 @@ export class GameConfig {
   readonly tiles: ConfigImageMap<TileConfig>;
   readonly towers: ConfigImageMap<TowerConfig>;
   readonly monsters: ConfigImageMap<MonsterConfig>;
-  readonly hash: number;
 
   static fromConfig(configData: GameConfigData): Promise<GameConfig> {
     return Promise.all([configArrayToMap(configData.tiles), configArrayToMap(configData.towers), configArrayToMap(configData.monsters)]).
       then(([tiles, towers, monsters]) => {
-        return new GameConfig(configData.playfield, tiles, towers, monsters, configData.hash);
+        return new GameConfig(configData.playfield, tiles, towers, monsters);
       });
   }
 
   static makeEmpty(): GameConfig{
-    return new GameConfig(emptyPlayfieldConfig, new Map(), new Map(), new Map(), 0);
+    return new GameConfig(emptyPlayfieldConfig, new Map(), new Map(), new Map());
   }
 
   constructor(playfield: PlayfieldConfig, tiles: ConfigImageMap<TileConfig>, towers: ConfigImageMap<TowerConfig>,
-     monsters: ConfigImageMap<MonsterConfig>, hash: number) {
+     monsters: ConfigImageMap<MonsterConfig>) {
     this.playfield = playfield;
     this.tiles = tiles;
     this.towers = towers;
     this.monsters = monsters;
-    this.hash = hash;
   }
 }
 
@@ -101,5 +98,4 @@ export const emptyGameConfigData: GameConfigData = {
   playfield: emptyPlayfieldConfig,
   monsters: [],
   towers: [],
-  hash: 0,
 };

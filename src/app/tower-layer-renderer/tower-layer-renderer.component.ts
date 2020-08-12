@@ -4,7 +4,7 @@ import Konva from 'konva';
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
 import { GameConfig, TowerConfig, ConfigImageMap } from '../game-config';
 import { GameConfigService } from '../game-config.service';
-import { TowersState, TowerState, ConfigHash } from '../game-state';
+import { TowersState, TowerState } from '../game-state';
 import { GameStateService } from '../game-state.service';
 
 @Component({
@@ -14,9 +14,8 @@ import { GameStateService } from '../game-state.service';
 export class TowerLayerRendererComponent extends BaseLayerRendererComponent implements OnInit {
   private rows = 0;
   private cols = 0;
-  private state!: TowersState & ConfigHash;
+  private state!: TowersState;
   private towersConfig!: ConfigImageMap<TowerConfig>;
-  private configHash: number = 0;
 
   constructor(
     private gameConfigService: GameConfigService,
@@ -30,23 +29,12 @@ export class TowerLayerRendererComponent extends BaseLayerRendererComponent impl
       this.rows = gameConfig.playfield.numRows;
       this.cols = gameConfig.playfield.numCols;
       this.towersConfig = gameConfig.towers;
-      this.configHash = gameConfig.hash;
-
-      if (this.configHash === this.state?.configHash) {
-        this.render();
-      } else {
-        this.clearRendering();
-      }
     });
 
     this.gameStateService.getTowers$().subscribe((newTowerState) => {
       this.state = newTowerState;
 
-      if (this.configHash === this.state?.configHash) {
-        this.render();
-      } else {
-        this.clearRendering();
-      }
+      this.render();
     });
   }
 
