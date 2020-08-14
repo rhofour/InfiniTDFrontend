@@ -4,8 +4,6 @@ import Konva from 'konva';
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
 import { GameConfig, TileConfig, ConfigImageMap } from '../game-config';
 import { GameConfigService } from '../game-config.service';
-import { BackgroundState } from '../game-state';
-import { GameStateService } from '../game-state.service';
 import { GameUiService, GridSelection } from '../game-ui.service';
 
 @Component({
@@ -15,13 +13,11 @@ import { GameUiService, GridSelection } from '../game-ui.service';
 export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent implements OnInit {
   private rows = 0;
   private cols = 0;
-  private state!: BackgroundState;
   private tilesConfig!: ConfigImageMap<TileConfig>;
 
   constructor(
     private uiService: GameUiService,
     private gameConfigService: GameConfigService,
-    private gameStateService: GameStateService,
   ) { super(); }
 
   ngOnInit(): void {
@@ -31,31 +27,21 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
       this.rows = gameConfig.playfield.numRows;
       this.cols = gameConfig.playfield.numCols;
       this.tilesConfig = gameConfig.tiles;
-    });
-
-    this.gameStateService.getBackground$().subscribe((newBgState) => {
-      this.state = newBgState;
-
       this.render();
     });
 
-    // Allow the layer to listen for clicks.
+    // Allow the layer to listen for clicks since it will always have tiles
+    // everywhere.
     this.layer.listening(true);
   }
 
   render() {
-    if (this.state === undefined || this.tilesConfig === undefined ||
-      this.state.ids.length !== this.rows) { // Exit early if our game state doesn't match our expectations.
+    if (this.tilesConfig === undefined)
       return;
-    }
     this.layer.destroyChildren();
     for (let row = 0; row < this.rows; row++) {
-      if (this.state.ids[row].length !== this.cols) {
-        // Exit early if our game state doesn't match our expectations.
-        return;
-      }
       for (let col = 0; col < this.cols; col++) {
-        const tileId = this.state.ids[row][col];
+        const tileId = 0; // Later replace with background / path logic.
         const tile = this.tilesConfig.get(tileId);
 
         if (tile) {

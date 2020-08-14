@@ -83,8 +83,10 @@ export const towerBgState = JsonDecoder.object<TowerBgState>(
 
 export const towersBgState = JsonDecoder.object<TowersBgState>(
   {
-    towers: JsonDecoder.array<TowerBgState | undefined>(
-      JsonDecoder.optional(towerBgState), '(TowerBgState | undefined)[]'),
+    towers: JsonDecoder.array<(TowerBgState | undefined)[]>(
+      JsonDecoder.array<TowerBgState | undefined>(
+        JsonDecoder.optional(towerBgState), '(TowerBgState | undefined)[]'),
+        '(TowerBgState | undefined)[][]'),
   },
   'TowersBgState');
 

@@ -3,7 +3,7 @@ export interface TowerBgState {
 }
 
 export interface TowersBgState {
-  towers: (TowerBgState | undefined)[],
+  towers: (TowerBgState | undefined)[][],
 }
 
 export interface BattlegroundState {

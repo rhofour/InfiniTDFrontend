@@ -4,8 +4,7 @@ import { MatSelectionList, MatSelectionListChange } from '@angular/material/list
 import { GameUiService, Selection, TowerSelection } from '../game-ui.service';
 import { GameConfig, TowerConfig } from '../game-config';
 import { GameConfigService } from '../game-config.service';
-import { TowersState, TowerState } from '../game-state';
-import { GameStateService } from '../game-state.service';
+import { TowersBgState, TowerBgState } from '../battleground-state';
 import { User } from '../user';
 import { BackendService } from '../backend.service';
 
@@ -19,7 +18,7 @@ export class GameDrawerComponent implements OnInit {
   public selectedTower?: TowerConfig;
   public gameConfig: GameConfig = GameConfig.makeEmpty();
   public loggedInUser: User | null = null;
-  private towersState: TowersState = { towers: [] };
+  private towersState: TowersBgState = { towers: [] };
   @ViewChild(MatSelectionList) buildList?: MatSelectionList;
   // user is the user we're displaying.
   @Input() user: User | null = null;
@@ -28,7 +27,6 @@ export class GameDrawerComponent implements OnInit {
     private uiService: GameUiService,
     private backend: BackendService,
     gameConfigService: GameConfigService,
-    gameStateService: GameStateService,
   ) {
     gameConfigService.getConfig().subscribe((gameConfig) => {
       this.gameConfig = gameConfig;
@@ -36,10 +34,6 @@ export class GameDrawerComponent implements OnInit {
     })
     uiService.getSelection().subscribe((newSelection) => {
       this.selection = newSelection;
-      this.updateFromSelection(this.selection);
-    });
-    gameStateService.getTowers$().subscribe((newTowersState) => {
-      this.towersState = newTowersState;
       this.updateFromSelection(this.selection);
     });
     backend.getCurrentUser().subscribe((user) => {

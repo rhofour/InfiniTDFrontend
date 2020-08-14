@@ -4,8 +4,7 @@ import Konva from 'konva';
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
 import { GameConfig, TowerConfig, ConfigImageMap } from '../game-config';
 import { GameConfigService } from '../game-config.service';
-import { TowersState, TowerState } from '../game-state';
-import { GameStateService } from '../game-state.service';
+import { TowersBgState, TowerBgState } from '../battleground-state';
 
 @Component({
   selector: 'app-tower-layer-renderer',
@@ -14,12 +13,11 @@ import { GameStateService } from '../game-state.service';
 export class TowerLayerRendererComponent extends BaseLayerRendererComponent implements OnInit {
   private rows = 0;
   private cols = 0;
-  private state!: TowersState;
+  private state!: TowersBgState;
   private towersConfig!: ConfigImageMap<TowerConfig>;
 
   constructor(
     private gameConfigService: GameConfigService,
-    private gameStateService: GameStateService,
   ) { super(); }
 
   ngOnInit(): void {
@@ -30,16 +28,11 @@ export class TowerLayerRendererComponent extends BaseLayerRendererComponent impl
       this.cols = gameConfig.playfield.numCols;
       this.towersConfig = gameConfig.towers;
     });
-
-    this.gameStateService.getTowers$().subscribe((newTowerState) => {
-      this.state = newTowerState;
-
-      this.render();
-    });
   }
 
   render() {
     this.layer.destroyChildren();
+    if (this.state === undefined) return;
     for (let row = 0; row < this.rows; row++) {
       if (this.state.towers[row].length !== this.cols) {
         // Exit early if our game state doesn't match our expectations.

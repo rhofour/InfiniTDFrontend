@@ -4,7 +4,6 @@ import Konva from 'konva';
 
 import { User } from '../user';
 import { BackendService } from '../backend.service';
-import { GameStateService } from '../game-state.service';
 
 
 @Component({
@@ -19,7 +18,6 @@ export class TowersComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private backend: BackendService,
-    private gameStateService: GameStateService,
   ) { }
 
   ngOnInit(): void {
@@ -29,7 +27,7 @@ export class TowersComponent implements OnInit {
   getUser(): void {
     this.username = this.route.snapshot.paramMap.get('username');
 
-    this.gameStateService.changeUser(this.username);
+    // this.gameStateService.changeUser(this.username);
 
     if(this.username) {
       this.backend.getUser(this.username).then(user => {
