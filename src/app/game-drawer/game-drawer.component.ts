@@ -55,7 +55,7 @@ export class GameDrawerComponent implements OnInit {
         if (this.buildList !== undefined) {
           this.buildList.deselectAll();
         }
-        let selectedTowerId = this.towersState.towers[selection.row][selection.col]?.id;
+        let selectedTowerId = this.towersState.towers[selection.row]?.[selection.col]?.id;
         if (selectedTowerId === undefined) {
           this.selectedTower = undefined;
           return;
