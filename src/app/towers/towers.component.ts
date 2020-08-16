@@ -13,7 +13,7 @@ import { BackendService } from '../backend.service';
 })
 export class TowersComponent implements OnInit {
   public user: User | null = null;
-  username: string | null = null;
+  public errorMsg: string | null = null;
 
   constructor(
     private route: ActivatedRoute,
@@ -24,15 +24,24 @@ export class TowersComponent implements OnInit {
     this.getUser();
   }
 
+  private setError(errorMsg: string): void {
+    this.errorMsg = errorMsg;
+    console.warn(errorMsg);
+  }
+
   getUser(): void {
-    this.username = this.route.snapshot.paramMap.get('username');
+    const username = this.route.snapshot.paramMap.get('username');
 
-    // this.gameStateService.changeUser(this.username);
-
-    if(this.username) {
-      this.backend.getUser(this.username).then(user => {
-        this.user = user;
-      });
+    if(username) {
+      this.backend.getUser(username)
+        .then(user => {
+          this.user = user;
+          if (user === null) {
+            this.setError('Could not find user ' + username + '.');
+          }
+        });
+    } else {
+      this.setError('No username provided.');
     }
   }
 }

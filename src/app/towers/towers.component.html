@@ -1,21 +1,14 @@
-<div *ngIf="user; else noUser">
+<div *ngIf="errorMsg">
+  Error: {{errorMsg}}
+</div>
+<div *ngIf="user">
   <mat-toolbar>
     <span>{{user.name}}</span>
     <span class="spacer"></span>
     {{user.gold}} gold ({{user.goldPerMinute}} / min)
   </mat-toolbar>
 </div>
-
-<ng-template #noUser>
-  <div *ngIf="username; else noUsername">
-    No user with the name {{username}} found.
-  </div>
-  <ng-template #noUsername>
-    No username found.
-  </ng-template>
-</ng-template>
-
-<mat-drawer-container [hidden]="!user" fxFlex="1 1 100%" autosize>
+<mat-drawer-container *ngIf="user" fxFlex="1 1 100%" autosize>
   <mat-drawer opened mode="side" position="end">
     <app-game-drawer [user]="user"></app-game-drawer>
   </mat-drawer>
