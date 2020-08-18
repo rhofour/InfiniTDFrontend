@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import Konva from 'konva';
 
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
@@ -13,8 +13,8 @@ import { TowersBgState, TowerBgState } from '../battleground-state';
 export class TowerLayerRendererComponent extends BaseLayerRendererComponent implements OnInit {
   private rows = 0;
   private cols = 0;
-  private state!: TowersBgState;
   private towersConfig!: ConfigImageMap<TowerConfig>;
+  @Input() state: TowersBgState | undefined;
 
   constructor(
     private gameConfigService: GameConfigService,
@@ -34,8 +34,10 @@ export class TowerLayerRendererComponent extends BaseLayerRendererComponent impl
     this.layer.destroyChildren();
     if (this.state === undefined) return;
     for (let row = 0; row < this.rows; row++) {
-      if (this.state.towers[row].length !== this.cols) {
+      let actualCols = this.state.towers[row]?.length;
+      if (actualCols !== this.cols) {
         // Exit early if our game state doesn't match our expectations.
+        console.warn("On row " + row + " expected to find " + this.cols + " cols, but instead got: " + actualCols);
         return;
       }
       for (let col = 0; col < this.cols; col++) {

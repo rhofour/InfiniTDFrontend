@@ -1,5 +1,5 @@
 import { Injectable, NgZone } from "@angular/core";
-import { Observable } from "rxjs";
+import { Observable, Observer } from "rxjs";
 
 @Injectable({
   providedIn: "root"
@@ -7,8 +7,8 @@ import { Observable } from "rxjs";
 export class SseService {
   constructor(private _zone: NgZone) {}
 
-  getServerSentEvent(url: string): Observable<any> {
-    return Observable.create(observer => {
+  getServerSentEvent(url: string): Observable<unknown> {
+    return Observable.create((observer: Observer<unknown>) => {
       const eventSource = this.getEventSource(url);
 
       eventSource.onmessage = event => {

@@ -8,12 +8,12 @@
     {{user.gold}} gold ({{user.goldPerMinute}} / min)
   </mat-toolbar>
 </div>
-<mat-drawer-container *ngIf="user" fxFlex="1 1 100%" autosize>
+<mat-drawer-container *ngIf="battlegroundState$ | async as bgState" fxFlex="1 1 100%" autosize>
   <mat-drawer opened mode="side" position="end">
     <app-game-drawer [user]="user"></app-game-drawer>
   </mat-drawer>
   <mat-drawer-content>
-    <app-renderer fxFlex="1 1 100%">
+    <app-renderer [state]="bgState" fxFlex="1 1 100%">
     </app-renderer>
   </mat-drawer-content>
 </mat-drawer-container>

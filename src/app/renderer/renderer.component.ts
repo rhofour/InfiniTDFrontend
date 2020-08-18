@@ -1,8 +1,9 @@
-import { Component, OnInit, ElementRef } from '@angular/core';
+import { Component, OnInit, ElementRef, Input } from '@angular/core';
 import Konva from 'konva';
 
 import { GameConfig } from '../game-config';
 import { GameConfigService } from '../game-config.service';
+import { BattlegroundState } from '../battleground-state';
 
 @Component({
   selector: 'app-renderer',
@@ -13,6 +14,7 @@ export class RendererComponent implements OnInit {
   public cellSize: number = 0;
   public gameConfig: GameConfig = GameConfig.makeEmpty();
   public stage!: Konva.Stage;
+  @Input() state: BattlegroundState | undefined;
 
   constructor(
     private hostElem: ElementRef,
