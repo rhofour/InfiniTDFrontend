@@ -8,7 +8,7 @@ export class SseService {
   constructor(private _zone: NgZone) {}
 
   getServerSentEvent(url: string): Observable<unknown> {
-    return Observable.create((observer: Observer<unknown>) => {
+    return new Observable((observer: Observer<unknown>) => {
       const eventSource = this.getEventSource(url);
 
       eventSource.onmessage = event => {
@@ -21,6 +21,11 @@ export class SseService {
         this._zone.run(() => {
           observer.error(error);
         });
+      };
+
+      return function unsubscribe() {
+        console.log("Closing event source for: " + url);
+        eventSource.close();
       };
     });
   }

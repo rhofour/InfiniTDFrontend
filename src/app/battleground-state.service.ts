@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { SseService } from './sse.service';
-import { BattlegroundState } from './battleground-state';
+import { BattlegroundState, TowerBgState } from './battleground-state';
 import { environment } from '../environments/environment';
+import * as decoders from './decode';
 
 @Injectable({
   providedIn: 'root'
@@ -12,21 +14,19 @@ export class BattlegroundStateService {
   constructor(private sseService: SseService) { }
 
   getBattlegroundState(username: string): Observable<BattlegroundState> {
-    this.sseService
+    return this.sseService
       .getServerSentEvent(environment.serverAddress + '/battleground/' + username)
-      .subscribe(data => console.log(data));
-
-    return new Observable(subscriber => {
-      let placeholderTowers = []
-      for (let r = 0; r < 14; r++) {
-        placeholderTowers[r] = []
-        placeholderTowers[r][9] = { id: 0 }
-      }
-      placeholderTowers[0][0] = { id: 1 }
-      const placeholderBgState: BattlegroundState = {
-        towers: {towers: placeholderTowers},
-      };
-      subscriber.next(placeholderBgState);
-    });
+      .pipe(map(resp => {
+        const respEvent = resp as MessageEvent;
+        const data = JSON.parse(respEvent.data);
+        console.log("Recieved new battleground state:");
+        console.log(data);
+        let decoded = decoders.battlegroundState.decode(data);
+        if (decoded.isOk()) {
+          return decoded.value;
+        } else {
+          throw new Error('Failed to decode BattlegroundState: ' + decoded.error);
+        }
+      }));
   }
 }

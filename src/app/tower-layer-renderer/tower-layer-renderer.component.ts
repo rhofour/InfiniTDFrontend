@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, OnChanges, Input, SimpleChanges } from '@angular/core';
 import Konva from 'konva';
 
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
@@ -10,7 +10,7 @@ import { TowersBgState, TowerBgState } from '../battleground-state';
   selector: 'app-tower-layer-renderer',
   template: ``,
 })
-export class TowerLayerRendererComponent extends BaseLayerRendererComponent implements OnInit {
+export class TowerLayerRendererComponent extends BaseLayerRendererComponent implements OnInit, OnChanges {
   private rows = 0;
   private cols = 0;
   private towersConfig!: ConfigImageMap<TowerConfig>;
@@ -28,6 +28,12 @@ export class TowerLayerRendererComponent extends BaseLayerRendererComponent impl
       this.cols = gameConfig.playfield.numCols;
       this.towersConfig = gameConfig.towers;
     });
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.state) {
+      this.render();
+    }
   }
 
   render() {
