@@ -10,7 +10,7 @@ export const user = JsonDecoder.object<User>(
     accumulatedGold: JsonDecoder.number,
     gold: JsonDecoder.number,
     goldPerMinute: JsonDecoder.number,
-    active: JsonDecoder.boolean,
+    inBattle: JsonDecoder.boolean,
   },
   'User');
 

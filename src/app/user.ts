@@ -3,7 +3,7 @@ export interface User {
   accumulatedGold: number,
   gold: number,
   goldPerMinute: number,
-  active: boolean,
+  inBattle: boolean,
 }
 
 export interface UsersContainer {
