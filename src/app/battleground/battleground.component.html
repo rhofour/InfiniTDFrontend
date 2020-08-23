@@ -9,7 +9,7 @@
   </mat-toolbar>
   <mat-drawer-container *ngIf="battlegroundState$ | async as bgState" fxFlex="1 1 100%" autosize>
     <mat-drawer opened mode="side" position="end">
-      <app-game-drawer [user]="user"></app-game-drawer>
+      <app-game-drawer [user]="user" [towersState]="bgState.towers"></app-game-drawer>
     </mat-drawer>
     <mat-drawer-content>
       <app-renderer [state]="bgState" fxFlex="1 1 100%">

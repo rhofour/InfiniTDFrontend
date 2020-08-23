@@ -18,7 +18,7 @@ export class GameDrawerComponent implements OnInit {
   public selectedTower?: TowerConfig;
   public gameConfig: GameConfig = GameConfig.makeEmpty();
   public loggedInUser: User | null = null;
-  private towersState: TowersBgState = { towers: [] };
+  @Input() towersState: TowersBgState = { towers: [] };
   @ViewChild(MatSelectionList) buildList?: MatSelectionList;
   // user is the user we're displaying.
   @Input() user: User | null = null;
