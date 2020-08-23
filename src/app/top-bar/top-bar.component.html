@@ -8,8 +8,8 @@
     Leaderboard
   </a>
   <a mat-tab-link *ngIf="currentUser$ | async as user"
-    [routerLink]="'/towers/' + user.name"
-    [active]="'/towers/' + user.name == location.path()">
+    [routerLink]="'/battleground/' + user.name"
+    [active]="'/battleground/' + user.name == location.path()">
     My Battleground
   </a>
   <a mat-tab-link

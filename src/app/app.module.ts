@@ -16,7 +16,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { LeaderboardComponent } from './leaderboard/leaderboard.component';
 import { TopBarComponent } from './top-bar/top-bar.component';
-import { TowersComponent } from './towers/towers.component';
+import { BattlegroundComponent } from './battleground/battleground.component';
 import { environment } from '../environments/environment';
 import { firebase } from './firebase';
 import { AccountComponent } from './account/account.component';
@@ -33,7 +33,7 @@ import { GameDrawerComponent } from './game-drawer/game-drawer.component';
     AppComponent,
     LeaderboardComponent,
     TopBarComponent,
-    TowersComponent,
+    BattlegroundComponent,
     AccountComponent,
     RendererComponent,
     BackgroundLayerRendererComponent,

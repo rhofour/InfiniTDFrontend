@@ -10,11 +10,11 @@ import { BattlegroundStateService } from '../battleground-state.service';
 
 
 @Component({
-  selector: 'app-towers',
-  templateUrl: './towers.component.html',
-  styleUrls: ['./towers.component.css']
+  selector: 'app-battleground',
+  templateUrl: './battleground.component.html',
+  styleUrls: ['./battleground.component.css']
 })
-export class TowersComponent implements OnInit {
+export class BattlegroundComponent implements OnInit {
   public user$: Observable<User> = EMPTY;
   public errorMsg: string | null = null;
   public battlegroundState$: Observable<BattlegroundState> = EMPTY;

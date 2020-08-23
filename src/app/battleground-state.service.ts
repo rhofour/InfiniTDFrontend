@@ -15,7 +15,7 @@ export class BattlegroundStateService {
 
   getBattlegroundState(username: string): Observable<BattlegroundState> {
     return this.sseService
-      .getServerSentEvent(environment.serverAddress + '/battleground/' + username)
+      .getServerSentEvent(environment.serverAddress + '/battlegroundStream/' + username)
       .pipe(map(resp => {
         const respEvent = resp as MessageEvent;
         const data = JSON.parse(respEvent.data);
