@@ -2,9 +2,22 @@
   <span>InfiniTD</span>
 </mat-toolbar>
 <nav mat-tab-nav-bar>
-  <a mat-tab-link *ngFor="let link of navLinks"
-    [routerLink]="link.link"
-    [active]="link.link == location.path()">
-    {{ link.label }}
+  <a mat-tab-link
+    [routerLink]="'/leaderboard'"
+    [active]="'/leaderboard' == location.path()">
+    Leaderboard
+  </a>
+  <a mat-tab-link *ngIf="currentUser$ | async as user"
+    [routerLink]="'/towers/' + user.name"
+    [active]="'/towers/' + user.name == location.path()">
+    My Battleground
+  </a>
+  <a mat-tab-link
+    [routerLink]="'/account'"
+    [active]="'/account' == location.path()">
+    <span *ngIf="currentUser$ | async as user; else noUser">
+      {{ user.name }}
+    </span>
+    <ng-template #noUser>Login</ng-template>
   </a>
 </nav>

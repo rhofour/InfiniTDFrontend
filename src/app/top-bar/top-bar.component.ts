@@ -1,7 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { Location } from '@angular/common';
 
+import { Observable, EMPTY } from 'rxjs';
+
 import { BackendService } from '../backend.service';
+import { User } from '../user';
 
 interface TopLink {
   label: string,
@@ -14,34 +17,15 @@ interface TopLink {
   styleUrls: ['./top-bar.component.css']
 })
 export class TopBarComponent implements OnInit {
-  navLinks: TopLink[]
-  accountLink: TopLink;
+  currentUser$: Observable<User | null> = EMPTY;
 
   constructor(
     public location: Location,
     private backend: BackendService,
-  ) {
-    this.navLinks = [
-      {
-        label: 'Leaderboard',
-        link: '/leaderboard',
-      },
-      {
-        label: 'Account',
-        link: '/account',
-      },
-    ];
-    this.accountLink = this.navLinks[1];
-  }
+  ) { }
 
   ngOnInit(): void {
-    this.backend.getCurrentUser().subscribe(user => {
-      if (user) {
-        this.accountLink.label = 'Account';
-      } else {
-        this.accountLink.label = 'Login';
-      }
-    });
+    this.currentUser$ = this.backend.getCurrentUser();
   }
 
 }
