@@ -1,19 +1,19 @@
 <div *ngIf="errorMsg">
   Error: {{errorMsg}}
 </div>
-<div *ngIf="user">
+<div class="outerContainer" *ngIf="user$ | async as user">
   <mat-toolbar>
     <span>{{user.name}}</span>
     <span class="spacer"></span>
     {{user.gold}} gold ({{user.goldPerMinute}} / min)
   </mat-toolbar>
+  <mat-drawer-container *ngIf="battlegroundState$ | async as bgState" fxFlex="1 1 100%" autosize>
+    <mat-drawer opened mode="side" position="end">
+      <app-game-drawer [user]="user"></app-game-drawer>
+    </mat-drawer>
+    <mat-drawer-content>
+      <app-renderer [state]="bgState" fxFlex="1 1 100%">
+      </app-renderer>
+    </mat-drawer-content>
+  </mat-drawer-container>
 </div>
-<mat-drawer-container *ngIf="battlegroundState$ | async as bgState" fxFlex="1 1 100%" autosize>
-  <mat-drawer opened mode="side" position="end">
-    <app-game-drawer [user]="user"></app-game-drawer>
-  </mat-drawer>
-  <mat-drawer-content>
-    <app-renderer [state]="bgState" fxFlex="1 1 100%">
-    </app-renderer>
-  </mat-drawer-content>
-</mat-drawer-container>
