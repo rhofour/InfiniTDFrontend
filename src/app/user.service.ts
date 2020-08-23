@@ -20,8 +20,6 @@ export class UserService {
       .pipe(map(resp => {
         const respEvent = resp as MessageEvent;
         const data = JSON.parse(respEvent.data);
-        console.log("Recieved new user state:");
-        console.log(data);
         let decoded = decoders.user.decode(data);
         if (decoded.isOk()) {
           return decoded.value;
