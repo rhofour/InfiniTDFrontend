@@ -9,7 +9,7 @@ import { GameUiService, Selection } from '../game-ui.service';
   template: ``,
 })
 export class UiLayerRendererComponent extends BaseLayerRendererComponent implements OnInit {
-  private selection?: Selection;
+  private selection: Selection = new Selection(undefined, undefined);
   private rows = 0;
   private cols = 0;
 
@@ -30,24 +30,17 @@ export class UiLayerRendererComponent extends BaseLayerRendererComponent impleme
   render() {
     this.layer.destroyChildren();
 
-    if (this.selection !== undefined) {
-      switch (this.selection.kind) {
-        case 'grid':
-          let selectionBox = new Konva.Rect({
-              x: this.selection.col * this.cellSize_,
-              y: this.selection.row * this.cellSize_,
-              width: this.cellSize_,
-              height: this.cellSize_,
-              fillEnabled: false,
-              stroke: 'red',
-              strokeWidth: 2,
-          });
-          this.layer.add(selectionBox);
-          break;
-        case 'tower':
-          break; // Don't render anything on the game UI here.
-        default: const _exhaustiveCheck: never = this.selection;
-      }
+    if (this.selection.grid) {
+      let selectionBox = new Konva.Rect({
+          x: this.selection.grid.col * this.cellSize_,
+          y: this.selection.grid.row * this.cellSize_,
+          width: this.cellSize_,
+          height: this.cellSize_,
+          fillEnabled: false,
+          stroke: 'red',
+          strokeWidth: 2,
+      });
+      this.layer.add(selectionBox);
     }
 
     this.layer.batchDraw();

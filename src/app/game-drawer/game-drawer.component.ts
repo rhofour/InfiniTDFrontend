@@ -14,7 +14,7 @@ import { BackendService } from '../backend.service';
   styleUrls: ['./game-drawer.component.css']
 })
 export class GameDrawerComponent implements OnInit {
-  public selection?: Selection;
+  public selection: Selection = new Selection(undefined, undefined);
   public selectedTower?: TowerConfig;
   public gameConfig: GameConfig = GameConfig.makeEmpty();
   public loggedInUser: User | null = null;
@@ -41,37 +41,28 @@ export class GameDrawerComponent implements OnInit {
     });
   }
 
-  updateFromSelection(selection?: Selection) {
-    if (selection === undefined) {
-      this.selectedTower = undefined;
-      if (this.buildList !== undefined) {
-        this.buildList.deselectAll();
-      }
-      return;
-    }
-
-    switch (selection.kind) {
-      case 'grid':
+  updateFromSelection(selection: Selection) {
+    let newSelectedTowerId = undefined;
+    if (selection.grid) {
+      let selectedTowerId = this.towersState.towers[selection.grid.row]?.[selection.grid.col]?.id;
+      if (selectedTowerId) {
+        // If the grid selection points to a tower then ignore tower selection.
         if (this.buildList !== undefined) {
           this.buildList.deselectAll();
         }
-        let selectedTowerId = this.towersState.towers[selection.row]?.[selection.col]?.id;
-        if (selectedTowerId === undefined) {
-          this.selectedTower = undefined;
-          return;
-        }
-
         this.selectedTower = this.gameConfig.towers.get(selectedTowerId);
-        break;
-      case 'tower':
-        this.selectedTower = this.gameConfig.towers.get(selection.id);
-        break;
-      default: const _exhaustiveCheck: never = selection;
+        return;
+      }
     }
+    if (selection.tower) {
+      this.selectedTower = this.gameConfig.towers.get(selection.tower.id);
+      return;
+    }
+    this.selectedTower = undefined;
   }
 
   selectionChange(event: MatSelectionListChange) {
-    const selection : TowerSelection = { kind: 'tower', id: event.option.value };
+    const selection = new Selection(new TowerSelection(event.option.value), undefined);
     this.uiService.select(selection);
   }
 

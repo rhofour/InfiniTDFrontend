@@ -13,10 +13,13 @@
       {{selectedTower.range}} <br />
     </div>
   </div>
+  <div *ngIf="loggedInUser && user && loggedInUser.name === user.name">
+    BUILD IT!
+  </div>
   <mat-divider></mat-divider>
 </div>
 <div *ngIf="loggedInUser && user && loggedInUser.name === user.name">
-  <h1>Build</h1>
+  <h1>Towers</h1>
   <mat-selection-list id="buildList" [multiple]="false"
       (selectionChange)="selectionChange($event)">
     <mat-list-option *ngFor="let tower of gameConfig.towers | keyvalue"

@@ -4,7 +4,7 @@ import Konva from 'konva';
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
 import { GameConfig, TileConfig, ConfigImageMap } from '../game-config';
 import { GameConfigService } from '../game-config.service';
-import { GameUiService, GridSelection } from '../game-ui.service';
+import { GameUiService, Selection, GridSelection } from '../game-ui.service';
 
 @Component({
   selector: 'app-background-layer-renderer',
@@ -53,9 +53,7 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
               image: tile.img,
           });
           tileImg.on('click', (evt) => {
-            const selection: GridSelection = {
-              kind: 'grid', row: row, col: col
-            }
+            const selection: Selection = { grid: new GridSelection(row, col), tower: undefined }
             this.uiService.select(selection);
             evt.cancelBubble = true;
           });
