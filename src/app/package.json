@@ -6,7 +6,5 @@
   "description_3": "It should be safe to set this option to 'false' for new applications, but existing code bases could be broken when built with the production config if the application code does contain non-local side-effects that the application depends on.",
   "description_4": "To learn more about this file see: https://angular.io/config/app-package-json.",
   "sideEffects": false,
-  "dependencies": {
-    "deep-equal": "^2.0.3"
-  }
+  "dependencies": {}
 }
