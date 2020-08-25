@@ -15,7 +15,7 @@ import { BackendService } from '../backend.service';
 })
 export class GameDrawerComponent implements OnInit {
   public selection: Selection = new Selection(undefined, undefined);
-  public selectedTower?: TowerConfig;
+  public displayedTower?: TowerConfig;
   public gameConfig: GameConfig = GameConfig.makeEmpty();
   public loggedInUser: User | null = null;
   @Input() towersState: TowersBgState = { towers: [] };
@@ -42,23 +42,24 @@ export class GameDrawerComponent implements OnInit {
   }
 
   updateFromSelection(selection: Selection) {
-    let newSelectedTowerId = undefined;
-    if (selection.grid) {
-      let selectedTowerId = this.towersState.towers[selection.grid.row]?.[selection.grid.col]?.id;
-      if (selectedTowerId) {
-        // If the grid selection points to a tower then ignore tower selection.
-        if (this.buildList !== undefined) {
-          this.buildList.deselectAll();
-        }
-        this.selectedTower = this.gameConfig.towers.get(selectedTowerId);
-        return;
+    let newlySelectedTower = undefined;
+    if (selection.tower) {
+      newlySelectedTower = this.gameConfig.towers.get(selection.tower.id);
+    } else {
+      if (this.buildList !== undefined) {
+        this.buildList.deselectAll();
       }
     }
-    if (selection.tower) {
-      this.selectedTower = this.gameConfig.towers.get(selection.tower.id);
-      return;
+    if (selection.grid) {
+      let displayedTowerId = this.towersState.towers[selection.grid.row]?.[selection.grid.col]?.id;
+      if (displayedTowerId) {
+        // If the grid selection points to a tower then remove towers from
+        // selection.
+        this.uiService.deselectTowers();
+        newlySelectedTower = this.gameConfig.towers.get(displayedTowerId);
+      }
     }
-    this.selectedTower = undefined;
+    this.displayedTower = newlySelectedTower;
   }
 
   selectionChange(event: MatSelectionListChange) {

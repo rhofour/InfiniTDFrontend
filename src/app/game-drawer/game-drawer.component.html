@@ -1,16 +1,16 @@
-<div *ngIf="selectedTower">
-  <h1>{{selectedTower.name}}</h1>
+<div *ngIf="displayedTower">
+  <h1>{{displayedTower.name}}</h1>
   <div fxLayout=row>
     <div>
-      <img class="selectedImg" [src]="selectedTower.url">
+      <img class="selectedImg" [src]="displayedTower.url">
     </div>
     <div>
       <span class="stat">Damage:</span>
-      {{selectedTower.damage}}<br />
+      {{displayedTower.damage}}<br />
       <span class="stat">Firing Rate:</span>
-      {{selectedTower.firingRate}} <br />
+      {{displayedTower.firingRate}} <br />
       <span class="stat">Range:</span>
-      {{selectedTower.range}} <br />
+      {{displayedTower.range}} <br />
     </div>
   </div>
   <div *ngIf="loggedInUser && user && loggedInUser.name === user.name">

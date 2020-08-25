@@ -48,23 +48,30 @@ export class GameUiService {
   }
 
   select(selection: Selection) {
-    console.log("Incoming selection:");
-    console.log(selection);
     let curSelection = this.selection$.getValue();
-    console.log("Current selection:");
-    console.log(curSelection);
     let newSelection = new Selection(undefined, undefined);
-    console.log("New selection:");
-    console.log(newSelection);
-    if (selection.tower && !selection.tower.equals(curSelection.tower)) {
-      newSelection.tower = selection.tower;
+    if (selection.tower) {
+      if (!selection.tower.equals(curSelection.tower)) {
+        newSelection.tower = selection.tower;
+      }
+    } else {
+      newSelection.tower = curSelection.tower;
     }
-    if (selection.grid && !selection.grid.equals(curSelection.grid)) {
-      console.log("They're not equal.");
-      newSelection.grid = selection.grid;
+    if (selection.grid) {
+      if (!selection.grid.equals(curSelection.grid)) {
+        newSelection.grid = selection.grid;
+      }
+    } else {
+      newSelection.grid = curSelection.grid;
     }
-    console.log("Final selection:");
-    console.log(newSelection);
     this.selection$.next(newSelection);
+  }
+
+  deselectTowers() {
+    let selection = this.selection$.getValue();
+    if (selection.tower) {
+      selection.tower = undefined;
+      this.selection$.next(selection);
+    }
   }
 }
