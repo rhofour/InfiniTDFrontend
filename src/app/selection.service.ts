@@ -94,14 +94,6 @@ export class SelectionService implements OnDestroy {
     this.selection$.next(curSelection);
   }
 
-  deselectTowers() {
-    let selection = this.selection$.getValue();
-    if (selection.tower) {
-      selection.tower = undefined;
-      this.selection$.next(selection);
-    }
-  }
-
   ngOnDestroy() {
     this.subscription.unsubscribe();
   }
