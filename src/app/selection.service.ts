@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { of, throwError, Observable, BehaviorSubject } from 'rxjs';
 
 export class TowerSelection {
+  kind: 'tower' = 'tower'
   id: number
 
   constructor(id: number) {
@@ -13,6 +14,7 @@ export class TowerSelection {
   }
 }
 export class GridSelection {
+  kind: 'grid' = 'grid'
   row: number
   col: number
 
@@ -35,10 +37,8 @@ export class Selection {
   }
 }
 
-@Injectable({
-  providedIn: 'root'
-})
-export class GameUiService {
+@Injectable()
+export class SelectionService {
   private selection$: BehaviorSubject<Selection> = new BehaviorSubject<Selection>(new Selection(undefined, undefined));
 
   constructor() { }
@@ -47,24 +47,31 @@ export class GameUiService {
     return this.selection$.asObservable();
   }
 
-  select(selection: Selection) {
+  updateSelection(newSelection: GridSelection | TowerSelection) {
     let curSelection = this.selection$.getValue();
-    let newSelection = new Selection(undefined, undefined);
-    if (selection.tower) {
-      if (!selection.tower.equals(curSelection.tower)) {
-        newSelection.tower = selection.tower;
+    switch (newSelection.kind) {
+      case 'grid': {
+        if (!newSelection.equals(curSelection.grid)) {
+          curSelection.grid = newSelection;
+          // If the new grid selection contains a tower then remove the
+          // tower selection.
+          // TODO(rofer)
+        } else {
+          curSelection.grid = undefined;
+        }
+        break;
       }
-    } else {
-      newSelection.tower = curSelection.tower;
-    }
-    if (selection.grid) {
-      if (!selection.grid.equals(curSelection.grid)) {
-        newSelection.grid = selection.grid;
+      case 'tower': {
+        if (!newSelection.equals(curSelection.tower)) {
+          curSelection.tower = newSelection;
+        } else {
+          curSelection.tower = undefined;
+        }
+        break;
       }
-    } else {
-      newSelection.grid = curSelection.grid;
+      default: const _exhaustiveCheck: never = newSelection;
     }
-    this.selection$.next(newSelection);
+    this.selection$.next(curSelection);
   }
 
   deselectTowers() {

@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, Input } from '@angular/core';
 import { MatSelectionList, MatSelectionListChange } from '@angular/material/list';
 
-import { GameUiService, Selection, TowerSelection } from '../game-ui.service';
+import { SelectionService, Selection, TowerSelection } from '../selection.service';
 import { GameConfig, TowerConfig } from '../game-config';
 import { GameConfigService } from '../game-config.service';
 import { TowersBgState, TowerBgState } from '../battleground-state';
@@ -24,7 +24,7 @@ export class GameDrawerComponent implements OnInit {
   @Input() user: User | null = null;
 
   constructor(
-    private uiService: GameUiService,
+    private selectionService: SelectionService,
     private backend: BackendService,
     gameConfigService: GameConfigService,
   ) {
@@ -32,7 +32,7 @@ export class GameDrawerComponent implements OnInit {
       this.gameConfig = gameConfig;
       this.updateFromSelection(this.selection);
     })
-    uiService.getSelection().subscribe((newSelection) => {
+    selectionService.getSelection().subscribe((newSelection) => {
       this.selection = newSelection;
       this.updateFromSelection(this.selection);
     });
@@ -55,7 +55,7 @@ export class GameDrawerComponent implements OnInit {
       if (displayedTowerId) {
         // If the grid selection points to a tower then remove towers from
         // selection.
-        this.uiService.deselectTowers();
+        this.selectionService.deselectTowers();
         newlySelectedTower = this.gameConfig.towers.get(displayedTowerId);
       }
     }
@@ -63,8 +63,7 @@ export class GameDrawerComponent implements OnInit {
   }
 
   selectionChange(event: MatSelectionListChange) {
-    const selection = new Selection(new TowerSelection(event.option.value), undefined);
-    this.uiService.select(selection);
+    this.selectionService.updateSelection(new TowerSelection(event.option.value));
   }
 
   ngOnInit(): void {

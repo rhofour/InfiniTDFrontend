@@ -7,12 +7,14 @@ import { User } from '../user';
 import { UserService } from '../user.service';
 import { BattlegroundState } from '../battleground-state';
 import { BattlegroundStateService } from '../battleground-state.service';
+import { SelectionService } from '../selection.service';
 
 
 @Component({
   selector: 'app-battleground',
   templateUrl: './battleground.component.html',
-  styleUrls: ['./battleground.component.css']
+  styleUrls: ['./battleground.component.css'],
+  providers: [SelectionService]
 })
 export class BattlegroundComponent implements OnInit {
   public user$: Observable<User> = EMPTY;

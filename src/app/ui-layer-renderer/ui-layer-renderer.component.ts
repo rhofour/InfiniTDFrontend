@@ -1,29 +1,33 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import Konva from 'konva';
+import { Subscription } from 'rxjs';
 
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
-import { GameUiService, Selection } from '../game-ui.service';
+import { SelectionService, Selection } from '../selection.service';
 
 @Component({
   selector: 'app-ui-layer-renderer',
   template: ``,
 })
-export class UiLayerRendererComponent extends BaseLayerRendererComponent implements OnInit {
+export class UiLayerRendererComponent extends BaseLayerRendererComponent implements OnInit, OnDestroy {
   private selection: Selection = new Selection(undefined, undefined);
   private rows = 0;
   private cols = 0;
+  private subscription: Subscription;
 
   constructor(
-    private uiService: GameUiService,
-  ) { super(); }
+    private selectionService: SelectionService,
+  ) {
+    super();
+    this.subscription = this.selectionService.getSelection().subscribe((newSelection) => {
+      this.selection = newSelection;
+      this.render();
+    });
+  }
 
   ngOnInit(): void {
     super.ngOnInit();
 
-    this.uiService.getSelection().subscribe((newSelection) => {
-      this.selection = newSelection;
-      this.render();
-    });
     this.render();
   }
 
@@ -44,5 +48,9 @@ export class UiLayerRendererComponent extends BaseLayerRendererComponent impleme
     }
 
     this.layer.batchDraw();
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }
