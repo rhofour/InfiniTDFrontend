@@ -53,9 +53,6 @@ export class GameDrawerComponent implements OnInit {
     if (selection.grid) {
       let displayedTowerId = this.towersState.towers[selection.grid.row]?.[selection.grid.col]?.id;
       if (displayedTowerId) {
-        // If the grid selection points to a tower then remove towers from
-        // selection.
-        this.selectionService.deselectTowers();
         newlySelectedTower = this.gameConfig.towers.get(displayedTowerId);
       }
     }

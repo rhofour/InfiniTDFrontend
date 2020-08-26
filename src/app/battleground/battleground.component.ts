@@ -25,6 +25,7 @@ export class BattlegroundComponent implements OnInit {
     private route: ActivatedRoute,
     private userService: UserService,
     private bgStateService: BattlegroundStateService,
+    private selectionService: SelectionService,
   ) { }
 
   ngOnInit(): void {
@@ -40,6 +41,7 @@ export class BattlegroundComponent implements OnInit {
     const username = this.route.snapshot.paramMap.get('username');
 
     if(username) {
+      this.selectionService.setUsername(username);
       this.user$ = this.userService.getUser(username);
       this.battlegroundState$ = this.bgStateService.getBattlegroundState(username);
     } else {

@@ -1,7 +1,11 @@
-import { Injectable } from '@angular/core';
-import { of, throwError, Observable, BehaviorSubject } from 'rxjs';
+import { Injectable, OnDestroy } from '@angular/core';
+import { of, throwError, Observable, BehaviorSubject, Subscription } from 'rxjs';
+
+import { BattlegroundState, TowerBgState } from './battleground-state';
+import { BattlegroundStateService } from './battleground-state.service';
 
 export class TowerSelection {
+  // Tower that's selected from the game drawer.
   kind: 'tower' = 'tower'
   id: number
 
@@ -14,6 +18,7 @@ export class TowerSelection {
   }
 }
 export class GridSelection {
+  // Part of the playfield that's selected.
   kind: 'grid' = 'grid'
   row: number
   col: number
@@ -38,16 +43,27 @@ export class Selection {
 }
 
 @Injectable()
-export class SelectionService {
+export class SelectionService implements OnDestroy {
   private selection$: BehaviorSubject<Selection> = new BehaviorSubject<Selection>(new Selection(undefined, undefined));
+  private subscription: Subscription = Subscription.EMPTY;
+  private battlegroundState?: BattlegroundState;
 
-  constructor() { }
+  constructor(private bgStateService: BattlegroundStateService) { }
+
+  setUsername(username: string) {
+    this.subscription = this.bgStateService.getBattlegroundState(username)
+      .subscribe((bgState: BattlegroundState) => this.battlegroundState = bgState);
+  }
 
   getSelection() : Observable<Selection> {
     return this.selection$.asObservable();
   }
 
   updateSelection(newSelection: GridSelection | TowerSelection) {
+    if (this.battlegroundState === undefined) {
+      console.warn("SelectionService battelgroundState is undefined when updateSelection is called.");
+      return;
+    }
     let curSelection = this.selection$.getValue();
     switch (newSelection.kind) {
       case 'grid': {
@@ -55,7 +71,11 @@ export class SelectionService {
           curSelection.grid = newSelection;
           // If the new grid selection contains a tower then remove the
           // tower selection.
-          // TODO(rofer)
+          let towerId =
+            this.battlegroundState.towers.towers[newSelection.row]?.[newSelection.col]?.id;
+          if (towerId) {
+            curSelection.tower = undefined;
+          }
         } else {
           curSelection.grid = undefined;
         }
@@ -80,5 +100,9 @@ export class SelectionService {
       selection.tower = undefined;
       this.selection$.next(selection);
     }
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }
