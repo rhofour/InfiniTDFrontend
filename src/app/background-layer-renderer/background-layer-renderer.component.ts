@@ -1,47 +1,42 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import Konva from 'konva';
-import { Subscription } from 'rxjs';
 
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
 import { GameConfig, TileConfig, ConfigImageMap } from '../game-config';
-import { GameConfigService } from '../game-config.service';
 import { SelectionService, GridSelection } from '../selection.service';
 
 @Component({
   selector: 'app-background-layer-renderer',
   template: ``,
 })
-export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent implements OnInit, OnDestroy {
+export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent implements OnInit {
   private rows = 0;
   private cols = 0;
   private tilesConfig!: ConfigImageMap<TileConfig>;
-  private subscription: Subscription;
+  @Input() gameConfig!: GameConfig;
 
   constructor(
     private selectionService: SelectionService,
-    private gameConfigService: GameConfigService,
-  ) {
-    super();
-
-    this.subscription = this.gameConfigService.getConfig().subscribe((gameConfig) => {
-      this.rows = gameConfig.playfield.numRows;
-      this.cols = gameConfig.playfield.numCols;
-      this.tilesConfig = gameConfig.tiles;
-      this.render();
-    });
-  }
+  ) { super(); }
 
   ngOnInit(): void {
     super.ngOnInit();
 
+    if (this.gameConfig === undefined) {
+      throw Error("Input gameConfig is undefined.");
+    }
+
+    this.rows = this.gameConfig.playfield.numRows;
+    this.cols = this.gameConfig.playfield.numCols;
+    this.tilesConfig = this.gameConfig.tiles;
+
     // Allow the layer to listen for clicks since it will always have tiles
     // everywhere.
     this.layer.listening(true);
+    this.render();
   }
 
   render() {
-    if (this.tilesConfig === undefined)
-      return;
     this.layer.destroyChildren();
     for (let row = 0; row < this.rows; row++) {
       for (let col = 0; col < this.cols; col++) {
@@ -66,9 +61,5 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
     }
 
     this.layer.batchDraw();
-  }
-
-  ngOnDestroy() {
-    this.subscription.unsubscribe();
   }
 }

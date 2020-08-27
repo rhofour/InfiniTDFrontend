@@ -3,7 +3,6 @@ import { MatSelectionList, MatSelectionListChange } from '@angular/material/list
 
 import { SelectionService, Selection, TowerSelection } from '../selection.service';
 import { GameConfig, TowerConfig } from '../game-config';
-import { GameConfigService } from '../game-config.service';
 import { TowersBgState, TowerBgState } from '../battleground-state';
 import { User } from '../user';
 import { BackendService } from '../backend.service';
@@ -16,7 +15,7 @@ import { BackendService } from '../backend.service';
 export class GameDrawerComponent implements OnInit {
   public selection: Selection = new Selection(undefined, undefined);
   public displayedTower?: TowerConfig;
-  public gameConfig: GameConfig = GameConfig.makeEmpty();
+  @Input() gameConfig!: GameConfig;
   public loggedInUser: User | null = null;
   @Input() towersState: TowersBgState = { towers: [] };
   @ViewChild(MatSelectionList) buildList?: MatSelectionList;
@@ -26,12 +25,7 @@ export class GameDrawerComponent implements OnInit {
   constructor(
     private selectionService: SelectionService,
     private backend: BackendService,
-    gameConfigService: GameConfigService,
   ) {
-    gameConfigService.getConfig().subscribe((gameConfig) => {
-      this.gameConfig = gameConfig;
-      this.updateFromSelection(this.selection);
-    })
     selectionService.getSelection().subscribe((newSelection) => {
       this.selection = newSelection;
       this.updateFromSelection(this.selection);

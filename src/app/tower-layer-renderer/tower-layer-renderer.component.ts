@@ -15,6 +15,7 @@ export class TowerLayerRendererComponent extends BaseLayerRendererComponent impl
   private cols = 0;
   private towersConfig!: ConfigImageMap<TowerConfig>;
   @Input() state: TowersBgState | undefined;
+  @Input() gameConfig!: GameConfig;
 
   constructor(
     private gameConfigService: GameConfigService,
@@ -23,11 +24,13 @@ export class TowerLayerRendererComponent extends BaseLayerRendererComponent impl
   ngOnInit(): void {
     super.ngOnInit();
 
-    this.gameConfigService.getConfig().subscribe((gameConfig) => {
-      this.rows = gameConfig.playfield.numRows;
-      this.cols = gameConfig.playfield.numCols;
-      this.towersConfig = gameConfig.towers;
-    });
+    if (this.gameConfig === undefined) {
+      throw Error("Input gameConfig is undefined.");
+    }
+
+    this.rows = this.gameConfig.playfield.numRows;
+    this.cols = this.gameConfig.playfield.numCols;
+    this.towersConfig = this.gameConfig.towers;
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -38,7 +41,10 @@ export class TowerLayerRendererComponent extends BaseLayerRendererComponent impl
 
   render() {
     this.layer.destroyChildren();
-    if (this.state === undefined) return;
+    if (this.state === undefined) {
+      console.warn("TowerLayerRendererComponent.render called while state is undefined.");
+      return;
+    }
     for (let row = 0; row < this.rows; row++) {
       let actualCols = this.state.towers[row]?.length;
       if (actualCols !== this.cols) {

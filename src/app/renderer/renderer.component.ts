@@ -2,7 +2,6 @@ import { Component, OnInit, ElementRef, Input } from '@angular/core';
 import Konva from 'konva';
 
 import { GameConfig } from '../game-config';
-import { GameConfigService } from '../game-config.service';
 import { BattlegroundState } from '../battleground-state';
 
 @Component({
@@ -12,26 +11,24 @@ import { BattlegroundState } from '../battleground-state';
 })
 export class RendererComponent implements OnInit {
   public cellSize: number = 0;
-  public gameConfig: GameConfig = GameConfig.makeEmpty();
   public stage!: Konva.Stage;
   @Input() state: BattlegroundState | undefined;
+  @Input() gameConfig!: GameConfig;
 
   constructor(
     private hostElem: ElementRef,
-    private gameConfigService: GameConfigService,
   ) { }
 
   ngOnInit(): void {
+    if (this.gameConfig === undefined) {
+      throw Error("Input gameConfig is undefined.");
+    }
     this.setupKonva();
 
     let resizeObserver = new ResizeObserver(entries => {
       this.adjustCanvas();
     });
     resizeObserver.observe(this.hostElem.nativeElement);
-    this.gameConfigService.getConfig().subscribe((config) => {
-      this.gameConfig = config;
-      this.adjustCanvas();
-    });
   }
 
   setupKonva() {

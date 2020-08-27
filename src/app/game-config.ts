@@ -73,10 +73,6 @@ export class GameConfig {
       });
   }
 
-  static makeEmpty(): GameConfig{
-    return new GameConfig(emptyPlayfieldConfig, new Map(), new Map(), new Map());
-  }
-
   constructor(playfield: PlayfieldConfig, tiles: ConfigImageMap<TileConfig>, towers: ConfigImageMap<TowerConfig>,
      monsters: ConfigImageMap<MonsterConfig>) {
     this.playfield = playfield;
@@ -85,17 +81,3 @@ export class GameConfig {
     this.monsters = monsters;
   }
 }
-
-export const emptyPlayfieldConfig: PlayfieldConfig = {
-  numRows: 0,
-  numCols: 0,
-  monsterEnter: { row: 0, col: 0 },
-  monsterExit: { row: 0, col: 0 },
-};
-
-export const emptyGameConfigData: GameConfigData = {
-  tiles: [],
-  playfield: emptyPlayfieldConfig,
-  monsters: [],
-  towers: [],
-};

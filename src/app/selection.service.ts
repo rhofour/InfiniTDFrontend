@@ -3,6 +3,8 @@ import { of, throwError, Observable, BehaviorSubject, Subscription } from 'rxjs'
 
 import { BattlegroundState, TowerBgState } from './battleground-state';
 import { BattlegroundStateService } from './battleground-state.service';
+import { GameConfig } from './game-config';
+import { GameConfigService } from './game-config.service';
 
 export class TowerSelection {
   // Tower that's selected from the game drawer.
@@ -47,8 +49,14 @@ export class SelectionService implements OnDestroy {
   private selection$: BehaviorSubject<Selection> = new BehaviorSubject<Selection>(new Selection(undefined, undefined));
   private subscription: Subscription = Subscription.EMPTY;
   private battlegroundState?: BattlegroundState;
+  private gameConfig!: GameConfig;
 
-  constructor(private bgStateService: BattlegroundStateService) { }
+  constructor(
+    private bgStateService: BattlegroundStateService,
+    private gameConfigService: GameConfigService,
+  ) {
+    gameConfigService.getConfig().toPromise().then((gameConfig) => this.gameConfig = gameConfig);
+  }
 
   setUsername(username: string) {
     this.subscription = this.bgStateService.getBattlegroundState(username)

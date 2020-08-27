@@ -8,6 +8,8 @@ import { UserService } from '../user.service';
 import { BattlegroundState } from '../battleground-state';
 import { BattlegroundStateService } from '../battleground-state.service';
 import { SelectionService } from '../selection.service';
+import { GameConfig } from '../game-config';
+import { GameConfigService } from '../game-config.service';
 
 
 @Component({
@@ -20,13 +22,17 @@ export class BattlegroundComponent implements OnInit {
   public user$: Observable<User> = EMPTY;
   public errorMsg: string | null = null;
   public battlegroundState$: Observable<BattlegroundState> = EMPTY;
+  public gameConfig$: Observable<GameConfig>;
 
   constructor(
     private route: ActivatedRoute,
     private userService: UserService,
     private bgStateService: BattlegroundStateService,
     private selectionService: SelectionService,
-  ) { }
+    private gameConfigService: GameConfigService,
+  ) {
+    this.gameConfig$ = gameConfigService.getConfig();
+  }
 
   ngOnInit(): void {
     this.getUser();

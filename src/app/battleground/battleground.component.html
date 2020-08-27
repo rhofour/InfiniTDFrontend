@@ -7,13 +7,15 @@
     <span class="spacer"></span>
     {{user.gold}} gold ({{user.goldPerMinute}} / min)
   </mat-toolbar>
-  <mat-drawer-container *ngIf="battlegroundState$ | async as bgState" fxFlex="1 1 100%" autosize>
-    <mat-drawer opened mode="side" position="end">
-      <app-game-drawer [user]="user" [towersState]="bgState.towers"></app-game-drawer>
-    </mat-drawer>
-    <mat-drawer-content>
-      <app-renderer [state]="bgState" fxFlex="1 1 100%">
-      </app-renderer>
-    </mat-drawer-content>
-  </mat-drawer-container>
+  <ng-container *ngIf="gameConfig$ | async as gameConfig">
+    <mat-drawer-container *ngIf="battlegroundState$ | async as bgState" fxFlex="1 1 100%" autosize>
+      <mat-drawer opened mode="side" position="end">
+        <app-game-drawer [user]="user" [gameConfig]="gameConfig" [towersState]="bgState.towers"></app-game-drawer>
+      </mat-drawer>
+      <mat-drawer-content>
+        <app-renderer [gameConfig]="gameConfig" [state]="bgState" fxFlex="1 1 100%">
+        </app-renderer>
+      </mat-drawer-content>
+    </mat-drawer-container>
+  </ng-container>
 </div>
