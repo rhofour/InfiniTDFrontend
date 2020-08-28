@@ -13,8 +13,8 @@
       {{displayedTower.range}} <br />
     </div>
   </div>
-  <div *ngIf="loggedInUser && user && loggedInUser.name === user.name">
-    BUILD IT!
+  <div *ngIf="user && loggedInUser?.name === user.name && selection.tower">
+    <button mat-stroked-button>Build ({{selection.tower.cost}} gold)</button>
   </div>
   <mat-divider></mat-divider>
 </div>

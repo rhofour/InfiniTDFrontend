@@ -1,7 +1,7 @@
 import { Component, OnInit, ViewChild, Input } from '@angular/core';
 import { MatSelectionList, MatSelectionListChange } from '@angular/material/list';
 
-import { SelectionService, Selection, TowerSelection } from '../selection.service';
+import { SelectionService, Selection, NewTowerSelection } from '../selection.service';
 import { GameConfig, TowerConfig } from '../game-config';
 import { TowersBgState, TowerBgState } from '../battleground-state';
 import { User } from '../user';
@@ -54,7 +54,7 @@ export class GameDrawerComponent implements OnInit {
   }
 
   selectionChange(event: MatSelectionListChange) {
-    this.selectionService.updateSelection(new TowerSelection(event.option.value));
+    this.selectionService.updateSelection(new NewTowerSelection(event.option.value));
   }
 
   ngOnInit(): void {

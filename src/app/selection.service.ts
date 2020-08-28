@@ -3,10 +3,10 @@ import { of, throwError, Observable, BehaviorSubject, Subscription } from 'rxjs'
 
 import { BattlegroundState, TowerBgState } from './battleground-state';
 import { BattlegroundStateService } from './battleground-state.service';
-import { GameConfig } from './game-config';
+import { GameConfig, TowerConfig } from './game-config';
 import { GameConfigService } from './game-config.service';
 
-export class TowerSelection {
+export class NewTowerSelection {
   // Tower that's selected from the game drawer.
   kind: 'tower' = 'tower'
   id: number
@@ -15,7 +15,7 @@ export class TowerSelection {
     this.id = id;
   }
 
-  equals(other: TowerSelection | undefined) {
+  equals(other: TowerConfig | undefined) {
     return other && this.id === other.id;
   }
 }
@@ -35,10 +35,10 @@ export class GridSelection {
   }
 }
 export class Selection {
-  tower: TowerSelection | undefined
+  tower: TowerConfig | undefined
   grid: GridSelection | undefined
 
-  constructor(tower: TowerSelection | undefined, grid: GridSelection | undefined) {
+  constructor(tower: TowerConfig | undefined, grid: GridSelection | undefined) {
     this.tower = tower;
     this.grid = grid;
   }
@@ -55,10 +55,12 @@ export class SelectionService implements OnDestroy {
     private bgStateService: BattlegroundStateService,
     private gameConfigService: GameConfigService,
   ) {
-    gameConfigService.getConfig().toPromise().then((gameConfig) => this.gameConfig = gameConfig);
+    // TODO: Add this to a subscription to be cleaned up later
+    gameConfigService.getConfig().subscribe((gameConfig) => this.gameConfig = gameConfig);
   }
 
   setUsername(username: string) {
+    this.subscription.unsubscribe();
     this.subscription = this.bgStateService.getBattlegroundState(username)
       .subscribe((bgState: BattlegroundState) => this.battlegroundState = bgState);
   }
@@ -67,7 +69,7 @@ export class SelectionService implements OnDestroy {
     return this.selection$.asObservable();
   }
 
-  updateSelection(newSelection: GridSelection | TowerSelection) {
+  updateSelection(newSelection: GridSelection | NewTowerSelection) {
     if (this.battlegroundState === undefined) {
       console.warn("SelectionService battelgroundState is undefined when updateSelection is called.");
       return;
@@ -91,7 +93,7 @@ export class SelectionService implements OnDestroy {
       }
       case 'tower': {
         if (!newSelection.equals(curSelection.tower)) {
-          curSelection.tower = newSelection;
+          curSelection.tower = this.gameConfig.towers.get(newSelection.id);
         } else {
           curSelection.tower = undefined;
         }
