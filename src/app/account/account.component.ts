@@ -5,6 +5,7 @@ import { FormControl, Validators } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 
 import { BackendService } from '../backend.service';
+import { LoggedInUser } from '../logged-in-user';
 
 @Component({
   selector: 'app-account',
@@ -32,7 +33,7 @@ export class AccountComponent implements OnInit {
     this.afAuth.signInWithPopup(new auth.GoogleAuthProvider()).catch(this.loginError);
   }
 
-  setName() {
+  setName(loggedInUser: LoggedInUser) {
     const name = this.desiredName.value;
     if (this.desiredName.invalid) {
       console.log('Attemping to set name with invalid value: ' + name);
@@ -42,7 +43,7 @@ export class AccountComponent implements OnInit {
     this.backend.isNameTaken(name).then(isTaken => {
       console.log('Is name taken: ' + isTaken);
     });
-    this.backend.register(name).then(registrationError => {
+    this.backend.register(loggedInUser, name).then(registrationError => {
       if (registrationError) {
         this.registrationErrorMsg = registrationError;
         console.log('registrationErrorMsg is now: ' + this.registrationErrorMsg);

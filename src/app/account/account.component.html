@@ -1,13 +1,15 @@
-<div *ngIf="backend.getCurrentUser() | async as user; else showLoginOrRegister">
-  <h1>Hello {{ user.name }}!</h1>
-  <br />
-  <button mat-stroked-button (click)="logout()">Logout</button>
-</div>
-<ng-template #showLoginOrRegister>
-  <div *ngIf="backend.getUnregistered() | async; else showLogin">
+<div *ngIf="backend.getLoggedInUser() | async as lUser; else showLogin">
+  <div *ngIf="lUser.user; else showRegister">
+    <h1>Hello {{ lUser.user.name }}!</h1>
+    <br />
+  </div>
+  <ng-template #showRegister>
     Please choose a display name:
     <input type="text" id="desiredName" name="desireName" [formControl]="desiredName">
-    <p><button mat-stroked-button (click)="setName()" [disabled]="desiredName.invalid || desiredName.pristine">Set Name</button></p>
+    <p>
+    <button mat-stroked-button (click)="setName(lUser)" [disabled]="desiredName.invalid || desiredName.pristine">
+      Set Name
+    </button></p>
     <div *ngIf="desiredName.invalid && (desiredName.dirty || desiredName.touched)"
       class="alert alert-danger">
       <div *ngIf="desiredName.errors && desiredName.errors.minlength">
@@ -17,11 +19,10 @@
     <div class="alert alert-danger">
       {{registrationErrorMsg}}
     </div>
-    <br />
-    <button mat-stroked-button (click)="logout()">Logout</button>
-  </div>
-  <ng-template #showLogin>
-    <p>Please login.</p>
-    <button mat-stroked-button (click)="googleLogin()">Login with Google</button>
   </ng-template>
+  <button mat-stroked-button (click)="logout()">Logout</button>
+</div>
+<ng-template #showLogin>
+  <p>Please login.</p>
+  <button mat-stroked-button (click)="googleLogin()">Login with Google</button>
 </ng-template>

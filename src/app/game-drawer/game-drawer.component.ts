@@ -16,7 +16,6 @@ export class GameDrawerComponent implements OnInit {
   public selection: Selection = new Selection(undefined, undefined);
   public displayedTower?: TowerConfig;
   @Input() gameConfig!: GameConfig;
-  public loggedInUser: User | null = null;
   @Input() towersState: TowersBgState = { towers: [] };
   @ViewChild(MatSelectionList) buildList?: MatSelectionList;
   // user is the user we're displaying.
@@ -24,14 +23,11 @@ export class GameDrawerComponent implements OnInit {
 
   constructor(
     private selectionService: SelectionService,
-    private backend: BackendService,
+    public backend: BackendService,
   ) {
     selectionService.getSelection().subscribe((newSelection) => {
       this.selection = newSelection;
       this.updateFromSelection(this.selection);
-    });
-    backend.getCurrentUser().subscribe((user) => {
-      this.loggedInUser = user;
     });
   }
 

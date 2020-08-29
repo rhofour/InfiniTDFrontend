@@ -2,22 +2,21 @@ import { Injectable, NgZone } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { auth, User as FbUser } from 'firebase/app';
 import { HttpClient, HttpHeaders, HttpResponse, HttpErrorResponse } from '@angular/common/http';
-import { of, throwError, Observable, BehaviorSubject } from 'rxjs';
+import { from, of, throwError, Observable, BehaviorSubject, pipe } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
-import { map, catchError } from 'rxjs/operators';
+import { switchMap, map, catchError, filter, distinctUntilChanged, tap } from 'rxjs/operators';
 
 import { environment } from '../environments/environment';
 import { User, UsersContainer } from './user';
 import { GameConfig, GameConfigData } from './game-config';
 import * as decoders from './decode';
+import { LoggedInUser } from './logged-in-user';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BackendService {
-  user$: BehaviorSubject<User | null> = new BehaviorSubject<User | null>(null);
-  // unregistered$ is only true when we have a FB user, but no backend user.
-  unregistered$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false);
+  loggedInUser$: BehaviorSubject<LoggedInUser | undefined> = new BehaviorSubject<LoggedInUser | undefined>(undefined);
 
   constructor(
     private http: HttpClient,
@@ -32,44 +31,16 @@ export class BackendService {
     this.afAuth.currentUser.then((fbUser) => this.updateUser(fbUser));
   }
 
-  // Update the user$ attribute from the Firebase user.
-  updateUser(fbUser: FbUser | null) {
-    this.ngZone.run(() => {
-      if (fbUser === null) {
-        console.log('User not signed in.');
-        this.unregistered$.next(false);
-        this.user$.next(null);
-        return
-      }
-      // Send request to get info to build a User.
-      this.authenticatedHttp(environment.serverAddress + '/thisUser').then((user) => {
-        let decoded = decoders.user.decode(user);
-        if (decoded.isOk()) {
-          console.log('Found registered user.');
-          this.unregistered$.next(false);
-          this.user$.next(decoded.value);
-        } else {
-          console.log('Decoding Error: ');
-          console.log(decoded);
-          // We have a Firebase user, but no associated user in our backend.
-          console.log('Found unregistered user.');
-          this.unregistered$.next(true);
-          this.user$.next(null);
-        }
-      });
-    });
+  getLoggedInUser(): Observable<LoggedInUser|undefined> {
+    return this.loggedInUser$.asObservable();
   }
 
-  authenticatedHttp(url: string, method = 'get'): Promise<Object> {
-    console.log('Sending authenticated request to ' + url);
-    return this.afAuth.currentUser.then((fbUser) => {
-      if (fbUser === null) {
-        throw new Error('Could not send authenticated HTTP because there is no Firebase user logged in.');
-      }
-      return fbUser.getIdToken()
-    }, (err) => {
-      throw new Error('Error getting current Firebase user: ' + err);
-    }).then((idToken) => {
+  getRegisteredUser(): Observable<User|undefined> {
+    return this.loggedInUser$.pipe(map(x => x?.user));
+  }
+
+  private authenticatedHttp(fbUser: FbUser, url: string, method = 'get'): Promise<Object> {
+    return fbUser.getIdToken().then((idToken) => {
       if (idToken) {
         const httpOptions = {
           headers: new HttpHeaders({
@@ -86,16 +57,34 @@ export class BackendService {
     });
   }
 
-  authenticatedHttpWithResponse(url: string, method = 'get'): Promise<HttpResponse<Object>> {
-    console.log('Sending authenticated request to ' + url);
-    return this.afAuth.currentUser.then((fbUser) => {
+  // Update the user$ attribute from the Firebase user.
+  updateUser(fbUser: FbUser | null) {
+    this.ngZone.run(() => {
       if (fbUser === null) {
-        throw new Error('Could not send authenticated HTTP because there is no Firebase user logged in.');
+        console.log('User not signed in.');
+        this.loggedInUser$.next(undefined);
+        return;
       }
-      return fbUser.getIdToken()
-    }, (err) => {
-      throw new Error('Error getting current Firebase user: ' + err);
-    }).then((idToken) => {
+      // Send request to get info to build a User.
+      this.authenticatedHttp(fbUser, environment.serverAddress + '/thisUser').then((user) => {
+        let decoded = decoders.user.decode(user);
+        if (decoded.isOk()) {
+          console.log('Found registered user.');
+          this.loggedInUser$.next(new LoggedInUser(fbUser, decoded.value));
+        } else {
+          console.log('Decoding Error: ');
+          console.log(decoded);
+          // We have a Firebase user, but no associated user in our backend.
+          console.log('Found unregistered user.');
+          this.loggedInUser$.next(new LoggedInUser(fbUser));
+        }
+      });
+    });
+  }
+
+  private authenticatedHttpWithResponse(fbUser: FbUser, url: string, method = 'get'): Promise<HttpResponse<Object>> {
+    console.log('Sending authenticated request to ' + url);
+    return fbUser.getIdToken().then((idToken) => {
       if (idToken) {
         console.log('Actually sending request to ' + url);
         return this.http.request(method, url, {
@@ -112,24 +101,18 @@ export class BackendService {
     });
   }
 
-  getUser(name: string): Promise<User | null> {
+  getUser(name: string): Promise<User | undefined> {
     return this.http.get(environment.serverAddress + '/user/' + name).toPromise()
       .then(resp => decoders.user.decodePromise(resp), (resp => {
         if (resp.status == 404) {
           console.log('User ' + name + ' not found.');
-          return null;
+          return undefined;
         }
         console.warn('Unexpected failure looking up user ' + name);
         console.log(resp);
-        return null;
+        return undefined;
       }));
   }
-
-  getCurrentUser(): Observable<User | null> {
-    return this.user$.asObservable();
-  }
-
-  getUnregistered() { return this.unregistered$; }
 
   getUsers(): Observable<User[]> {
     return ajax.getJSON(environment.serverAddress + '/users').pipe(
@@ -167,8 +150,9 @@ export class BackendService {
     });
   }
 
-  register(name: string): Promise<string | null> {
+  register(loggedInUser: LoggedInUser, name: string): Promise<string | null> {
     return this.authenticatedHttpWithResponse(
+      loggedInUser.fbUser,
       environment.serverAddress + '/register/' + name, 'post').then((resp: HttpResponse<Object>) => {
         if (resp.status == 201) {
           console.log('Registration successful.');

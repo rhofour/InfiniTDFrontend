@@ -16,16 +16,11 @@ interface TopLink {
   templateUrl: './top-bar.component.html',
   styleUrls: ['./top-bar.component.css']
 })
-export class TopBarComponent implements OnInit {
-  currentUser$: Observable<User | null> = EMPTY;
+export class TopBarComponent {
 
   constructor(
     public location: Location,
-    private backend: BackendService,
+    public backend: BackendService,
   ) { }
-
-  ngOnInit(): void {
-    this.currentUser$ = this.backend.getCurrentUser();
-  }
 
 }

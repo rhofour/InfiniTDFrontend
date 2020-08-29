@@ -7,7 +7,7 @@
     [active]="'/leaderboard' == location.path()">
     Leaderboard
   </a>
-  <a mat-tab-link *ngIf="currentUser$ | async as user"
+  <a mat-tab-link *ngIf="backend.getRegisteredUser() | async as user"
     [routerLink]="'/battleground/' + user.name"
     [active]="'/battleground/' + user.name == location.path()">
     My Battleground
@@ -15,7 +15,7 @@
   <a mat-tab-link
     [routerLink]="'/account'"
     [active]="'/account' == location.path()">
-    <span *ngIf="currentUser$ | async as user; else noUser">
+    <span *ngIf="backend.getRegisteredUser() | async as user; else noUser">
       {{ user.name }}
     </span>
     <ng-template #noUser>Login</ng-template>
