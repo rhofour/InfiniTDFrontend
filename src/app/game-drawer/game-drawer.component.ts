@@ -1,18 +1,20 @@
-import { Component, OnInit, ViewChild, Input } from '@angular/core';
+import { Component, ViewChild, Input } from '@angular/core';
 import { MatSelectionList, MatSelectionListChange } from '@angular/material/list';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { SelectionService, Selection, NewTowerSelection } from '../selection.service';
+import { SelectionService, Selection, NewTowerSelection, GridSelection } from '../selection.service';
 import { GameConfig, TowerConfig } from '../game-config';
 import { TowersBgState, TowerBgState } from '../battleground-state';
 import { User } from '../user';
 import { BackendService } from '../backend.service';
+import { LoggedInUser } from '../logged-in-user';
 
 @Component({
   selector: 'app-game-drawer',
   templateUrl: './game-drawer.component.html',
   styleUrls: ['./game-drawer.component.css']
 })
-export class GameDrawerComponent implements OnInit {
+export class GameDrawerComponent {
   public selection: Selection = new Selection(undefined, undefined);
   public displayedTower?: TowerConfig;
   @Input() gameConfig!: GameConfig;
@@ -23,6 +25,7 @@ export class GameDrawerComponent implements OnInit {
 
   constructor(
     private selectionService: SelectionService,
+    private snackBar: MatSnackBar,
     public backend: BackendService,
   ) {
     selectionService.getSelection().subscribe((newSelection) => {
@@ -53,7 +56,11 @@ export class GameDrawerComponent implements OnInit {
     this.selectionService.updateSelection(new NewTowerSelection(event.option.value));
   }
 
-  ngOnInit(): void {
+  build(loggedInUser: LoggedInUser, tower: TowerConfig, gridSel: GridSelection) {
+    this.backend.build(loggedInUser, tower.id, gridSel).catch((err) => {
+      console.warn("Building error:");
+      console.warn(err);
+      this.snackBar.open(err.error);
+    });
   }
-
 }

@@ -14,9 +14,10 @@
     </div>
   </div>
   <div *ngIf="backend.getLoggedInUser() | async as lUser">
-    <div *ngIf="lUser.user && lUser.user.name === user?.name && selection.tower">
-      <button mat-stroked-button>Build ({{selection.tower.cost}} gold)</button>
-    </div>
+    <button *ngIf="lUser.user && lUser.user.name === user?.name && selection.tower && selection.grid"
+      (click)="build(lUser, selection.tower, selection.grid)" mat-stroked-button>
+      Build ({{selection.tower.cost}} gold)
+    </button>
   </div>
   <mat-divider></mat-divider>
 </div>

@@ -11,6 +11,7 @@ import { User, UsersContainer } from './user';
 import { GameConfig, GameConfigData } from './game-config';
 import * as decoders from './decode';
 import { LoggedInUser } from './logged-in-user';
+import { GridSelection } from './selection.service';
 
 @Injectable({
   providedIn: 'root'
@@ -82,7 +83,7 @@ export class BackendService {
     });
   }
 
-  private authenticatedHttpWithResponse(fbUser: FbUser, url: string, method = 'get'): Promise<HttpResponse<Object>> {
+  private authenticatedHttpWithResponse(fbUser: FbUser, url: string, method = 'get', body?: any): Promise<HttpResponse<Object>> {
     console.log('Sending authenticated request to ' + url);
     return fbUser.getIdToken().then((idToken) => {
       if (idToken) {
@@ -92,6 +93,7 @@ export class BackendService {
             'Content-Type': 'application/json',
             Authorization: 'Bearer ' + idToken,
           }),
+          body: body,
           observe: 'response'
         }).toPromise();
       }
@@ -171,5 +173,15 @@ export class BackendService {
   getGameConfig(): Promise<GameConfigData> {
     return this.http.get(environment.serverAddress + '/gameConfig').toPromise()
       .then((resp) => decoders.gameConfigData.decodePromise(resp));
+  }
+
+  build(loggedInUser: LoggedInUser, towerId: number, gridSel: GridSelection): Promise<Object> {
+    const name = loggedInUser?.user?.name;
+    if (name === undefined) {
+      return Promise.reject(new Error("Cannot build for user who is not registered."));
+    }
+    const url = `${environment.serverAddress}/build/${name}/${gridSel.row}/${gridSel.col}`;
+    return this.authenticatedHttpWithResponse(
+      loggedInUser.fbUser, url, 'post', `{"towerId": ${towerId}}`);
   }
 }
