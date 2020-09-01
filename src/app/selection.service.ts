@@ -83,7 +83,7 @@ export class SelectionService implements OnDestroy {
           // tower selection.
           let towerId =
             this.battlegroundState.towers.towers[newSelection.row]?.[newSelection.col]?.id;
-          if (towerId) {
+          if (towerId !== undefined) {
             curSelection.tower = undefined;
           }
         } else {

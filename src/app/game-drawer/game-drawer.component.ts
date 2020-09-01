@@ -45,7 +45,7 @@ export class GameDrawerComponent {
     }
     if (selection.grid) {
       let displayedTowerId = this.towersState.towers[selection.grid.row]?.[selection.grid.col]?.id;
-      if (displayedTowerId) {
+      if (displayedTowerId !== undefined) {
         newlySelectedTower = this.gameConfig.towers.get(displayedTowerId);
       }
     }
