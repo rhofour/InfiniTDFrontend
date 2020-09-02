@@ -6,9 +6,9 @@ import { BattlegroundStateService } from './battleground-state.service';
 import { GameConfig, TowerConfig } from './game-config';
 import { GameConfigService } from './game-config.service';
 
-export class NewTowerSelection {
-  // Tower that's selected from the game drawer.
-  kind: 'tower' = 'tower'
+export class NewBuildSelection {
+  // Tower that's selected from the build panel.
+  kind: 'build' = 'build'
   id: number
 
   constructor(id: number) {
@@ -35,18 +35,20 @@ export class GridSelection {
   }
 }
 export class Selection {
-  tower: TowerConfig | undefined
+  buildTower: TowerConfig | undefined
+  gridTower: TowerConfig | undefined
   grid: GridSelection | undefined
 
-  constructor(tower: TowerConfig | undefined, grid: GridSelection | undefined) {
-    this.tower = tower;
+  constructor(buildTower?: TowerConfig, gridTower?: TowerConfig, grid?: GridSelection) {
+    this.buildTower = buildTower; // Tower selected from the build menu
+    this.gridTower = gridTower; // Tower selected from the battleground
     this.grid = grid;
   }
 }
 
 @Injectable()
 export class SelectionService implements OnDestroy {
-  private selection$: BehaviorSubject<Selection> = new BehaviorSubject<Selection>(new Selection(undefined, undefined));
+  private selection$: BehaviorSubject<Selection> = new BehaviorSubject<Selection>(new Selection());
   private subscription: Subscription = Subscription.EMPTY;
   private battlegroundState?: BattlegroundState;
   private gameConfig!: GameConfig;
@@ -69,7 +71,7 @@ export class SelectionService implements OnDestroy {
     return this.selection$.asObservable();
   }
 
-  updateSelection(newSelection: GridSelection | NewTowerSelection) {
+  updateSelection(newSelection: GridSelection | NewBuildSelection) {
     if (this.battlegroundState === undefined) {
       console.warn("SelectionService battelgroundState is undefined when updateSelection is called.");
       return;
@@ -77,25 +79,29 @@ export class SelectionService implements OnDestroy {
     let curSelection = this.selection$.getValue();
     switch (newSelection.kind) {
       case 'grid': {
-        if (!newSelection.equals(curSelection.grid)) {
-          curSelection.grid = newSelection;
-          // If the new grid selection contains a tower then remove the
-          // tower selection.
-          let towerId =
-            this.battlegroundState.towers.towers[newSelection.row]?.[newSelection.col]?.id;
-          if (towerId !== undefined) {
-            curSelection.tower = undefined;
-          }
-        } else {
+        if (newSelection.equals(curSelection.grid)) {
           curSelection.grid = undefined;
+          curSelection.gridTower = undefined;
+        } else {
+          curSelection.grid = newSelection;
+          const gridTowerId =
+            this.battlegroundState.towers.towers[newSelection.row]?.[newSelection.col]?.id;
+          curSelection.gridTower = gridTowerId !== undefined ?
+            this.gameConfig.towers.get(gridTowerId) : undefined;
+          // If the new grid selection contains a tower then remove the tower selection,
+          // unless it matches
+          if (curSelection.gridTower !== undefined &&
+              curSelection.gridTower.id !== curSelection.buildTower?.id) {
+            curSelection.buildTower = undefined;
+          }
         }
         break;
       }
-      case 'tower': {
-        if (!newSelection.equals(curSelection.tower)) {
-          curSelection.tower = this.gameConfig.towers.get(newSelection.id);
+      case 'build': {
+        if (!newSelection.equals(curSelection.buildTower)) {
+          curSelection.buildTower = this.gameConfig.towers.get(newSelection.id);
         } else {
-          curSelection.tower = undefined;
+          curSelection.buildTower = undefined;
         }
         break;
       }

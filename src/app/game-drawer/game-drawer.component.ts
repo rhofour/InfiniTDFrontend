@@ -2,7 +2,7 @@ import { Component, ViewChild, Input } from '@angular/core';
 import { MatSelectionList, MatSelectionListChange } from '@angular/material/list';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { SelectionService, Selection, NewTowerSelection, GridSelection } from '../selection.service';
+import { SelectionService, Selection, NewBuildSelection, GridSelection } from '../selection.service';
 import { GameConfig, TowerConfig } from '../game-config';
 import { TowersBgState, TowerBgState } from '../battleground-state';
 import { User } from '../user';
@@ -15,7 +15,7 @@ import { LoggedInUser } from '../logged-in-user';
   styleUrls: ['./game-drawer.component.css']
 })
 export class GameDrawerComponent {
-  public selection: Selection = new Selection(undefined, undefined);
+  public selection: Selection = new Selection();
   public displayedTower?: TowerConfig;
   @Input() gameConfig!: GameConfig;
   @Input() towersState: TowersBgState = { towers: [] };
@@ -35,25 +35,19 @@ export class GameDrawerComponent {
   }
 
   updateFromSelection(selection: Selection) {
-    let newlySelectedTower = undefined;
-    if (selection.tower) {
-      newlySelectedTower = this.gameConfig.towers.get(selection.tower.id);
-    } else {
-      if (this.buildList !== undefined) {
-        this.buildList.deselectAll();
-      }
+    this.displayedTower = undefined;
+    if (selection.buildTower) {
+      this.displayedTower = selection.buildTower;
+    } else if (this.buildList !== undefined) {
+      this.buildList.deselectAll();
     }
-    if (selection.grid) {
-      let displayedTowerId = this.towersState.towers[selection.grid.row]?.[selection.grid.col]?.id;
-      if (displayedTowerId !== undefined) {
-        newlySelectedTower = this.gameConfig.towers.get(displayedTowerId);
-      }
+    if (selection.gridTower) {
+      this.displayedTower = selection.gridTower;
     }
-    this.displayedTower = newlySelectedTower;
   }
 
   selectionChange(event: MatSelectionListChange) {
-    this.selectionService.updateSelection(new NewTowerSelection(event.option.value));
+    this.selectionService.updateSelection(new NewBuildSelection(event.option.value));
   }
 
   build(loggedInUser: LoggedInUser, tower: TowerConfig, gridSel: GridSelection) {
