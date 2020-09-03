@@ -1,6 +1,7 @@
 import { async, ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { RendererComponent } from './renderer.component';
+import { mockGameConfig } from '../mock-game-config';
 
 describe('RendererComponent', () => {
   let component: RendererComponent;
@@ -16,6 +17,8 @@ describe('RendererComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(RendererComponent);
     component = fixture.componentInstance;
+    // Set mandatory inputs.
+    component.gameConfig = mockGameConfig;
     fixture.detectChanges();
   });
 

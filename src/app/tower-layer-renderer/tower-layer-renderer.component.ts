@@ -3,7 +3,6 @@ import Konva from 'konva';
 
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
 import { GameConfig, TowerConfig, ConfigImageMap } from '../game-config';
-import { GameConfigService } from '../game-config.service';
 import { TowersBgState, TowerBgState } from '../battleground-state';
 
 @Component({
@@ -17,9 +16,7 @@ export class TowerLayerRendererComponent extends BaseLayerRendererComponent impl
   @Input() state: TowersBgState | undefined;
   @Input() gameConfig!: GameConfig;
 
-  constructor(
-    private gameConfigService: GameConfigService,
-  ) { super(); }
+  constructor() { super(); }
 
   ngOnInit(): void {
     super.ngOnInit();
