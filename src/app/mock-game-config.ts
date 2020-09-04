@@ -1,10 +1,14 @@
-import { GameConfig, GameConfigData, PlayfieldConfig, TowerConfig  } from './game-config';
+import { GameConfig, GameConfigData, PlayfieldConfig, TowerConfig, MiscConfig  } from './game-config';
 
 const playfieldConfig: PlayfieldConfig = {
   numRows: 3,
   numCols: 4,
   monsterEnter: { row: 0, col: 0 },
   monsterExit: { row: 0, col: 3 },
+};
+
+const miscConfig: MiscConfig = {
+  sellMultiplier: 0.5,
 };
 
 export const mockTowerConfig0: TowerConfig = {
@@ -39,9 +43,9 @@ export const mockGameConfigData: GameConfigData = {
   tiles: [],
   towers: [ mockTowerConfig0, mockTowerConfig1 ],
   monsters: [],
+  misc: miscConfig,
 };
 
-export const mockGameConfig = new GameConfig(
-  playfieldConfig, new Map(), towersMap, new Map()
-);
+export const mockGameConfig =
+  new GameConfig(playfieldConfig, new Map(), towersMap, new Map(), miscConfig);
 

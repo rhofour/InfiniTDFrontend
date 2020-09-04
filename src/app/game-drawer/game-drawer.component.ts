@@ -22,6 +22,7 @@ export class GameDrawerComponent {
   @ViewChild(MatSelectionList) buildList?: MatSelectionList;
   // user is the user we're displaying.
   @Input() user: User | null = null;
+  Math = Math;
 
   constructor(
     private selectionService: SelectionService,
@@ -56,5 +57,9 @@ export class GameDrawerComponent {
       console.warn(err);
       this.snackBar.open(err.error);
     });
+  }
+
+  sell(loggedInUser: LoggedInUser, gridSel: GridSelection) {
+    console.log("Selling.");
   }
 }

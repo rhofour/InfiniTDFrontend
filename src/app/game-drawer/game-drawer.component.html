@@ -20,6 +20,9 @@
         [disabled]="lUser.user.gold < selection.buildTower.cost || selection.gridTower !== undefined" mat-stroked-button>
         Build ({{selection.buildTower.cost}} gold)
       </button>
+      <button *ngIf="selection.gridTower && selection.grid" (click)="sell(lUser, selection.grid)" mat-stroked-button>
+        Sell ({{Math.floor(selection.gridTower.cost * gameConfig.misc.sellMultiplier)}} gold)
+      </button>
     </ng-container>
   </div>
   <mat-divider></mat-divider>

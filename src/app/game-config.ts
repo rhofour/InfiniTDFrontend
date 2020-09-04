@@ -31,11 +31,16 @@ export interface TowerConfig {
   damage: number,
 }
 
+export interface MiscConfig {
+  sellMultiplier: number,
+}
+
 export interface GameConfigData {
   playfield: PlayfieldConfig,
   tiles: TileConfig[],
   towers: TowerConfig[],
   monsters: MonsterConfig[],
+  misc: MiscConfig,
 }
 
 export type ConfigAndImage<T> = T & { img: HTMLImageElement };
@@ -65,19 +70,21 @@ export class GameConfig {
   readonly tiles: ConfigImageMap<TileConfig>;
   readonly towers: ConfigImageMap<TowerConfig>;
   readonly monsters: ConfigImageMap<MonsterConfig>;
+  readonly misc: MiscConfig;
 
   static fromConfig(configData: GameConfigData): Promise<GameConfig> {
     return Promise.all([configArrayToMap(configData.tiles), configArrayToMap(configData.towers), configArrayToMap(configData.monsters)]).
       then(([tiles, towers, monsters]) => {
-        return new GameConfig(configData.playfield, tiles, towers, monsters);
+        return new GameConfig(configData.playfield, tiles, towers, monsters, configData.misc);
       });
   }
 
   constructor(playfield: PlayfieldConfig, tiles: ConfigImageMap<TileConfig>, towers: ConfigImageMap<TowerConfig>,
-     monsters: ConfigImageMap<MonsterConfig>) {
+     monsters: ConfigImageMap<MonsterConfig>, misc: MiscConfig) {
     this.playfield = playfield;
     this.tiles = tiles;
     this.towers = towers;
     this.monsters = monsters;
+    this.misc = misc;
   }
 }
