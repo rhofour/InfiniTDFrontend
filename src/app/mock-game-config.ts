@@ -7,7 +7,7 @@ const playfieldConfig: PlayfieldConfig = {
   monsterExit: { row: 0, col: 3 },
 };
 
-export const mockTowerConfig: TowerConfig = {
+export const mockTowerConfig0: TowerConfig = {
   id: 0,
   url: 'fake-tower-url',
   name: 'Mock Tower 0',
@@ -16,16 +16,28 @@ export const mockTowerConfig: TowerConfig = {
   damage: 3,
   range: 4,
 };
-export const mockTowerConfigWithImg =
-  {...mockTowerConfig, img: new Image()};
+export const mockTowerConfigWithImg0 =
+  {...mockTowerConfig0, img: new Image()};
+export const mockTowerConfig1: TowerConfig = {
+  id: 1,
+  url: 'fake-tower-url',
+  name: 'Mock Tower 1',
+  cost: 5,
+  firingRate: 5,
+  damage: 6,
+  range: 7,
+};
+export const mockTowerConfigWithImg1 =
+  {...mockTowerConfig1, img: new Image()};
 
 let towersMap = new Map();
-towersMap.set(0, mockTowerConfigWithImg);
+towersMap.set(0, mockTowerConfigWithImg0);
+towersMap.set(1, mockTowerConfigWithImg1);
 
 export const mockGameConfigData: GameConfigData = {
   playfield: playfieldConfig,
   tiles: [],
-  towers: [ mockTowerConfig ],
+  towers: [ mockTowerConfig0, mockTowerConfig1 ],
   monsters: [],
 };
 

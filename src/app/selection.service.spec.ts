@@ -6,7 +6,7 @@ import { of } from 'rxjs';
 import { SelectionService, Selection, NewBuildSelection, GridSelection } from './selection.service';
 import { BattlegroundStateService } from './battleground-state.service';
 import { GameConfigService } from './game-config.service';
-import { mockGameConfig, mockTowerConfigWithImg } from './mock-game-config';
+import { mockGameConfig, mockTowerConfigWithImg0, mockTowerConfigWithImg1 } from './mock-game-config';
 import { mockBattlegroundState } from './mock-battleground-state';
 
 describe('SelectionService', () => {
@@ -42,7 +42,7 @@ describe('SelectionService', () => {
     const newSelection = new NewBuildSelection(0);
     service.updateSelection(newSelection);
 
-    const expectedSelection = new Selection(mockTowerConfigWithImg, undefined, undefined);
+    const expectedSelection = new Selection(mockTowerConfigWithImg0, undefined, undefined);
     service.getSelection().subscribe(
       selection => expect(selection).toEqual(expectedSelection),
       fail
@@ -56,6 +56,121 @@ describe('SelectionService', () => {
 
     service.getSelection().subscribe(
       selection => expect(selection).toEqual(new Selection(), 'empty selection'),
+      fail
+    );
+  });
+
+  it('build selection removes gridTower selection', () => {
+    const initialSelection = new GridSelection(0, 1);
+    service.updateSelection(initialSelection);
+
+    const newSelection = new NewBuildSelection(0);
+    service.updateSelection(newSelection);
+
+    const expectedSelection = new Selection(mockTowerConfigWithImg0, undefined, undefined);
+    service.getSelection().subscribe(
+      selection => expect(selection).toEqual(expectedSelection),
+      fail
+    );
+  });
+
+  it('build selection doesn\'t remove empty grid selection', () => {
+    const initialSelection = new GridSelection(2, 2);
+    service.updateSelection(initialSelection);
+
+    const newSelection = new NewBuildSelection(0);
+    service.updateSelection(newSelection);
+
+    const expectedSelection = new Selection(mockTowerConfigWithImg0, undefined, initialSelection);
+    service.getSelection().subscribe(
+      selection => expect(selection).toEqual(expectedSelection),
+      fail
+    );
+  });
+
+  it('empty grid selection from nothing works', () => {
+    const newSelection = new GridSelection(0, 0);
+    service.updateSelection(newSelection);
+
+    const expectedSelection = new Selection(undefined, undefined, newSelection);
+    service.getSelection().subscribe(
+      selection => expect(selection).toEqual(expectedSelection),
+      fail
+    );
+  });
+
+  it('empty grid unselection from nothing works', () => {
+    const newSelection = new GridSelection(0, 0);
+    service.updateSelection(newSelection);
+    service.updateSelection(newSelection);
+
+    service.getSelection().subscribe(
+      selection => expect(selection).toEqual(new Selection()),
+      fail
+    );
+  });
+
+  it('non-empty grid selection from nothing works', () => {
+    const newSelection = new GridSelection(0, 1);
+    service.updateSelection(newSelection);
+
+    const expectedSelection = new Selection(undefined, mockTowerConfigWithImg0, newSelection);
+    service.getSelection().subscribe(
+      selection => expect(selection).toEqual(expectedSelection),
+      fail
+    );
+  });
+
+  it('non-empty grid unselection from nothing works', () => {
+    const newSelection = new GridSelection(0, 1);
+    service.updateSelection(newSelection);
+    service.updateSelection(newSelection);
+
+    service.getSelection().subscribe(
+      selection => expect(selection).toEqual(new Selection()),
+      fail
+    );
+  });
+
+  it('non-empty grid selection keeps matching build selection', () => {
+    const initialSelection = new NewBuildSelection(0);
+    service.updateSelection(initialSelection);
+
+    const newSelection = new GridSelection(0, 1);
+    service.updateSelection(newSelection);
+
+    const expectedSelection = new Selection(mockTowerConfigWithImg0, mockTowerConfigWithImg0, newSelection);
+    service.getSelection().subscribe(
+      selection => expect(selection).toEqual(expectedSelection),
+      fail
+    );
+  });
+
+  it('non-empty grid unselection keeps matching build selection', () => {
+    const initialSelection = new NewBuildSelection(0);
+    service.updateSelection(initialSelection);
+
+    const newSelection = new GridSelection(0, 1);
+    service.updateSelection(newSelection);
+    service.updateSelection(newSelection);
+
+    const expectedSelection = new Selection(mockTowerConfigWithImg0, undefined, undefined);
+    service.getSelection().subscribe(
+      selection => expect(selection).toEqual(expectedSelection),
+      fail
+    );
+  });
+
+  it('non-empty grid selection drops non-matching build selection', () => {
+    const initialSelection = new NewBuildSelection(0);
+    service.updateSelection(initialSelection);
+
+    const newSelection = new GridSelection(1, 1);
+    service.updateSelection(newSelection);
+
+    const expectedSelection = new Selection(undefined, mockTowerConfigWithImg1, newSelection);
+    service.getSelection().subscribe(
+      selection => expect(selection).toEqual(expectedSelection),
       fail
     );
   });
