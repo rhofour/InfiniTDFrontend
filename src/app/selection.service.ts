@@ -82,7 +82,7 @@ export class SelectionService implements OnDestroy {
 
   private updateGridTowerFromSelection(selection: Selection): Selection {
     if (this.battlegroundState === undefined) {
-      console.warn("SelectionService battelgroundState is undefined when updateGridTowerFromSelection is called.");
+      console.warn("SelectionService battlegroundState is undefined when updateGridTowerFromSelection is called.");
       return selection;
     }
 
