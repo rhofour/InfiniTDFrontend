@@ -184,4 +184,14 @@ export class BackendService {
     return this.authenticatedHttpWithResponse(
       loggedInUser.fbUser, url, 'post', `{"towerId": ${towerId}}`);
   }
+
+  sell(loggedInUser: LoggedInUser, gridSel: GridSelection): Promise<Object> {
+    const name = loggedInUser?.user?.name;
+    if (name === undefined) {
+      return Promise.reject(new Error("Cannot sell for user who is not registered."));
+    }
+    const url = `${environment.serverAddress}/sell/${name}/${gridSel.row}/${gridSel.col}`;
+    return this.authenticatedHttpWithResponse(
+      loggedInUser.fbUser, url, 'delete');
+  }
 }

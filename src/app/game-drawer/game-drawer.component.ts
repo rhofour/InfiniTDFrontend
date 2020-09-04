@@ -60,6 +60,10 @@ export class GameDrawerComponent {
   }
 
   sell(loggedInUser: LoggedInUser, gridSel: GridSelection) {
-    console.log("Selling.");
+    this.backend.sell(loggedInUser, gridSel).catch((err) => {
+      console.warn("Selling error:");
+      console.warn(err);
+      this.snackBar.open(err.error);
+    });
   }
 }
