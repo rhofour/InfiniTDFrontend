@@ -1,4 +1,4 @@
-export interface CellPos { row: number, col: number }
+import { CellPos } from './types';
 
 export interface TileConfig {
   id: number,

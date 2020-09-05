@@ -1,8 +1,9 @@
 import { Component, OnInit, OnChanges, Input, SimpleChanges } from '@angular/core';
 import Konva from 'konva';
 
+import { CellPos } from '../types';
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
-import { GameConfig, TileConfig, ConfigImageMap, CellPos } from '../game-config';
+import { GameConfig, TileConfig, ConfigImageMap } from '../game-config';
 import { SelectionService, GridSelection } from '../selection.service';
 import { TowersBgState, TowerBgState } from '../battleground-state';
 

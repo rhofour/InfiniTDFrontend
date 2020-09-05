@@ -1,7 +1,8 @@
 import { JsonDecoder } from 'ts.data.json';
 
+import { CellPos } from './types';
 import { User, UsersContainer } from './user';
-import { CellPos, TileConfig, PlayfieldConfig, MonsterConfig, TowerConfig, GameConfigData, MiscConfig } from './game-config';
+import { TileConfig, PlayfieldConfig, MonsterConfig, TowerConfig, GameConfigData, MiscConfig } from './game-config';
 import { TowerBgState, TowersBgState, BattlegroundState } from './battleground-state';
 
 export const user = JsonDecoder.object<User>(
