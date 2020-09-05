@@ -1,18 +1,21 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, OnChanges, Input, SimpleChanges } from '@angular/core';
 import Konva from 'konva';
 
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
-import { GameConfig, TileConfig, ConfigImageMap } from '../game-config';
+import { GameConfig, TileConfig, ConfigImageMap, CellPos } from '../game-config';
 import { SelectionService, GridSelection } from '../selection.service';
+import { TowersBgState, TowerBgState } from '../battleground-state';
 
 @Component({
   selector: 'app-background-layer-renderer',
   template: ``,
 })
-export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent implements OnInit {
+export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent implements OnInit, OnChanges {
   private rows = 0;
   private cols = 0;
   private tilesConfig!: ConfigImageMap<TileConfig>;
+  private pathTiles: Set<string> = new Set(['0_0', '1_0']);
+  @Input() towersState: TowersBgState | undefined;
   @Input() gameConfig!: GameConfig;
 
   constructor(
@@ -36,12 +39,25 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
     this.render();
   }
 
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.towersState) {
+      this.updatePath();
+      this.render();
+    }
+  }
+
+  updatePath() {
+    return;
+  }
+
   render() {
+    console.log(this.pathTiles);
     this.layer.destroyChildren();
     for (let row = 0; row < this.rows; row++) {
       for (let col = 0; col < this.cols; col++) {
-        const tileId = 0; // Later replace with background / path logic.
+        const tileId = this.pathTiles.has(row + '_' + col) ? 1 : 0;
         const tile = this.tilesConfig.get(tileId);
+        //console.log('row ' + row + ' col ' + col + ' = ' + tileId);
 
         if (tile) {
           let tileImg = new Konva.Image({

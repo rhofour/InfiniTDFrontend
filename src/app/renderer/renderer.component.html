@@ -1,4 +1,5 @@
-<app-background-layer-renderer [stage]="stage" [gameConfig]="gameConfig" [cellSize]="cellSize">
+<app-background-layer-renderer [stage]="stage" [gameConfig]="gameConfig"
+  [towersState]="state?.towers" [cellSize]="cellSize">
 </app-background-layer-renderer>
 <app-tower-layer-renderer *ngIf="state" [gameConfig]="gameConfig"
   [state]="state.towers" [stage]="stage" [cellSize]="cellSize">
