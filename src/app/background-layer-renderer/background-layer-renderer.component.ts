@@ -5,6 +5,7 @@ import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-re
 import { GameConfig, TileConfig, ConfigImageMap } from '../game-config';
 import { SelectionService, GridSelection } from '../selection.service';
 import { TowersBgState, TowerBgState } from '../battleground-state';
+import { findShortestPaths } from '../path';
 
 @Component({
   selector: 'app-background-layer-renderer',
@@ -47,17 +48,28 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
   }
 
   updatePath() {
-    return;
+    if (this.towersState === undefined) {
+      return;
+    }
+
+    this.pathTiles.clear();
+    let paths = findShortestPaths(
+      this.towersState,
+      this.gameConfig.playfield.monsterEnter,
+      this.gameConfig.playfield.monsterExit);
+    for (const path of paths) {
+      for (const cell of path) {
+        this.pathTiles.add(cell.row + '_' + cell.col);
+      }
+    }
   }
 
   render() {
-    console.log(this.pathTiles);
     this.layer.destroyChildren();
     for (let row = 0; row < this.rows; row++) {
       for (let col = 0; col < this.cols; col++) {
         const tileId = this.pathTiles.has(row + '_' + col) ? 1 : 0;
         const tile = this.tilesConfig.get(tileId);
-        //console.log('row ' + row + ' col ' + col + ' = ' + tileId);
 
         if (tile) {
           let tileImg = new Konva.Image({
