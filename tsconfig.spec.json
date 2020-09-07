@@ -5,7 +5,8 @@
     "outDir": "./out-tsc/spec",
     "types": [
       "jasmine",
-      "resize-observer-browser"
+      "resize-observer-browser",
+      "node"
     ]
   },
   "files": [
