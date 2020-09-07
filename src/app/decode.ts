@@ -44,6 +44,10 @@ export const playfieldConfig = JsonDecoder.object<PlayfieldConfig>(
     numCols: JsonDecoder.number,
     monsterEnter: cellPos,
     monsterExit: cellPos,
+    backgroundId: JsonDecoder.number,
+    pathId: JsonDecoder.number,
+    pathStartId: JsonDecoder.number,
+    pathEndId: JsonDecoder.number,
   },
   'PlayfieldConfig');
 

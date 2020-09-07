@@ -10,6 +10,10 @@ export interface PlayfieldConfig {
   numCols: number,
   monsterEnter: CellPos,
   monsterExit: CellPos,
+  backgroundId: number,
+  pathId: number,
+  pathStartId: number,
+  pathEndId: number,
 }
 
 export interface MonsterConfig {

@@ -6,6 +6,10 @@ const playfieldConfig: PlayfieldConfig = {
   numCols: 4,
   monsterEnter: new CellPos(0, 0),
   monsterExit: new CellPos(0, 3),
+  backgroundId: 0,
+  pathId: 0,
+  pathStartId: 0,
+  pathEndId: 0,
 };
 
 const miscConfig: MiscConfig = {

@@ -1,6 +1,7 @@
 import { Component, OnInit, OnChanges, Input, SimpleChanges } from '@angular/core';
 import Konva from 'konva';
 
+import { CellPos } from '../types';
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
 import { GameConfig, TileConfig, ConfigImageMap } from '../game-config';
 import { SelectionService, GridSelection } from '../selection.service';
@@ -59,7 +60,7 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
       this.gameConfig.playfield.monsterExit);
     for (const path of paths) {
       for (const cell of path) {
-        this.pathTiles.add(cell.row + '_' + cell.col);
+        this.pathTiles.add(cell.toStrKey());
       }
     }
   }
@@ -68,7 +69,18 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
     this.layer.destroyChildren();
     for (let row = 0; row < this.rows; row++) {
       for (let col = 0; col < this.cols; col++) {
-        const tileId = this.pathTiles.has(row + '_' + col) ? 1 : 0;
+        const cellPos = new CellPos(row, col);
+
+        var tileId;
+        if (this.gameConfig.playfield.monsterEnter.equals(cellPos)) {
+          tileId = this.gameConfig.playfield.pathStartId;
+        } else if(this.gameConfig.playfield.monsterExit.equals(cellPos)) {
+          tileId = this.gameConfig.playfield.pathEndId;
+        } else if(this.pathTiles.has(cellPos.toStrKey())) {
+          tileId = this.gameConfig.playfield.pathId;
+        } else {
+          tileId = this.gameConfig.playfield.backgroundId;
+        }
         const tile = this.tilesConfig.get(tileId);
 
         if (tile) {
