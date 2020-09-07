@@ -17,7 +17,8 @@
     <ng-container *ngIf="lUser.user && lUser.user.name === user?.name">
       <button *ngIf="selection.buildTower && selection.grid"
         (click)="build(lUser, selection.buildTower, selection.grid)"
-        [disabled]="lUser.user.gold < selection.buildTower.cost || selection.gridTower !== undefined" mat-stroked-button>
+        [disabled]="lUser.user.gold < selection.buildTower.cost || selection.gridTower !== undefined || wouldBlockPath(selection.grid)"
+        mat-stroked-button>
         Build ({{selection.buildTower.cost}} gold)
       </button>
       <button *ngIf="selection.gridTower && selection.grid" (click)="sell(lUser, selection.grid)" mat-stroked-button>

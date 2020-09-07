@@ -1,6 +1,7 @@
 import { Component, ViewChild, Input } from '@angular/core';
 import { MatSelectionList, MatSelectionListChange } from '@angular/material/list';
 import { MatSnackBar } from '@angular/material/snack-bar';
+const clone = require('rfdc')()
 
 import { SelectionService, Selection, NewBuildSelection, GridSelection } from '../selection.service';
 import { GameConfig, TowerConfig } from '../game-config';
@@ -8,6 +9,7 @@ import { TowersBgState, TowerBgState } from '../battleground-state';
 import { User } from '../user';
 import { BackendService } from '../backend.service';
 import { LoggedInUser } from '../logged-in-user';
+import { findShortestPaths } from '../path';
 
 @Component({
   selector: 'app-game-drawer',
@@ -65,5 +67,17 @@ export class GameDrawerComponent {
       console.warn(err);
       this.snackBar.open(err.error);
     });
+  }
+
+  wouldBlockPath(selection: GridSelection): boolean {
+    // Make a deep enough copy of the state
+    let possibleTowers: TowersBgState = clone(this.towersState);
+    // Which tower is placed is unimportant.
+    possibleTowers.towers[selection.row][selection.col] = { id: 0 };
+    const paths = findShortestPaths(
+      possibleTowers,
+      this.gameConfig.playfield.monsterEnter,
+      this.gameConfig.playfield.monsterExit);
+    return paths.length === 0;
   }
 }
