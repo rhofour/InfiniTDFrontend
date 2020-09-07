@@ -1,24 +1,16 @@
 import { CellPos } from './types';
 import { TowersBgState } from './battleground-state';
 
-function cellToStr(cell: CellPos): string {
-  return cell.row + '_' + cell.col;
-}
-
-function cellPosEquals(c1: CellPos, c2: CellPos): boolean {
-  return c1.row === c2.row && c1.col === c2.col;
-}
-
 export function findShortestPaths(towers: TowersBgState, start: CellPos, end: CellPos): CellPos[][] {
   const rows = towers.towers.length;
   const cols = towers.towers[0].length;
 
   function getNeighbors(pos: CellPos): CellPos[] {
     let res = []
-    if (pos.row > 0) { res.push({ row: pos.row - 1, col: pos.col }); }
-    if (pos.row < rows - 1) { res.push({ row: pos.row + 1, col: pos.col }); }
-    if (pos.col > 0) { res.push({ row: pos.row, col: pos.col - 1 }); }
-    if (pos.col < cols - 1) { res.push({ row: pos.row, col: pos.col + 1 }); }
+    if (pos.row > 0) { res.push(new CellPos(pos.row - 1, pos.col)); }
+    if (pos.row < rows - 1) { res.push(new CellPos(pos.row + 1, pos.col)); }
+    if (pos.col > 0) { res.push(new CellPos(pos.row, pos.col - 1)); }
+    if (pos.col < cols - 1) { res.push(new CellPos(pos.row, pos.col + 1)); }
     return res;
   }
 
@@ -31,7 +23,7 @@ export function findShortestPaths(towers: TowersBgState, start: CellPos, end: Ce
     }
   }
 
-  if (occupiedOrSeen.has(cellToStr(start))) {
+  if (occupiedOrSeen.has(start.toStrKey())) {
     return [];
   }
 
@@ -42,13 +34,13 @@ export function findShortestPaths(towers: TowersBgState, start: CellPos, end: Ce
     let newlySeen: Set<string> = new Set();
     for (const partialPath of paths) {
       const pathEnd: CellPos = partialPath[partialPath.length - 1];
-      newlySeen.add(cellToStr(pathEnd));
-      if (cellPosEquals(pathEnd, end)) {
+      newlySeen.add(pathEnd.toStrKey());
+      if (pathEnd.equals(end)) {
         finalPaths.push(partialPath);
         continue;
       }
       for (const neighbor of getNeighbors(pathEnd)) {
-        if (!occupiedOrSeen.has(cellToStr(neighbor))) {
+        if (!occupiedOrSeen.has(neighbor.toStrKey())) {
           newPaths.push(partialPath.concat([neighbor]));
         }
       }

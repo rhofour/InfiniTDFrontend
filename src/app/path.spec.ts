@@ -16,7 +16,7 @@ describe('findShortestPaths', () => {
     };
 
     const paths = findShortestPaths(
-      towersBgState, { row: 0, col: 0 }, { row: 1, col: 1 });
+      towersBgState, new CellPos(0, 0), new CellPos(1, 1));
 
     expect(paths).toEqual([]);
   });
@@ -29,7 +29,7 @@ describe('findShortestPaths', () => {
     };
 
     const paths = findShortestPaths(
-      towersBgState, { row: 0, col: 0 }, { row: 1, col: 1 });
+      towersBgState, new CellPos(0, 0), new CellPos(1, 1));
 
     expect(paths).toEqual([]);
   });
@@ -42,7 +42,7 @@ describe('findShortestPaths', () => {
     };
 
     const paths = findShortestPaths(
-      towersBgState, { row: 0, col: 0 }, { row: 1, col: 1 });
+      towersBgState, new CellPos(0, 0), new CellPos(1, 1));
 
     expect(paths).toEqual([]);
   });
@@ -54,9 +54,9 @@ describe('findShortestPaths', () => {
     };
 
     const paths = findShortestPaths(
-      towersBgState, { row: 0, col: 0 }, { row: 0, col: 1 });
+      towersBgState, new CellPos(0, 0), new CellPos(0, 1));
 
-    expect(paths).toEqual([[ { row: 0, col: 0 }, { row: 0, col: 1 } ]]);
+    expect(paths).toEqual([[ new CellPos(0, 0), new CellPos(0, 1) ]]);
   });
 
   it('multistep path', () => {
@@ -67,10 +67,10 @@ describe('findShortestPaths', () => {
     };
 
     const paths = findShortestPaths(
-      towersBgState, { row: 0, col: 0 }, { row: 0, col: 2 });
+      towersBgState, new CellPos(0, 0), new CellPos(0, 2));
 
     expect(paths).toEqual([
-      [ { row: 0, col: 0 }, { row: 1, col: 0 }, { row: 1, col: 1 }, { row: 1, col: 2 }, { row: 0, col: 2 } ]
+      [ new CellPos(0, 0), new CellPos(1, 0), new CellPos(1, 1), new CellPos(1, 2), new CellPos(0, 2) ]
     ]);
   });
 
@@ -82,11 +82,11 @@ describe('findShortestPaths', () => {
     };
 
     const paths = findShortestPaths(
-      towersBgState, { row: 0, col: 0 }, { row: 2, col: 2 });
+      towersBgState, new CellPos(0, 0), new CellPos(2, 2));
 
     expect(paths).toEqual(jasmine.arrayWithExactContents([
-      [ { row: 0, col: 0 }, { row: 0, col: 1 }, { row: 0, col: 2 }, { row: 1, col: 2 }, { row: 2, col: 2 } ],
-      [ { row: 0, col: 0 }, { row: 1, col: 0 }, { row: 2, col: 0 }, { row: 2, col: 1 }, { row: 2, col: 2 } ],
+      [ new CellPos(0, 0), new CellPos(0, 1), new CellPos(0, 2), new CellPos(1, 2), new CellPos(2, 2) ],
+      [ new CellPos(0, 0), new CellPos(1, 0), new CellPos(2, 0), new CellPos(2, 1), new CellPos(2, 2) ],
     ]));
   });
 
@@ -98,7 +98,7 @@ describe('findShortestPaths', () => {
     };
 
     const paths = findShortestPaths(
-      towersBgState, { row: 0, col: 0 }, { row: 2, col: 2 });
+      towersBgState, new CellPos(0, 0), new CellPos(2, 2));
 
     expect(paths.length).toEqual(6);
   });

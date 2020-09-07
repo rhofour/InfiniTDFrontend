@@ -1,10 +1,11 @@
+import { CellPos } from './types';
 import { GameConfig, GameConfigData, PlayfieldConfig, TowerConfig, MiscConfig  } from './game-config';
 
 const playfieldConfig: PlayfieldConfig = {
   numRows: 3,
   numCols: 4,
-  monsterEnter: { row: 0, col: 0 },
-  monsterExit: { row: 0, col: 3 },
+  monsterEnter: new CellPos(0, 0),
+  monsterExit: new CellPos(0, 3),
 };
 
 const miscConfig: MiscConfig = {

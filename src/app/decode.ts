@@ -1,6 +1,6 @@
 import { JsonDecoder } from 'ts.data.json';
 
-import { CellPos } from './types';
+import { CellPos, CellPosData } from './types';
 import { User, UsersContainer } from './user';
 import { TileConfig, PlayfieldConfig, MonsterConfig, TowerConfig, GameConfigData, MiscConfig } from './game-config';
 import { TowerBgState, TowersBgState, BattlegroundState } from './battleground-state';
@@ -21,12 +21,15 @@ export const usersContainer = JsonDecoder.object<UsersContainer>(
   },
   'UserContainer');
 
-export const cellPos = JsonDecoder.object<CellPos>(
+export const cellPosData = JsonDecoder.object<CellPosData>(
   {
     row: JsonDecoder.number,
     col: JsonDecoder.number,
   },
-  'CellPos');
+  'CellPosData');
+
+export const cellPos = cellPosData.map<CellPos>(
+  data => new CellPos(data.row, data.col));
 
 export const tileConfig = JsonDecoder.object<TileConfig>(
   {
