@@ -12,6 +12,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatExpansionModule } from '@angular/material/expansion';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -58,6 +59,7 @@ import { GameDrawerComponent } from './game-drawer/game-drawer.component';
     MatDividerModule,
     MatListModule,
     MatSnackBarModule,
+    MatExpansionModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,6 +1,7 @@
 import { Component, ViewChild, Input } from '@angular/core';
 import { MatSelectionList, MatSelectionListChange } from '@angular/material/list';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import {MatExpansionModule} from '@angular/material/expansion';
 const clone = require('rfdc')()
 
 import { SelectionService, Selection, NewBuildSelection, GridSelection } from '../selection.service';
@@ -14,7 +15,7 @@ import { findShortestPaths } from '../path';
 @Component({
   selector: 'app-game-drawer',
   templateUrl: './game-drawer.component.html',
-  styleUrls: ['./game-drawer.component.css']
+  styleUrls: ['./game-drawer.component.css'],
 })
 export class GameDrawerComponent {
   public selection: Selection = new Selection();

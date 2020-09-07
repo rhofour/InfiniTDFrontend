@@ -28,9 +28,18 @@
   </div>
   <mat-divider></mat-divider>
 </div>
-<div *ngIf="backend.getLoggedInUser() | async as lUser">
-  <div *ngIf="lUser.user && lUser.user.name === user?.name">
-    <h1>Towers</h1>
+<mat-expansion-panel>
+  <mat-expansion-panel-header>
+    <mat-panel-title> Battle </mat-panel-title>
+  </mat-expansion-panel-header>
+  CONTENT!
+</mat-expansion-panel>
+<ng-container *ngIf="backend.getLoggedInUser() | async as lUser">
+  <mat-expansion-panel *ngIf="lUser.user && lUser.user.name === user?.name">
+    <mat-expansion-panel-header>
+      <mat-panel-title> Build </mat-panel-title>
+    </mat-expansion-panel-header>
+
     <mat-selection-list id="buildList" [multiple]="false"
         (selectionChange)="selectionChange($event)">
       <mat-list-option *ngFor="let tower of gameConfig.towers | keyvalue"
@@ -40,5 +49,11 @@
         <span style="font-weight: lighter">Cost: {{tower.value.cost}}</span>
       </mat-list-option>
     </mat-selection-list>
-  </div>
-</div>
+  </mat-expansion-panel>
+</ng-container>
+<mat-expansion-panel>
+  <mat-expansion-panel-header>
+    <mat-panel-title> Wave </mat-panel-title>
+  </mat-expansion-panel-header>
+  CONTENT!
+</mat-expansion-panel>
