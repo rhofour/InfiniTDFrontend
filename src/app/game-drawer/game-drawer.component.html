@@ -32,8 +32,26 @@
   <mat-expansion-panel-header>
     <mat-panel-title> Battle </mat-panel-title>
   </mat-expansion-panel-header>
-  CONTENT!
+  <ng-container *ngIf="backend.getLoggedInUser() | async as lUser; else otherUser">
+    <ng-container *ngIf="lUser.user && lUser.user.name === user?.name; else otherUser">
+      <button *ngIf="!inBattle" (click)="inBattle=true" mat-stroked-button>
+        Start battle
+      </button>
+      <button *ngIf="inBattle" (click)="inBattle=false" mat-stroked-button>
+        Stop battle
+      </button>
+    </ng-container>
+  </ng-container>
+  <ng-template #otherUser>
+    <button *ngIf="!inBattle" mat-stroked-button>
+      Show battle
+    </button>
+    <button *ngIf="inBattle" mat-stroked-button>
+      Stop battle
+    </button>
+  </ng-template>
 </mat-expansion-panel>
+
 <ng-container *ngIf="backend.getLoggedInUser() | async as lUser">
   <mat-expansion-panel *ngIf="lUser.user && lUser.user.name === user?.name">
     <mat-expansion-panel-header>
@@ -51,6 +69,7 @@
     </mat-selection-list>
   </mat-expansion-panel>
 </ng-container>
+
 <mat-expansion-panel>
   <mat-expansion-panel-header>
     <mat-panel-title> Wave </mat-panel-title>
