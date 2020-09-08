@@ -19,8 +19,6 @@ export class BattlegroundStateService {
       .pipe(map(resp => {
         const respEvent = resp as MessageEvent;
         const data = JSON.parse(respEvent.data);
-        console.log("Recieved new battleground state:");
-        console.log(data);
         let decoded = decoders.battlegroundState.decode(data);
         if (decoded.isOk()) {
           return decoded.value;
