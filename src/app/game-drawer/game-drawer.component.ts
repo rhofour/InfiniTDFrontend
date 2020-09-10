@@ -20,6 +20,7 @@ import { findShortestPaths } from '../path';
 export class GameDrawerComponent {
   public selection: Selection = new Selection();
   public displayedTower?: TowerConfig;
+  public inBattle: boolean = false;
   @Input() gameConfig!: GameConfig;
   @Input() towersState: TowersBgState = { towers: [] };
   @ViewChild(MatSelectionList) buildList?: MatSelectionList;
