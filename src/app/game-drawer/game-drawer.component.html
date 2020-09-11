@@ -28,6 +28,32 @@
   </div>
   <mat-divider></mat-divider>
 </div>
+
+<div *ngIf="displayedMonster">
+  <h1>{{displayedMonster.name}}</h1>
+  <div fxLayout=row>
+    <div>
+      <img class="selectedImg" [src]="displayedMonster.url">
+    </div>
+    <div>
+      <span class="stat">Health:</span>
+      {{displayedMonster.health}}<br />
+      <span class="stat">Speed:</span>
+      {{displayedMonster.speed}} <br />
+      <span class="stat">Bounty:</span>
+      {{displayedMonster.bounty}} <br />
+    </div>
+  </div>
+  <div *ngIf="backend.getLoggedInUser() | async as lUser">
+    <ng-container *ngIf="lUser.user && lUser.user.name === user?.name">
+      <button (click)="addToWave(lUser, displayedMonster)" mat-stroked-button>
+        Add to wave
+      </button>
+    </ng-container>
+  </div>
+  <mat-divider></mat-divider>
+</div>
+
 <mat-expansion-panel>
   <mat-expansion-panel-header>
     <mat-panel-title> Battle </mat-panel-title>
@@ -58,7 +84,7 @@
       <mat-panel-title> Build </mat-panel-title>
     </mat-expansion-panel-header>
 
-    <mat-selection-list id="buildList" [multiple]="false"
+    <mat-selection-list id="buildList" #buildList [multiple]="false"
         (selectionChange)="buildSelectionChange($event)">
       <mat-list-option *ngFor="let tower of gameConfig.towers | keyvalue"
       [value]="tower.key">
@@ -75,7 +101,7 @@
     <mat-panel-title> Wave </mat-panel-title>
   </mat-expansion-panel-header>
   <ng-container *ngIf="backend.getLoggedInUser() | async as lUser">
-    <mat-selection-list id="monsterList" [multiple]="false"
+    <mat-selection-list id="monsterList" #monsterList [multiple]="false"
         (selectionChange)="monsterSelectionChange($event)"
         *ngIf="lUser.user && lUser.user.name === user?.name">
       <mat-list-option *ngFor="let monster of gameConfig.monsters | keyvalue"

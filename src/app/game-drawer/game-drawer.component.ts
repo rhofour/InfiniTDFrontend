@@ -1,4 +1,4 @@
-import { Component, ViewChild, Input } from '@angular/core';
+import { Component, ViewChild, Input, ChangeDetectorRef } from '@angular/core';
 import { MatSelectionList, MatSelectionListChange } from '@angular/material/list';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import {MatExpansionModule} from '@angular/material/expansion';
@@ -11,6 +11,11 @@ import { User } from '../user';
 import { BackendService } from '../backend.service';
 import { LoggedInUser } from '../logged-in-user';
 import { findShortestPaths } from '../path';
+
+function hasOwnProperty<X extends {}, Y extends PropertyKey>
+  (obj: X, prop: Y): obj is X & Record<Y, unknown> {
+    return obj.hasOwnProperty(prop)
+}
 
 @Component({
   selector: 'app-game-drawer',
@@ -25,13 +30,14 @@ export class GameDrawerComponent {
   public inBattle: boolean = false;
   @Input() gameConfig!: GameConfig;
   @Input() towersState: TowersBgState = { towers: [] };
-  @ViewChild(MatSelectionList) buildList?: MatSelectionList;
-  @ViewChild(MatSelectionList) monsterList?: MatSelectionList;
+  @ViewChild('buildList') buildList?: MatSelectionList;
+  @ViewChild('monsterList') monsterList?: MatSelectionList;
   // user is the user we're displaying.
   @Input() user: User | null = null;
   Math = Math;
 
   constructor(
+    private ref: ChangeDetectorRef,
     private selectionService: SelectionService,
     private snackBar: MatSnackBar,
     public backend: BackendService,
@@ -39,6 +45,7 @@ export class GameDrawerComponent {
     selectionService.getSelection().subscribe((newSelection) => {
       this.selection = newSelection;
       this.updateFromSelection(this.selection);
+      this.ref.markForCheck();
     });
   }
 
@@ -56,10 +63,7 @@ export class GameDrawerComponent {
 
     if (selection.monster) {
       this.displayedMonster = selection.monster;
-      console.log(selection.monster);
     } else if (this.monsterList !== undefined) {
-      console.log(this.monsterList);
-      console.log("Deselecting monsters.");
       this.monsterList.deselectAll();
     }
   }
@@ -72,19 +76,33 @@ export class GameDrawerComponent {
     this.selectionService.updateSelection(new NewMonsterSelection(event.option.value));
   }
 
+
+
+  handleBackendError(actionErrDesc: string, err: Object) {
+    console.warn(actionErrDesc);
+    console.warn(err);
+    if (hasOwnProperty(err, 'message')) {
+      this.snackBar.open(`${err.message}`);
+    } else {
+      this.snackBar.open(`${err}`);
+    }
+  }
+
   build(loggedInUser: LoggedInUser, tower: TowerConfig, gridSel: GridSelection) {
     this.backend.build(loggedInUser, tower.id, gridSel).catch((err) => {
-      console.warn("Building error:");
-      console.warn(err);
-      this.snackBar.open(err.error);
+      this.handleBackendError("Building error:", err);
     });
   }
 
   sell(loggedInUser: LoggedInUser, gridSel: GridSelection) {
     this.backend.sell(loggedInUser, gridSel).catch((err) => {
-      console.warn("Selling error:");
-      console.warn(err);
-      this.snackBar.open(err.error);
+      this.handleBackendError("Selling error:", err);
+    });
+  }
+
+  addToWave(loggedInUser: LoggedInUser, monster: MonsterConfig) {
+    this.backend.addToWave(loggedInUser, monster.id).catch((err) => {
+      this.handleBackendError("Error adding to wave:", err);
     });
   }
 

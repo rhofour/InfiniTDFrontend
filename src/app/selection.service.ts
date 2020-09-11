@@ -162,7 +162,6 @@ export class SelectionService implements OnDestroy {
       }
       default: const _exhaustiveCheck: never = newSelection;
     }
-    console.log(curSelection);
     this.selection$.next(curSelection);
   }
 
