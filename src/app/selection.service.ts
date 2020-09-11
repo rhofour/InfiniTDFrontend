@@ -3,7 +3,7 @@ import { of, throwError, Observable, BehaviorSubject, Subscription } from 'rxjs'
 
 import { BattlegroundState, TowerBgState } from './battleground-state';
 import { BattlegroundStateService } from './battleground-state.service';
-import { GameConfig, TowerConfig } from './game-config';
+import { GameConfig, TowerConfig, MonsterConfig } from './game-config';
 import { GameConfigService } from './game-config.service';
 
 export class NewBuildSelection {
@@ -16,6 +16,18 @@ export class NewBuildSelection {
   }
 
   equals(other: TowerConfig | undefined) {
+    return other && this.id === other.id;
+  }
+}
+export class NewMonsterSelection {
+  kind: 'monster' = 'monster'
+  id: number
+
+  constructor(id: number) {
+    this.id = id;
+  }
+
+  equals(other: MonsterConfig | undefined) {
     return other && this.id === other.id;
   }
 }
@@ -36,11 +48,14 @@ export class GridSelection {
 }
 export class Selection {
   buildTower: TowerConfig | undefined
+  monster: MonsterConfig | undefined
   gridTower: TowerConfig | undefined
   grid: GridSelection | undefined
 
-  constructor(buildTower?: TowerConfig, gridTower?: TowerConfig, grid?: GridSelection) {
+  constructor(buildTower?: TowerConfig, monster?: MonsterConfig,
+      gridTower?: TowerConfig, grid?: GridSelection) {
     this.buildTower = buildTower; // Tower selected from the build menu
+    this.monster = monster;
     this.gridTower = gridTower; // Tower selected from the battleground
     this.grid = grid;
   }
@@ -102,7 +117,7 @@ export class SelectionService implements OnDestroy {
     return selection;
   }
 
-  updateSelection(newSelection: GridSelection | NewBuildSelection) {
+  updateSelection(newSelection: GridSelection | NewBuildSelection | NewMonsterSelection) {
     if (this.battlegroundState === undefined) {
       console.warn("SelectionService battelgroundState is undefined when updateSelection is called.");
       return;
@@ -122,6 +137,7 @@ export class SelectionService implements OnDestroy {
       case 'build': {
         if (!newSelection.equals(curSelection.buildTower)) {
           curSelection.buildTower = this.gameConfig.towers.get(newSelection.id);
+          curSelection.monster = undefined;
           // If a grid tower is currently selected deselect it.
           if (curSelection.gridTower) {
             curSelection.grid = undefined;
@@ -132,8 +148,21 @@ export class SelectionService implements OnDestroy {
         }
         break;
       }
+      case 'monster': {
+        if (!newSelection.equals(curSelection.monster)) {
+          curSelection.monster = this.gameConfig.monsters.get(newSelection.id);
+          // Remove any grid or tower selections.
+          curSelection.grid = undefined;
+          curSelection.gridTower = undefined;
+          curSelection.buildTower = undefined;
+        } else {
+          curSelection.monster = undefined;
+        }
+        break;
+      }
       default: const _exhaustiveCheck: never = newSelection;
     }
+    console.log(curSelection);
     this.selection$.next(curSelection);
   }
 

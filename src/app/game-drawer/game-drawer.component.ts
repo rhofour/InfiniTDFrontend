@@ -4,8 +4,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import {MatExpansionModule} from '@angular/material/expansion';
 const clone = require('rfdc')()
 
-import { SelectionService, Selection, NewBuildSelection, GridSelection } from '../selection.service';
-import { GameConfig, TowerConfig } from '../game-config';
+import { SelectionService, Selection, NewBuildSelection, GridSelection, NewMonsterSelection } from '../selection.service';
+import { GameConfig, TowerConfig, MonsterConfig } from '../game-config';
 import { TowersBgState, TowerBgState } from '../battleground-state';
 import { User } from '../user';
 import { BackendService } from '../backend.service';
@@ -19,11 +19,14 @@ import { findShortestPaths } from '../path';
 })
 export class GameDrawerComponent {
   public selection: Selection = new Selection();
+  // Only one of these should be set at once.
   public displayedTower?: TowerConfig;
+  public displayedMonster?: MonsterConfig;
   public inBattle: boolean = false;
   @Input() gameConfig!: GameConfig;
   @Input() towersState: TowersBgState = { towers: [] };
   @ViewChild(MatSelectionList) buildList?: MatSelectionList;
+  @ViewChild(MatSelectionList) monsterList?: MatSelectionList;
   // user is the user we're displaying.
   @Input() user: User | null = null;
   Math = Math;
@@ -41,6 +44,7 @@ export class GameDrawerComponent {
 
   updateFromSelection(selection: Selection) {
     this.displayedTower = undefined;
+    this.displayedMonster = undefined;
     if (selection.buildTower) {
       this.displayedTower = selection.buildTower;
     } else if (this.buildList !== undefined) {
@@ -49,10 +53,23 @@ export class GameDrawerComponent {
     if (selection.gridTower) {
       this.displayedTower = selection.gridTower;
     }
+
+    if (selection.monster) {
+      this.displayedMonster = selection.monster;
+      console.log(selection.monster);
+    } else if (this.monsterList !== undefined) {
+      console.log(this.monsterList);
+      console.log("Deselecting monsters.");
+      this.monsterList.deselectAll();
+    }
   }
 
-  selectionChange(event: MatSelectionListChange) {
+  buildSelectionChange(event: MatSelectionListChange) {
     this.selectionService.updateSelection(new NewBuildSelection(event.option.value));
+  }
+
+  monsterSelectionChange(event: MatSelectionListChange) {
+    this.selectionService.updateSelection(new NewMonsterSelection(event.option.value));
   }
 
   build(loggedInUser: LoggedInUser, tower: TowerConfig, gridSel: GridSelection) {

@@ -42,7 +42,7 @@ describe('SelectionService', () => {
     const newSelection = new NewBuildSelection(0);
     service.updateSelection(newSelection);
 
-    const expectedSelection = new Selection(mockTowerConfigWithImg0, undefined, undefined);
+    const expectedSelection = new Selection(mockTowerConfigWithImg0, undefined, undefined, undefined);
     service.getSelection().subscribe(
       selection => expect(selection).toEqual(expectedSelection),
       fail
@@ -67,7 +67,7 @@ describe('SelectionService', () => {
     const newSelection = new NewBuildSelection(0);
     service.updateSelection(newSelection);
 
-    const expectedSelection = new Selection(mockTowerConfigWithImg0, undefined, undefined);
+    const expectedSelection = new Selection(mockTowerConfigWithImg0, undefined, undefined, undefined);
     service.getSelection().subscribe(
       selection => expect(selection).toEqual(expectedSelection),
       fail
@@ -81,7 +81,7 @@ describe('SelectionService', () => {
     const newSelection = new NewBuildSelection(0);
     service.updateSelection(newSelection);
 
-    const expectedSelection = new Selection(mockTowerConfigWithImg0, undefined, initialSelection);
+    const expectedSelection = new Selection(mockTowerConfigWithImg0, undefined, undefined, initialSelection);
     service.getSelection().subscribe(
       selection => expect(selection).toEqual(expectedSelection),
       fail
@@ -92,7 +92,7 @@ describe('SelectionService', () => {
     const newSelection = new GridSelection(0, 0);
     service.updateSelection(newSelection);
 
-    const expectedSelection = new Selection(undefined, undefined, newSelection);
+    const expectedSelection = new Selection(undefined, undefined, undefined, newSelection);
     service.getSelection().subscribe(
       selection => expect(selection).toEqual(expectedSelection),
       fail
@@ -114,7 +114,7 @@ describe('SelectionService', () => {
     const newSelection = new GridSelection(0, 1);
     service.updateSelection(newSelection);
 
-    const expectedSelection = new Selection(undefined, mockTowerConfigWithImg0, newSelection);
+    const expectedSelection = new Selection(undefined, undefined, mockTowerConfigWithImg0, newSelection);
     service.getSelection().subscribe(
       selection => expect(selection).toEqual(expectedSelection),
       fail
@@ -139,7 +139,7 @@ describe('SelectionService', () => {
     const newSelection = new GridSelection(0, 1);
     service.updateSelection(newSelection);
 
-    const expectedSelection = new Selection(mockTowerConfigWithImg0, mockTowerConfigWithImg0, newSelection);
+    const expectedSelection = new Selection(mockTowerConfigWithImg0, undefined, mockTowerConfigWithImg0, newSelection);
     service.getSelection().subscribe(
       selection => expect(selection).toEqual(expectedSelection),
       fail
@@ -154,7 +154,7 @@ describe('SelectionService', () => {
     service.updateSelection(newSelection);
     service.updateSelection(newSelection);
 
-    const expectedSelection = new Selection(mockTowerConfigWithImg0, undefined, undefined);
+    const expectedSelection = new Selection(mockTowerConfigWithImg0, undefined, undefined, undefined);
     service.getSelection().subscribe(
       selection => expect(selection).toEqual(expectedSelection),
       fail
@@ -168,7 +168,7 @@ describe('SelectionService', () => {
     const newSelection = new GridSelection(1, 1);
     service.updateSelection(newSelection);
 
-    const expectedSelection = new Selection(undefined, mockTowerConfigWithImg1, newSelection);
+    const expectedSelection = new Selection(undefined, undefined, mockTowerConfigWithImg1, newSelection);
     service.getSelection().subscribe(
       selection => expect(selection).toEqual(expectedSelection),
       fail

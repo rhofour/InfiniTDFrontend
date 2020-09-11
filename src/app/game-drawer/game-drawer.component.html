@@ -59,11 +59,11 @@
     </mat-expansion-panel-header>
 
     <mat-selection-list id="buildList" [multiple]="false"
-        (selectionChange)="selectionChange($event)">
+        (selectionChange)="buildSelectionChange($event)">
       <mat-list-option *ngFor="let tower of gameConfig.towers | keyvalue"
       [value]="tower.key">
         <img matListAvatar [src]="tower.value.url">
-        <span >{{tower.value.name}}</span>
+        <span>{{tower.value.name}}</span>
         <span style="font-weight: lighter">Cost: {{tower.value.cost}}</span>
       </mat-list-option>
     </mat-selection-list>
@@ -74,5 +74,15 @@
   <mat-expansion-panel-header>
     <mat-panel-title> Wave </mat-panel-title>
   </mat-expansion-panel-header>
-  CONTENT!
+  <ng-container *ngIf="backend.getLoggedInUser() | async as lUser">
+    <mat-selection-list id="monsterList" [multiple]="false"
+        (selectionChange)="monsterSelectionChange($event)"
+        *ngIf="lUser.user && lUser.user.name === user?.name">
+      <mat-list-option *ngFor="let monster of gameConfig.monsters | keyvalue"
+        [value]="monster.key">
+          <img matListAvatar [src]="monster.value.url">
+          <span >{{monster.value.name}}</span>
+      </mat-list-option>
+    </mat-selection-list>
+  </ng-container>
 </mat-expansion-panel>
