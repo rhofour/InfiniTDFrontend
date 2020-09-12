@@ -200,7 +200,7 @@ export class BackendService {
     if (name === undefined) {
       return Promise.reject(new Error("Cannot add to wave for user who is not registered."));
     }
-    const url = `${environment.serverAddress}/addToWave/${name}`;
+    const url = `${environment.serverAddress}/wave/${name}`;
     return this.authenticatedHttpWithResponse(
       loggedInUser.fbUser, url, 'post', `{"monsterId": ${monsterId}}`);
   }
