@@ -5,6 +5,7 @@ import { of } from 'rxjs';
 import { GameDrawerComponent } from './game-drawer.component';
 import { SelectionService, Selection } from '../selection.service';
 import { BackendService } from '../backend.service';
+import { mockUser } from '../mock-user';
 
 describe('GameDrawerComponent', () => {
   let component: GameDrawerComponent;
@@ -33,6 +34,8 @@ describe('GameDrawerComponent', () => {
   beforeEach(() => {
     fixture = TestBed.createComponent(GameDrawerComponent);
     component = fixture.componentInstance;
+    // Set mandatory inputs.
+    component.user = mockUser;
     fixture.detectChanges();
   });
 

@@ -1,7 +1,7 @@
-import { Component, ViewChild, Input, ChangeDetectorRef } from '@angular/core';
-import { MatSelectionList, MatSelectionListChange } from '@angular/material/list';
+import { Component, OnInit, ViewChild, Input, ChangeDetectorRef } from '@angular/core';
+import { MatList, MatSelectionList, MatSelectionListChange } from '@angular/material/list';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import {MatExpansionModule} from '@angular/material/expansion';
+import { MatExpansionModule } from '@angular/material/expansion';
 const clone = require('rfdc')()
 
 import { SelectionService, Selection, NewBuildSelection, GridSelection, NewMonsterSelection } from '../selection.service';
@@ -33,7 +33,7 @@ export class GameDrawerComponent {
   @ViewChild('buildList') buildList?: MatSelectionList;
   @ViewChild('monsterList') monsterList?: MatSelectionList;
   // user is the user we're displaying.
-  @Input() user: User | null = null;
+  @Input() user!: User;
   Math = Math;
 
   constructor(
@@ -47,6 +47,12 @@ export class GameDrawerComponent {
       this.updateFromSelection(this.selection);
       this.ref.markForCheck();
     });
+  }
+
+  ngOnInit(): void {
+    if (this.user === undefined) {
+      throw Error("Input user is undefined.");
+    }
   }
 
   updateFromSelection(selection: Selection) {
@@ -66,6 +72,19 @@ export class GameDrawerComponent {
     } else if (this.monsterList !== undefined) {
       this.monsterList.deselectAll();
     }
+  }
+
+  getWave(): MonsterConfig[] {
+    let monsters: MonsterConfig[] = [];
+    for (let monsterId of this.user.wave) {
+      let monster = this.gameConfig.monsters.get(monsterId);
+      if (monster !== undefined) {
+        monsters.push(monster);
+      } else {
+        console.warn(`Unknown monster ID: ${monsterId}`);
+      }
+    }
+    return monsters;
   }
 
   buildSelectionChange(event: MatSelectionListChange) {

@@ -101,14 +101,33 @@
     <mat-panel-title> Wave </mat-panel-title>
   </mat-expansion-panel-header>
   <ng-container *ngIf="backend.getLoggedInUser() | async as lUser">
-    <mat-selection-list id="monsterList" #monsterList [multiple]="false"
-        (selectionChange)="monsterSelectionChange($event)"
-        *ngIf="lUser.user && lUser.user.name === user?.name">
-      <mat-list-option *ngFor="let monster of gameConfig.monsters | keyvalue"
-        [value]="monster.key">
-          <img matListAvatar [src]="monster.value.url">
-          <span >{{monster.value.name}}</span>
-      </mat-list-option>
-    </mat-selection-list>
+    Current wave:
+    <mat-list *ngIf="user.wave.length > 0; else emptyWave">
+      <mat-list-item *ngFor="let monster of getWave()">
+        <ng-container *ngIf="monster; else invalidMonsterId">
+          <img matListAvatar [src]="monster.url">
+          <span >{{monster.name}}</span>
+        </ng-container>
+        <ng-template #invalidMonsterId>
+          Unknown monster
+        </ng-template>
+      </mat-list-item>
+    </mat-list>
+    <button>Clear wave</button>
+    <ng-template #emptyWave>
+      Empty
+    </ng-template>
+    <ng-container *ngIf="lUser.user && lUser.user.name === user?.name">
+      <mat-divider></mat-divider>
+      Add monster:
+      <mat-selection-list id="monsterList" #monsterList [multiple]="false"
+          (selectionChange)="monsterSelectionChange($event)">
+        <mat-list-option *ngFor="let monster of gameConfig.monsters | keyvalue"
+          [value]="monster.key">
+            <img matListAvatar [src]="monster.value.url">
+            <span >{{monster.value.name}}</span>
+        </mat-list-option>
+      </mat-selection-list>
+    </ng-container>
   </ng-container>
 </mat-expansion-panel>

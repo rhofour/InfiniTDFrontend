@@ -12,6 +12,7 @@ export const user = JsonDecoder.object<User>(
     gold: JsonDecoder.number,
     goldPerMinute: JsonDecoder.number,
     inBattle: JsonDecoder.boolean,
+    wave: JsonDecoder.array<number>(JsonDecoder.number, 'number[]'),
   },
   'User');
 
