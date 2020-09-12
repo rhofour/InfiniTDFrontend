@@ -102,18 +102,23 @@
   </mat-expansion-panel-header>
   <ng-container *ngIf="backend.getLoggedInUser() | async as lUser">
     Current wave:
-    <mat-list *ngIf="user.wave.length > 0; else emptyWave">
-      <mat-list-item *ngFor="let monster of getWave()">
-        <ng-container *ngIf="monster; else invalidMonsterId">
-          <img matListAvatar [src]="monster.url">
-          <span >{{monster.name}}</span>
-        </ng-container>
-        <ng-template #invalidMonsterId>
-          Unknown monster
-        </ng-template>
-      </mat-list-item>
-    </mat-list>
-    <button>Clear wave</button>
+    <ng-container *ngIf="user.wave.length > 0; else emptyWave">
+      <mat-list>
+        <mat-list-item *ngFor="let monster of getWave()">
+          <ng-container *ngIf="monster; else invalidMonsterId">
+            <img matListAvatar [src]="monster.url">
+            <span >{{monster.name}}</span>
+          </ng-container>
+          <ng-template #invalidMonsterId>
+            Unknown monster
+          </ng-template>
+        </mat-list-item>
+      </mat-list>
+      <button [disabled]="user.inBattle" (click)="clearWave(lUser)"
+        mat-stroked-button>
+        Clear wave
+      </button>
+    </ng-container>
     <ng-template #emptyWave>
       Empty
     </ng-template>

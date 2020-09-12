@@ -125,6 +125,12 @@ export class GameDrawerComponent {
     });
   }
 
+  clearWave(loggedInUser: LoggedInUser) {
+    this.backend.clearWave(loggedInUser).catch((err) => {
+      this.handleBackendError("Error clearing wave:", err);
+    });
+  }
+
   wouldBlockPath(selection: GridSelection): boolean {
     // Make a deep enough copy of the state
     let possibleTowers: TowersBgState = clone(this.towersState);

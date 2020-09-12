@@ -204,4 +204,13 @@ export class BackendService {
     return this.authenticatedHttpWithResponse(
       loggedInUser.fbUser, url, 'post', `{"monsterId": ${monsterId}}`);
   }
+
+  clearWave(loggedInUser: LoggedInUser): Promise<Object> {
+    const name = loggedInUser?.user?.name;
+    if (name === undefined) {
+      return Promise.reject(new Error("Cannot add to wave for user who is not registered."));
+    }
+    const url = `${environment.serverAddress}/wave/${name}`;
+    return this.authenticatedHttpWithResponse(loggedInUser.fbUser, url, 'delete');
+  }
 }
