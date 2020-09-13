@@ -74,15 +74,28 @@ export class GameDrawerComponent {
     }
   }
 
-  getWave(): MonsterConfig[] {
-    let monsters: MonsterConfig[] = [];
+  getWave(): [number, MonsterConfig][] {
+    let monsters: [number, MonsterConfig][] = [];
+    let lastMonsterConfig = undefined;
+    let previousMonsters = 0;
     for (let monsterId of this.user.wave) {
       let monster = this.gameConfig.monsters.get(monsterId);
       if (monster !== undefined) {
-        monsters.push(monster);
+        if (lastMonsterConfig?.id === monsterId) {
+          previousMonsters += 1;
+        } else {
+          if (lastMonsterConfig) {
+            monsters.push([previousMonsters, lastMonsterConfig]);
+          }
+          previousMonsters = 1;
+          lastMonsterConfig = monster;
+        }
       } else {
         console.warn(`Unknown monster ID: ${monsterId}`);
       }
+    }
+    if (lastMonsterConfig) {
+      monsters.push([previousMonsters, lastMonsterConfig]);
     }
     return monsters;
   }
@@ -94,8 +107,6 @@ export class GameDrawerComponent {
   monsterSelectionChange(event: MatSelectionListChange) {
     this.selectionService.updateSelection(new NewMonsterSelection(event.option.value));
   }
-
-
 
   handleBackendError(actionErrDesc: string, err: Object) {
     console.warn(actionErrDesc);

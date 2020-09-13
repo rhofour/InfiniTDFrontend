@@ -105,10 +105,8 @@
     <ng-container *ngIf="user.wave.length > 0; else emptyWave">
       <mat-list>
         <mat-list-item *ngFor="let monster of getWave()">
-          <ng-container *ngIf="monster; else invalidMonsterId">
-            <img matListAvatar [src]="monster.url">
-            <span >{{monster.name}}</span>
-          </ng-container>
+          <img matListAvatar [src]="monster[1].url">
+          <span >{{monster[0]}} x {{monster[1].name}}</span>
           <ng-template #invalidMonsterId>
             Unknown monster
           </ng-template>
