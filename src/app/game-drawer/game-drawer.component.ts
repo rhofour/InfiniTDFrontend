@@ -17,6 +17,11 @@ function hasOwnProperty<X extends {}, Y extends PropertyKey>
     return obj.hasOwnProperty(prop)
 }
 
+interface WaveStats {
+  totalMonsters: number,
+  totalBounty: number,
+}
+
 @Component({
   selector: 'app-game-drawer',
   templateUrl: './game-drawer.component.html',
@@ -98,6 +103,21 @@ export class GameDrawerComponent {
       monsters.push([previousMonsters, lastMonsterConfig]);
     }
     return monsters;
+  }
+
+  getWaveStats(): WaveStats {
+    let stats = {
+      totalMonsters: 0,
+      totalBounty: 0,
+    }
+    for (let monsterId of this.user.wave) {
+      let monster = this.gameConfig.monsters.get(monsterId);
+      if (monster !== undefined) {
+        stats.totalMonsters += 1;
+        stats.totalBounty += monster.bounty;
+      }
+    }
+    return stats;
   }
 
   buildSelectionChange(event: MatSelectionListChange) {

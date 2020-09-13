@@ -112,6 +112,10 @@
           </ng-template>
         </mat-list-item>
       </mat-list>
+      <div *ngIf="getWaveStats() as waveStats" style="width: 0; min-width: 100%">
+        Wave contains {{waveStats.totalMonsters}} monsters with a total bounty of
+        {{waveStats.totalBounty}} gold.
+      </div>
       <button [disabled]="user.inBattle" (click)="clearWave(lUser)"
         mat-stroked-button>
         Clear wave
