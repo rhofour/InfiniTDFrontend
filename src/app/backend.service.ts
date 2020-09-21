@@ -208,9 +208,18 @@ export class BackendService {
   clearWave(loggedInUser: LoggedInUser): Promise<Object> {
     const name = loggedInUser?.user?.name;
     if (name === undefined) {
-      return Promise.reject(new Error("Cannot add to wave for user who is not registered."));
+      return Promise.reject(new Error("Cannot clear wave for user who is not registered."));
     }
     const url = `${environment.serverAddress}/wave/${name}`;
     return this.authenticatedHttpWithResponse(loggedInUser.fbUser, url, 'delete');
+  }
+
+  startBattle(loggedInUser: LoggedInUser): Promise<Object> {
+    const name = loggedInUser?.user?.name;
+    if (name === undefined) {
+      return Promise.reject(new Error("Cannot start battle for user who is not registered."));
+    }
+    const url = `${environment.serverAddress}/controlBattle/${name}`;
+    return this.authenticatedHttpWithResponse(loggedInUser.fbUser, url, 'post');
   }
 }

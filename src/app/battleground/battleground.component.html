@@ -12,7 +12,7 @@
       <mat-drawer opened mode="side" position="end">
         <app-game-drawer [user]="user" [gameConfig]="gameConfig" [towersState]="bgState.towers"></app-game-drawer>
       </mat-drawer>
-      <mat-drawer-content>
+      <mat-drawer-content *ngIf="battleState$ | async as battleState">
         <app-renderer [gameConfig]="gameConfig" [state]="bgState" fxFlex="1 1 100%">
         </app-renderer>
       </mat-drawer-content>

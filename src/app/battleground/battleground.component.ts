@@ -5,6 +5,8 @@ import { Observable, EMPTY } from 'rxjs';
 
 import { User } from '../user';
 import { UserService } from '../user.service';
+import { BattleState } from '../battle-state';
+import { BattleStateService } from '../battle-state.service';
 import { BattlegroundState } from '../battleground-state';
 import { BattlegroundStateService } from '../battleground-state.service';
 import { SelectionService } from '../selection.service';
@@ -21,12 +23,14 @@ import { GameConfigService } from '../game-config.service';
 export class BattlegroundComponent implements OnInit {
   public user$: Observable<User> = EMPTY;
   public errorMsg: string | null = null;
+  public battleState$: Observable<BattleState> = EMPTY;
   public battlegroundState$: Observable<BattlegroundState> = EMPTY;
   public gameConfig$: Observable<GameConfig>;
 
   constructor(
     private route: ActivatedRoute,
     private userService: UserService,
+    private battleStateService: BattleStateService,
     private bgStateService: BattlegroundStateService,
     private selectionService: SelectionService,
     private gameConfigService: GameConfigService,
@@ -50,6 +54,7 @@ export class BattlegroundComponent implements OnInit {
       this.selectionService.setUsername(username);
       this.user$ = this.userService.getUser(username);
       this.battlegroundState$ = this.bgStateService.getBattlegroundState(username);
+      this.battleState$ = this.battleStateService.getBattleState(username);
     } else {
       this.setError('No username provided.');
     }

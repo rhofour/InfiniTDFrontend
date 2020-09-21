@@ -60,10 +60,10 @@
   </mat-expansion-panel-header>
   <ng-container *ngIf="backend.getLoggedInUser() | async as lUser; else otherUser">
     <ng-container *ngIf="lUser.user && lUser.user.name === user?.name; else otherUser">
-      <button *ngIf="!inBattle" (click)="inBattle=true" mat-stroked-button>
+      <button *ngIf="!user.inBattle" (click)="startBattle(lUser)" mat-stroked-button>
         Start battle
       </button>
-      <button *ngIf="inBattle" (click)="inBattle=false" mat-stroked-button>
+      <button *ngIf="user.inBattle" (click)="inBattle=false" mat-stroked-button>
         Stop battle
       </button>
     </ng-container>

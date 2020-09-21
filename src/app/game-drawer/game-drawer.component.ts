@@ -173,4 +173,10 @@ export class GameDrawerComponent {
       this.gameConfig.playfield.monsterExit);
     return paths.length === 0;
   }
+
+  startBattle(loggedInUser: LoggedInUser) {
+    this.backend.startBattle(loggedInUser).catch((err) => {
+      this.handleBackendError("Error starting battle:", err);
+    });
+  }
 }
