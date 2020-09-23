@@ -4,6 +4,7 @@ import { CellPos, CellPosData } from './types';
 import { User, UsersContainer } from './user';
 import { TileConfig, PlayfieldConfig, MonsterConfig, TowerConfig, GameConfigData, MiscConfig } from './game-config';
 import { TowerBgState, TowersBgState, BattlegroundState } from './battleground-state';
+import { ObjectType, MoveEvent, DeleteEvent, BattleEvent } from './battle-state';
 
 export const user = JsonDecoder.object<User>(
   {
@@ -30,7 +31,7 @@ export const cellPosData = JsonDecoder.object<CellPosData>(
   'CellPosData');
 
 export const cellPos = cellPosData.map<CellPos>(
-  data => new CellPos(data.row, data.col));
+  (data: CellPosData) => new CellPos(data.row, data.col));
 
 export const tileConfig = JsonDecoder.object<TileConfig>(
   {
@@ -111,3 +112,28 @@ export const battlegroundState = JsonDecoder.object<BattlegroundState>(
     towers: towersBgState,
   },
   'BattlegroundState');
+
+export const objectType = JsonDecoder.enumeration<ObjectType>(ObjectType, 'ObjectType')
+
+export const moveEvent = JsonDecoder.object<MoveEvent>(
+  {
+    objType: objectType,
+    id: JsonDecoder.number,
+    configId: JsonDecoder.number,
+    startPos: cellPos,
+    endPos: cellPos,
+    startTime: JsonDecoder.number,
+    endTime: JsonDecoder.number,
+  },
+  'MoveEvent');
+
+export const deleteEvent = JsonDecoder.object<DeleteEvent>(
+  {
+    objType: objectType,
+    id: JsonDecoder.number,
+    startTime: JsonDecoder.number,
+  },
+  'DeleteEvent');
+
+export const battleEvent = JsonDecoder.oneOf<BattleEvent>(
+  [moveEvent, deleteEvent], 'BattleEvent');

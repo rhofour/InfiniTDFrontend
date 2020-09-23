@@ -1,4 +1,4 @@
-import { CellPos } from 'types'
+import { CellPos } from './types'
 
 export enum ObjectType {
   Monster,
@@ -23,6 +23,37 @@ export interface DeleteEvent {
 
 export type BattleEvent = MoveEvent | DeleteEvent
 
-export interface BattleState {
-  events: BattleEvent[]
+export interface ObjectState {
+  objType: ObjectType
+  id: number
+  pos: CellPos
+}
+
+export interface BattleUpdate {
+  objects: ObjectState[]
+  deletedIds: number[]
+}
+
+export class BattleState {
+  public running: boolean = false
+
+  private lastUpdateTime: number = 0
+  private events: BattleEvent[] = [];
+
+  processEvent(event: unknown) {
+    console.log(event);
+  }
+
+  setServerTime(time: number) {
+    console.log(`BattleState time: ${time}`);
+  }
+
+  getState(time: number): BattleUpdate {
+    this.lastUpdateTime = time;
+
+    return {
+      objects: [],
+      deletedIds: [],
+    }
+  }
 }
