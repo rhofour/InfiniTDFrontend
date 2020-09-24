@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, Input, SimpleChanges } from '@angular/core';
+import { Component, OnInit, OnChanges, Input, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import Konva from 'konva';
 
 import { CellPos } from '../types';
@@ -11,6 +11,7 @@ import { findShortestPaths } from '../path';
 @Component({
   selector: 'app-background-layer-renderer',
   template: ``,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent implements OnInit, OnChanges {
   private rows = 0;

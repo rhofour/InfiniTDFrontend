@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { Location } from '@angular/common';
 
 import { Observable, EMPTY } from 'rxjs';
@@ -14,7 +14,8 @@ interface TopLink {
 @Component({
   selector: 'app-top-bar',
   templateUrl: './top-bar.component.html',
-  styleUrls: ['./top-bar.component.css']
+  styleUrls: ['./top-bar.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TopBarComponent {
 

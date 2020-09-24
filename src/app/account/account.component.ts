@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { auth } from 'firebase/app';
 import { FormControl, Validators } from '@angular/forms';
@@ -11,6 +11,7 @@ import { LoggedInUser } from '../logged-in-user';
   selector: 'app-account',
   templateUrl: './account.component.html',
   styleUrls: ['./account.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccountComponent implements OnInit {
   loginErrorMsg = '';
