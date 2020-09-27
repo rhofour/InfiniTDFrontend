@@ -4,6 +4,7 @@ import { TowersBgState } from './battleground-state';
 export function findShortestPaths(towers: TowersBgState, start: CellPos, end: CellPos): CellPos[][] {
   const rows = towers.towers.length;
   const cols = towers.towers[0].length;
+  const numCells = rows * cols;
 
   function getNeighbors(pos: number): number[] {
     let res = []
@@ -22,16 +23,16 @@ export function findShortestPaths(towers: TowersBgState, start: CellPos, end: Ce
     return cp.row * cols + cp.col;
   }
 
-  let occupiedOrSeen: Set<number> = new Set()
+  let occupiedOrSeen: Int8Array = new Int8Array(numCells);
   for (const [row, towersRow] of towers.towers.entries()) {
     for (const [col, tower] of towersRow.entries()) {
       if (tower !== undefined) {
-        occupiedOrSeen.add((row * cols) + col)
+        occupiedOrSeen[(row * cols) + col] = 1;
       }
     }
   }
 
-  if (occupiedOrSeen.has(toNumber(start))) {
+  if (occupiedOrSeen[toNumber(start)] === 1) {
     return [];
   }
 
@@ -49,7 +50,7 @@ export function findShortestPaths(towers: TowersBgState, start: CellPos, end: Ce
         continue;
       }
       for (const neighbor of getNeighbors(pathEnd)) {
-        if (!occupiedOrSeen.has(neighbor)) {
+        if (occupiedOrSeen[neighbor] !== 1) {
           newPaths.push(partialPath.concat([neighbor]));
         }
       }
@@ -60,7 +61,7 @@ export function findShortestPaths(towers: TowersBgState, start: CellPos, end: Ce
     }
     paths = newPaths;
     for (const newPos of newlySeen) {
-      occupiedOrSeen.add(newPos);
+      occupiedOrSeen[newPos] = 1;
     }
   }
 

@@ -39,7 +39,7 @@ export class BenchmarkComponent implements OnInit {
     }
     console.log('Timing for: ' + name);
     durations.sort()
-    console.log(`Max: ${durations[durations.length-1]}ms\nMedian: ${durations[Math.floor(durations.length / 2)]}ms\nMin: ${durations[0]}ms`);
+    console.log(`Max: ${durations[durations.length-1]} ms\nMedian: ${durations[Math.floor(durations.length / 2)]} ms\nMin: ${durations[0]} ms`);
   }
 
   benchmarkPaths(): void {
