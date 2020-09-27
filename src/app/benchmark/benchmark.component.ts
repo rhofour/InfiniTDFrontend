@@ -38,8 +38,9 @@ export class BenchmarkComponent implements OnInit {
       durations[i] = measures[0].duration;
     }
     console.log('Timing for: ' + name);
-    const avg = durations.reduce((acc: number, x: number) => acc + x) / durations.length;
-    console.log(`Max: ${Math.max(...durations)}ms\nAvg: ${avg}ms\nMin: ${Math.min(...durations)}ms`);
+    durations.sort()
+    console.log(`Max: ${durations[durations.length-1]}ms\nMedian: ${durations[Math.floor(durations.length / 2)]}ms\nMin: ${durations[0]}ms`);
+    console.log(durations);
   }
 
   benchmarkPaths(): void {
