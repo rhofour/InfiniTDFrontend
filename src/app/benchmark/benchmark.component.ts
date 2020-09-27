@@ -18,6 +18,7 @@ class BenchmarkAccumulator {
   add(stats: BenchmarkStats | undefined) {
     if (stats === undefined) {
       console.warn('Recieved undefined stats.');
+      return;
     }
     this.maxs.push(stats.max);
     this.medians.push(stats.median);
