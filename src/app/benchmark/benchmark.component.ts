@@ -68,22 +68,22 @@ export class BenchmarkComponent implements OnInit {
       towers: empty15,
     };
 
-    this.benchmark('Empty 5x5 straight', 10, function() {
+    this.benchmark('Empty 5x5 straight', 25, function() {
       findShortestPaths(empty5BgState, new CellPos(0, 0), new CellPos(4, 0));
     })
-    this.benchmark('Empty 10x10 straight', 10, function() {
+    this.benchmark('Empty 10x10 straight', 25, function() {
       findShortestPaths(empty10BgState, new CellPos(0, 0), new CellPos(9, 0));
     })
-    this.benchmark('Empty 15x15 straight', 10, function() {
+    this.benchmark('Empty 15x15 straight', 25, function() {
       findShortestPaths(empty10BgState, new CellPos(0, 0), new CellPos(14, 0));
     })
-    this.benchmark('Empty 5x5 diagonal', 10, function() {
+    this.benchmark('Empty 5x5 diagonal', 25, function() {
       findShortestPaths(empty5BgState, new CellPos(0, 0), new CellPos(4, 4));
     })
-    this.benchmark('Empty 7x7 diagonal', 10, function() {
+    this.benchmark('Empty 7x7 diagonal', 25, function() {
       findShortestPaths(empty7BgState, new CellPos(0, 0), new CellPos(6, 6));
     })
-    this.benchmark('Empty 10x10 diagonal', 10, function() {
+    this.benchmark('Empty 10x10 diagonal', 25, function() {
       findShortestPaths(empty10BgState, new CellPos(0, 0), new CellPos(9, 9));
     })
     this.benchmark('Empty 12x12 diagonal', 5, function() {
