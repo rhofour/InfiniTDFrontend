@@ -29,6 +29,7 @@ import { BackgroundLayerRendererComponent } from './background-layer-renderer/ba
 import { TowerLayerRendererComponent } from './tower-layer-renderer/tower-layer-renderer.component';
 import { UiLayerRendererComponent } from './ui-layer-renderer/ui-layer-renderer.component';
 import { GameDrawerComponent } from './game-drawer/game-drawer.component';
+import { BenchmarkComponent } from './benchmark/benchmark.component';
 
 @NgModule({
   declarations: [
@@ -42,6 +43,7 @@ import { GameDrawerComponent } from './game-drawer/game-drawer.component';
     TowerLayerRendererComponent,
     UiLayerRendererComponent,
     GameDrawerComponent,
+    BenchmarkComponent,
   ],
   imports: [
     BrowserModule,
