@@ -4,6 +4,33 @@ import { CellPos } from '../types';
 import { TowersBgState } from '../battleground-state';
 import { findShortestPaths } from '../path';
 
+interface BenchmarkStats {
+  max: number,
+  median: number,
+  min: number,
+}
+
+class BenchmarkAccumulator {
+  maxs: number[] = [];
+  medians: number[] = [];
+  mins: number[] = [];
+
+  add(stats: BenchmarkStats | undefined) {
+    if (stats === undefined) {
+      console.warn('Recieved undefined stats.');
+    }
+    this.maxs.push(stats.max);
+    this.medians.push(stats.median);
+    this.mins.push(stats.min);
+  }
+
+  logCsv() {
+    console.log('Max: ' + this.maxs.join());
+    console.log('Median: ' + this.medians.join());
+    console.log('Min: ' + this.mins.join());
+  }
+}
+
 @Component({
   selector: 'app-benchmark',
   templateUrl: './benchmark.component.html',
@@ -16,7 +43,7 @@ export class BenchmarkComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  benchmark(name: string, iters: number, fn: () => void) {
+  benchmark(name: string, iters: number, fn: () => void): BenchmarkStats | undefined {
     // Cleanup existing marks and measures before starting
     performance.clearMarks();
     performance.clearMeasures();
@@ -33,13 +60,19 @@ export class BenchmarkComponent implements OnInit {
       if (measures.length !== 1) {
         console.warn(`Expected one measure named ${measureName}, found: ${measures.length}`);
         console.warn(measures);
-        return;
+        return undefined;
       }
       durations[i] = measures[0].duration;
     }
     console.log('Timing for: ' + name);
-    durations.sort()
-    console.log(`Max: ${durations[durations.length-1]} ms\nMedian: ${durations[Math.floor(durations.length / 2)]} ms\nMin: ${durations[0]} ms`);
+    durations.sort((a: number, b: number) => a - b)
+    const stats: BenchmarkStats = {
+      max: durations[durations.length-1],
+      median: durations[Math.floor(durations.length / 2)],
+      min: durations[0],
+    };
+    console.log(`Max: ${stats.max} ms\nMedian: ${stats.median} ms\nMin: ${stats.min} ms`);
+    return stats;
   }
 
   benchmarkPaths(): void {
@@ -68,27 +101,35 @@ export class BenchmarkComponent implements OnInit {
       towers: empty15,
     };
 
-    this.benchmark('Empty 5x5 straight', 25, function() {
-      findShortestPaths(empty5BgState, new CellPos(0, 0), new CellPos(4, 0));
-    })
-    this.benchmark('Empty 10x10 straight', 25, function() {
-      findShortestPaths(empty10BgState, new CellPos(0, 0), new CellPos(9, 0));
-    })
-    this.benchmark('Empty 15x15 straight', 25, function() {
-      findShortestPaths(empty10BgState, new CellPos(0, 0), new CellPos(14, 0));
-    })
-    this.benchmark('Empty 5x5 diagonal', 25, function() {
-      findShortestPaths(empty5BgState, new CellPos(0, 0), new CellPos(4, 4));
-    })
-    this.benchmark('Empty 7x7 diagonal', 25, function() {
-      findShortestPaths(empty7BgState, new CellPos(0, 0), new CellPos(6, 6));
-    })
-    this.benchmark('Empty 10x10 diagonal', 25, function() {
-      findShortestPaths(empty10BgState, new CellPos(0, 0), new CellPos(9, 9));
-    })
-    this.benchmark('Empty 12x12 diagonal', 5, function() {
-      findShortestPaths(empty12BgState, new CellPos(0, 0), new CellPos(11, 11));
-    })
+    let acc = new BenchmarkAccumulator();
+    acc.add(
+      this.benchmark('Empty 5x5 straight', 25, function() {
+        findShortestPaths(empty5BgState, new CellPos(0, 0), new CellPos(4, 0));
+      }));
+    acc.add(
+      this.benchmark('Empty 10x10 straight', 25, function() {
+        findShortestPaths(empty10BgState, new CellPos(0, 0), new CellPos(9, 0));
+      }));
+    acc.add(
+      this.benchmark('Empty 15x15 straight', 25, function() {
+        findShortestPaths(empty10BgState, new CellPos(0, 0), new CellPos(14, 0));
+      }));
+    acc.add(
+      this.benchmark('Empty 5x5 diagonal', 25, function() {
+        findShortestPaths(empty5BgState, new CellPos(0, 0), new CellPos(4, 4));
+      }));
+    acc.add(
+      this.benchmark('Empty 7x7 diagonal', 25, function() {
+        findShortestPaths(empty7BgState, new CellPos(0, 0), new CellPos(6, 6));
+      }));
+    acc.add(
+      this.benchmark('Empty 10x10 diagonal', 25, function() {
+        findShortestPaths(empty10BgState, new CellPos(0, 0), new CellPos(9, 9));
+      }));
+    acc.add(
+      this.benchmark('Empty 12x12 diagonal', 5, function() {
+        findShortestPaths(empty12BgState, new CellPos(0, 0), new CellPos(11, 11));
+      }));
+    acc.logCsv();
   }
-
 }

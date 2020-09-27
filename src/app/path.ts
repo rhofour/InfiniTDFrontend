@@ -41,10 +41,10 @@ export function findShortestPaths(towers: TowersBgState, start: CellPos, end: Ce
   const endNumber = toNumber(end);
   while (paths.length > 0) {
     let newPaths = [];
-    let newlySeen: Set<number> = new Set();
+    let newlySeen: number[] = [];
     for (const partialPath of paths) {
       const pathEnd: number = partialPath[partialPath.length - 1];
-      newlySeen.add(pathEnd);
+      newlySeen.push(pathEnd);
       if (pathEnd === endNumber) {
         finalPaths.push(partialPath);
         continue;
