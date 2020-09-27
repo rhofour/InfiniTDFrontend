@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { CellPos } from '../types';
-import { TowersBgState } from '../battleground-state';
+import { TowersBgState, TowerBgState } from '../battleground-state';
 import { findShortestPaths } from '../path';
 
 interface BenchmarkStats {
@@ -77,30 +77,34 @@ export class BenchmarkComponent implements OnInit {
   }
 
   benchmarkPaths(): void {
-    function makeEmptyArray(rows: number, cols: number) {
-      return Array(rows).fill(undefined).map((_) => Array(cols).fill(undefined));
+    function makeEmptyBgState(rows: number, cols: number): TowersBgState {
+      const arr: (TowerBgState | undefined)[][] = Array(rows).fill(undefined).map((_) => Array(cols).fill(undefined));
+      return { towers: arr };
+    }
+    function make2ColBgState(rows: number, cols: number): TowersBgState {
+      let arr = Array(rows).fill(undefined).map((_) => Array(cols).fill(undefined));
+      // Add the first column of towers.
+      for (let i = 0; i < rows - 2; i++) {
+        arr[i][1] = { id: 0 };
+      }
+      // Add the second column of towers.
+      for (let i = 1; i < rows; i++) {
+        arr[i][3] = { id: 0 };
+      }
+      // Add the bottom row.
+      for (let i = 0; i < 3; i++) {
+        arr[rows - 2][i] = { id: 0 };
+      }
+      return { towers: arr };
     }
 
-    let empty5 = makeEmptyArray(5, 5);
-    const empty5BgState: TowersBgState = {
-      towers: empty5,
-    };
-    let empty7 = makeEmptyArray(7, 7);
-    const empty7BgState: TowersBgState = {
-      towers: empty7,
-    };
-    let empty10 = makeEmptyArray(10, 10);
-    const empty10BgState: TowersBgState = {
-      towers: empty10,
-    };
-    let empty12 = makeEmptyArray(12, 12);
-    const empty12BgState: TowersBgState = {
-      towers: empty12,
-    };
-    let empty15 = makeEmptyArray(15, 15);
-    const empty15BgState: TowersBgState = {
-      towers: empty15,
-    };
+    const empty5BgState = makeEmptyBgState(5, 5);
+    const empty7BgState = makeEmptyBgState(7, 7);
+    const empty10BgState = makeEmptyBgState(10, 10);
+    const empty12BgState = makeEmptyBgState(12, 12);
+    const empty15BgState = makeEmptyBgState(15, 15);
+    const twoCol10BgState = make2ColBgState(10, 10);
+    const twoCol15BgState = make2ColBgState(15, 15);
 
     let acc = new BenchmarkAccumulator();
     acc.add(
@@ -114,6 +118,14 @@ export class BenchmarkComponent implements OnInit {
     acc.add(
       this.benchmark('Empty 15x15 straight', 25, function() {
         findShortestPaths(empty10BgState, new CellPos(0, 0), new CellPos(14, 0));
+      }));
+    acc.add(
+      this.benchmark('2 Col 10x10 straight', 25, function() {
+        findShortestPaths(twoCol10BgState, new CellPos(0, 0), new CellPos(9, 0));
+      }));
+    acc.add(
+      this.benchmark('2 Col 15x15 straight', 25, function() {
+        findShortestPaths(twoCol15BgState, new CellPos(0, 0), new CellPos(14, 0));
       }));
     acc.add(
       this.benchmark('Empty 5x5 diagonal', 25, function() {
