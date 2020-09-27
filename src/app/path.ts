@@ -7,10 +7,12 @@ export function findShortestPaths(towers: TowersBgState, start: CellPos, end: Ce
 
   function getNeighbors(pos: number): number[] {
     let res = []
-    if (pos % cols > 0) { res.push(pos - 1) };
-    if (pos % cols < cols - 1) { res.push(pos + 1) };
-    if (pos / cols >= 1) { res.push(pos - cols) };
-    if (pos / cols < rows - 1) { res.push(pos + cols) };
+    const col = pos % cols;
+    const row = pos / cols;
+    if (col > 0) { res.push(pos - 1) };
+    if (col < cols - 1) { res.push(pos + 1) };
+    if (row >= 1) { res.push(pos - cols) };
+    if (row < rows - 1) { res.push(pos + cols) };
     return res;
   }
   function toCellPos(pos: number): CellPos {
@@ -48,7 +50,6 @@ export function findShortestPaths(towers: TowersBgState, start: CellPos, end: Ce
       }
       for (const neighbor of getNeighbors(pathEnd)) {
         if (!occupiedOrSeen.has(neighbor)) {
-          // TODO: Try modifying partial path instead
           newPaths.push(partialPath.concat([neighbor]));
         }
       }
