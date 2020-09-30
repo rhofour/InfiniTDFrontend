@@ -6,6 +6,12 @@ function makeEmptyArray(rows: number, cols: number) {
   return Array(rows).fill(undefined).map((_) => Array(cols).fill(undefined));
 }
 
+function toNumberPaths(cellPosPaths: CellPos[][], numCols: number): number[][] {
+  return cellPosPaths.map(
+    (path: CellPos[]) => path.map(
+      (cp: CellPos) => cp.toNumber(numCols)));
+}
+
 describe('findShortestPaths', () => {
   it('no path', () => {
     let towers = makeEmptyArray(2, 2);
@@ -56,7 +62,9 @@ describe('findShortestPaths', () => {
     const paths = findShortestPaths(
       towersBgState, new CellPos(0, 0), new CellPos(0, 1));
 
-    expect(paths).toEqual([[ new CellPos(0, 0), new CellPos(0, 1) ]]);
+    const expectedPathsCellPos = [[ new CellPos(0, 0), new CellPos(0, 1) ]];
+    const expectedPaths = toNumberPaths(expectedPathsCellPos, 2);
+    expect(paths).toEqual(expectedPaths);
   });
 
   it('multistep path', () => {
@@ -69,9 +77,10 @@ describe('findShortestPaths', () => {
     const paths = findShortestPaths(
       towersBgState, new CellPos(0, 0), new CellPos(0, 2));
 
-    expect(paths).toEqual([
+    const expectedPathsCellPos = [
       [ new CellPos(0, 0), new CellPos(1, 0), new CellPos(1, 1), new CellPos(1, 2), new CellPos(0, 2) ]
-    ]);
+    ];
+    expect(paths).toEqual(toNumberPaths(expectedPathsCellPos, 3));
   });
 
   it('multiple paths', () => {
@@ -84,10 +93,11 @@ describe('findShortestPaths', () => {
     const paths = findShortestPaths(
       towersBgState, new CellPos(0, 0), new CellPos(2, 2));
 
-    expect(paths).toEqual(jasmine.arrayWithExactContents([
+    const expectedPathsCellPos = [
       [ new CellPos(0, 0), new CellPos(0, 1), new CellPos(0, 2), new CellPos(1, 2), new CellPos(2, 2) ],
       [ new CellPos(0, 0), new CellPos(1, 0), new CellPos(2, 0), new CellPos(2, 1), new CellPos(2, 2) ],
-    ]));
+    ];
+    expect(paths).toEqual(jasmine.arrayWithExactContents(toNumberPaths(expectedPathsCellPos, 3)));
   });
 
   it('many paths', () => {

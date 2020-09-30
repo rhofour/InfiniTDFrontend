@@ -1,69 +1,107 @@
 import { CellPos } from './types';
 import { TowersBgState } from './battleground-state';
 
-export function findShortestPaths(towers: TowersBgState, start: CellPos, end: CellPos): CellPos[][] {
-  const rows = towers.towers.length;
-  const cols = towers.towers[0].length;
-  const numCells = rows * cols;
+export const findShortestPaths = (function() {
+  // Memoization data
+  let cache: Map<string, number[][]> = new Map();
+  let cachedStart: number | undefined = undefined;
+  let cachedEnd: number | undefined = undefined;
+  let cachedWidth: number | undefined = undefined;
+  let cachedHeight: number | undefined = undefined;
 
-  function getNeighbors(pos: number): number[] {
-    let res = []
-    const col = pos % cols;
-    const row = pos / cols;
-    if (col > 0) { res.push(pos - 1) };
-    if (col < cols - 1) { res.push(pos + 1) };
-    if (row >= 1) { res.push(pos - cols) };
-    if (row < rows - 1) { res.push(pos + cols) };
-    return res;
-  }
-  function toCellPos(pos: number): CellPos {
-    return new CellPos(Math.floor(pos / cols), pos % cols);
-  }
-  function toNumber(cp: CellPos): number {
-    return cp.row * cols + cp.col;
-  }
+  function innerFunction(towers: TowersBgState, start: CellPos, end: CellPos, memoized: boolean = true): number[][] {
+    const numRows = towers.towers.length;
+    const numCols = towers.towers[0].length;
+    const numCells = numRows * numCols;
 
-  let occupiedOrSeen: Int8Array = new Int8Array(numCells);
-  for (const [row, towersRow] of towers.towers.entries()) {
-    for (const [col, tower] of towersRow.entries()) {
-      if (tower !== undefined) {
-        occupiedOrSeen[(row * cols) + col] = 1;
-      }
+    // Helper functions
+    function getNeighbors(pos: number): number[] {
+      let res = []
+      const col = pos % numCols;
+      const row = pos / numCols;
+      if (col > 0) { res.push(pos - 1) };
+      if (col < numCols - 1) { res.push(pos + 1) };
+      if (row >= 1) { res.push(pos - numCols) };
+      if (row < numRows - 1) { res.push(pos + numCols) };
+      return res;
     }
-  }
 
-  if (occupiedOrSeen[toNumber(start)] === 1) {
-    return [];
-  }
-
-  let paths = [[ toNumber(start) ]];
-  let finalPaths = [];
-  const endNumber = toNumber(end);
-  while (paths.length > 0) {
-    let newPaths = [];
-    let newlySeen: number[] = [];
-    for (const partialPath of paths) {
-      const pathEnd: number = partialPath[partialPath.length - 1];
-      newlySeen.push(pathEnd);
-      if (pathEnd === endNumber) {
-        finalPaths.push(partialPath);
-        continue;
-      }
-      for (const neighbor of getNeighbors(pathEnd)) {
-        if (occupiedOrSeen[neighbor] !== 1) {
-          newPaths.push(partialPath.concat([neighbor]));
+    const startNumber = start.toNumber(numCols);
+    const endNumber = end.toNumber(numCols);
+    let occupiedOrSeen: Int8Array = new Int8Array(numCells);
+    let i = 0;
+    let bytes = [];
+    let x = 0;
+    for (const [row, towersRow] of towers.towers.entries()) {
+      for (const [col, tower] of towersRow.entries()) {
+        if (tower !== undefined) {
+          occupiedOrSeen[(row * numCols) + col] = 1;
+          x += Math.pow(2, i);
+        }
+        i++;
+        if (i > 15) {
+          bytes.push(x);
+          x = 0;
+          i = 0;
         }
       }
     }
+    if (i > 0) {
+      bytes.push(x);
+    }
+    let memoizationKey: string = String.fromCharCode(...bytes);
 
-    if (finalPaths.length > 0) {
-      break;
+    if (occupiedOrSeen[startNumber] === 1) {
+      return [];
     }
-    paths = newPaths;
-    for (const newPos of newlySeen) {
-      occupiedOrSeen[newPos] = 1;
+
+    // Check if we can consult our cache.
+    if (startNumber !== cachedStart || endNumber !== cachedEnd || numRows !== cachedHeight || numCols !== cachedWidth) {
+      cache = new Map();
+      cachedStart = startNumber;
+      cachedEnd = endNumber;
+      cachedHeight = numRows;
+      cachedWidth = numCols;
     }
+    if (memoized) {
+      const cachedValue = cache.get(memoizationKey);
+      if (cachedValue) {
+        return cachedValue;
+      }
+    }
+
+    let paths = [[ startNumber ]];
+    let finalPaths = [];
+    while (paths.length > 0) {
+      let newPaths = [];
+      let newlySeen: number[] = [];
+      for (const partialPath of paths) {
+        const pathEnd: number = partialPath[partialPath.length - 1];
+        newlySeen.push(pathEnd);
+        if (pathEnd === endNumber) {
+          finalPaths.push(partialPath);
+          continue;
+        }
+        for (const neighbor of getNeighbors(pathEnd)) {
+          if (occupiedOrSeen[neighbor] !== 1) {
+            newPaths.push(partialPath.concat([neighbor]));
+          }
+        }
+      }
+
+      if (finalPaths.length > 0) {
+        break;
+      }
+      paths = newPaths;
+      for (const newPos of newlySeen) {
+        occupiedOrSeen[newPos] = 1;
+      }
+    }
+
+    if (memoized) {
+      cache.set(memoizationKey, finalPaths);
+    }
+    return finalPaths;
   }
-
-  return finalPaths.map(path => path.map(toCellPos));
-}
+  return innerFunction;
+})();

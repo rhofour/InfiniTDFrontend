@@ -16,7 +16,11 @@ export class CellPos implements CellPosData {
     return this.row === other.row && this.col === other.col;
   }
 
-  toStrKey(): string {
-    return this.row + '_' + this.col;
+  toNumber(numCols: number): number {
+    return this.row * numCols + this.col;
+  }
+
+  static fromNumber(numCols: number, num: number): CellPos {
+    return new CellPos(Math.floor(num / numCols), num % numCols);
   }
 }

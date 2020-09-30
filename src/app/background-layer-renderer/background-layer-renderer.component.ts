@@ -14,10 +14,10 @@ import { findShortestPaths } from '../path';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent implements OnInit, OnChanges {
-  private rows = 0;
-  private cols = 0;
+  private numRows = 0;
+  private numCols = 0;
   private tilesConfig!: ConfigImageMap<TileConfig>;
-  private pathTiles: Set<string> = new Set(['0_0', '1_0']);
+  private pathTiles: Int8Array = new Int8Array(0);
   @Input() towersState: TowersBgState | undefined;
   @Input() gameConfig!: GameConfig;
 
@@ -32,9 +32,11 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
       throw Error("Input gameConfig is undefined.");
     }
 
-    this.rows = this.gameConfig.playfield.numRows;
-    this.cols = this.gameConfig.playfield.numCols;
+    this.numRows = this.gameConfig.playfield.numRows;
+    this.numCols = this.gameConfig.playfield.numCols;
+    this.pathTiles = new Int8Array(this.numRows * this.numCols);
     this.tilesConfig = this.gameConfig.tiles;
+    this.updatePath();
 
     // Allow the layer to listen for clicks since it will always have tiles
     // everywhere.
@@ -50,26 +52,26 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
   }
 
   updatePath() {
-    if (this.towersState === undefined) {
+    if (this.towersState === undefined || this.numCols === 0) {
       return;
     }
 
-    this.pathTiles.clear();
-    let paths = findShortestPaths(
+    this.pathTiles.fill(0);
+    const paths = findShortestPaths(
       this.towersState,
       this.gameConfig.playfield.monsterEnter,
       this.gameConfig.playfield.monsterExit);
     for (const path of paths) {
       for (const cell of path) {
-        this.pathTiles.add(cell.toStrKey());
+        this.pathTiles[cell] = 1;
       }
     }
   }
 
   render() {
     this.layer.destroyChildren();
-    for (let row = 0; row < this.rows; row++) {
-      for (let col = 0; col < this.cols; col++) {
+    for (let row = 0; row < this.numRows; row++) {
+      for (let col = 0; col < this.numCols; col++) {
         const cellPos = new CellPos(row, col);
 
         var tileId;
@@ -77,7 +79,7 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
           tileId = this.gameConfig.playfield.pathStartId;
         } else if(this.gameConfig.playfield.monsterExit.equals(cellPos)) {
           tileId = this.gameConfig.playfield.pathEndId;
-        } else if(this.pathTiles.has(cellPos.toStrKey())) {
+        } else if(this.pathTiles[cellPos.toNumber(this.numCols)] === 1) {
           tileId = this.gameConfig.playfield.pathId;
         } else {
           tileId = this.gameConfig.playfield.backgroundId;

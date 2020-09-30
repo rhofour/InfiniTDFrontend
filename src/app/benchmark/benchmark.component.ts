@@ -109,39 +109,39 @@ export class BenchmarkComponent implements OnInit {
     let acc = new BenchmarkAccumulator();
     acc.add(
       this.benchmark('Empty 5x5 straight', 25, function() {
-        findShortestPaths(empty5BgState, new CellPos(0, 0), new CellPos(4, 0));
+        findShortestPaths(empty5BgState, new CellPos(0, 0), new CellPos(4, 0), false);
       }));
     acc.add(
       this.benchmark('Empty 10x10 straight', 25, function() {
-        findShortestPaths(empty10BgState, new CellPos(0, 0), new CellPos(9, 0));
+        findShortestPaths(empty10BgState, new CellPos(0, 0), new CellPos(9, 0), false);
       }));
     acc.add(
       this.benchmark('Empty 15x15 straight', 25, function() {
-        findShortestPaths(empty10BgState, new CellPos(0, 0), new CellPos(14, 0));
+        findShortestPaths(empty10BgState, new CellPos(0, 0), new CellPos(14, 0), false);
       }));
     acc.add(
       this.benchmark('2 Col 10x10 straight', 25, function() {
-        findShortestPaths(twoCol10BgState, new CellPos(0, 0), new CellPos(9, 0));
+        findShortestPaths(twoCol10BgState, new CellPos(0, 0), new CellPos(9, 0), false);
       }));
     acc.add(
       this.benchmark('2 Col 15x15 straight', 25, function() {
-        findShortestPaths(twoCol15BgState, new CellPos(0, 0), new CellPos(14, 0));
+        findShortestPaths(twoCol15BgState, new CellPos(0, 0), new CellPos(14, 0), false);
       }));
     acc.add(
       this.benchmark('Empty 5x5 diagonal', 25, function() {
-        findShortestPaths(empty5BgState, new CellPos(0, 0), new CellPos(4, 4));
+        findShortestPaths(empty5BgState, new CellPos(0, 0), new CellPos(4, 4), false);
       }));
     acc.add(
       this.benchmark('Empty 7x7 diagonal', 25, function() {
-        findShortestPaths(empty7BgState, new CellPos(0, 0), new CellPos(6, 6));
+        findShortestPaths(empty7BgState, new CellPos(0, 0), new CellPos(6, 6), false);
       }));
     acc.add(
       this.benchmark('Empty 10x10 diagonal', 25, function() {
-        findShortestPaths(empty10BgState, new CellPos(0, 0), new CellPos(9, 9));
+        findShortestPaths(empty10BgState, new CellPos(0, 0), new CellPos(9, 9), false);
       }));
     acc.add(
       this.benchmark('Empty 12x12 diagonal', 5, function() {
-        findShortestPaths(empty12BgState, new CellPos(0, 0), new CellPos(11, 11));
+        findShortestPaths(empty12BgState, new CellPos(0, 0), new CellPos(11, 11), false);
       }));
     acc.logCsv();
   }
