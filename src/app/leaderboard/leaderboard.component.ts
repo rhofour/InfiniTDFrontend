@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { Observable, EMPTY } from 'rxjs';
 
 import { User } from '../user'
 import { BackendService } from '../backend.service'
@@ -6,19 +7,15 @@ import { BackendService } from '../backend.service'
 @Component({
   selector: 'app-leaderboard',
   templateUrl: './leaderboard.component.html',
-  styleUrls: ['./leaderboard.component.css']
+  styleUrls: ['./leaderboard.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LeaderboardComponent implements OnInit {
-  users: User[] = [];
+export class LeaderboardComponent {
+  users$: Observable<User[]> = EMPTY;
 
   constructor(
     private backend: BackendService
-  ) { }
-
-  ngOnInit(): void {
-    this.backend.getUsers().subscribe(users => {
-      this.users = users;
-    });
+  ) {
+    this.users$ = backend.getUsers();
   }
-
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Input, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
 import { MatList, MatSelectionList, MatSelectionListChange } from '@angular/material/list';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -26,6 +26,7 @@ interface WaveStats {
   selector: 'app-game-drawer',
   templateUrl: './game-drawer.component.html',
   styleUrls: ['./game-drawer.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GameDrawerComponent {
   public selection: Selection = new Selection();

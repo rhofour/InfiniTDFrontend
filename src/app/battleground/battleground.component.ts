@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import Konva from 'konva';
 import { Observable, EMPTY } from 'rxjs';
@@ -18,7 +18,8 @@ import { GameConfigService } from '../game-config.service';
   selector: 'app-battleground',
   templateUrl: './battleground.component.html',
   styleUrls: ['./battleground.component.css'],
-  providers: [SelectionService]
+  providers: [SelectionService],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BattlegroundComponent implements OnInit {
   public user$: Observable<User> = EMPTY;

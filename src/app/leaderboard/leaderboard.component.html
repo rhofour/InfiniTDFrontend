@@ -1,4 +1,4 @@
-<ul>
+<ul *ngIf="users$ | async as users">
   <ng-container *ngFor="let user of users">
     <li *ngIf="user.accumulatedGold > 0"
       routerLink="/battleground/{{user.name}}"
