@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, Input } from '@angular/core';
+import { Component, OnInit, ElementRef, Input, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import Konva from 'konva';
 
 import { GameConfig } from '../game-config';
@@ -7,7 +7,8 @@ import { BattlegroundState } from '../battleground-state';
 @Component({
   selector: 'app-renderer',
   templateUrl: './renderer.component.html',
-  styleUrls: ['./renderer.component.css']
+  styleUrls: ['./renderer.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RendererComponent implements OnInit {
   public cellSize: number = 0;
@@ -17,6 +18,7 @@ export class RendererComponent implements OnInit {
 
   constructor(
     private hostElem: ElementRef,
+    private cdRef: ChangeDetectorRef,
   ) { }
 
   ngOnInit(): void {
@@ -64,6 +66,7 @@ export class RendererComponent implements OnInit {
         height: divCellSize * this.gameConfig.playfield.numRows,
       }
       this.stage.size(newSize);
+      this.cdRef.markForCheck();
     }
   }
 }

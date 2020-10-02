@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, Input, SimpleChanges } from '@angular/core';
+import { Component, OnInit, OnChanges, Input, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import Konva from 'konva';
 
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
@@ -8,6 +8,7 @@ import { TowersBgState, TowerBgState } from '../battleground-state';
 @Component({
   selector: 'app-tower-layer-renderer',
   template: ``,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TowerLayerRendererComponent extends BaseLayerRendererComponent implements OnInit, OnChanges {
   private rows = 0;

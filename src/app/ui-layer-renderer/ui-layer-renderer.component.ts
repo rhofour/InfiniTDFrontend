@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectionStrategy } from '@angular/core';
 import Konva from 'konva';
 import { Subscription } from 'rxjs';
 
@@ -8,6 +8,7 @@ import { SelectionService, Selection } from '../selection.service';
 @Component({
   selector: 'app-ui-layer-renderer',
   template: ``,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UiLayerRendererComponent extends BaseLayerRendererComponent implements OnInit, OnDestroy {
   private selection: Selection = new Selection(undefined, undefined);
