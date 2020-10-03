@@ -30,6 +30,7 @@ import { TowerLayerRendererComponent } from './tower-layer-renderer/tower-layer-
 import { UiLayerRendererComponent } from './ui-layer-renderer/ui-layer-renderer.component';
 import { GameDrawerComponent } from './game-drawer/game-drawer.component';
 import { BenchmarkComponent } from './benchmark/benchmark.component';
+import { WouldBlockPathPipe } from './would-block-path.pipe';
 
 @NgModule({
   declarations: [
@@ -44,6 +45,7 @@ import { BenchmarkComponent } from './benchmark/benchmark.component';
     UiLayerRendererComponent,
     GameDrawerComponent,
     BenchmarkComponent,
+    WouldBlockPathPipe,
   ],
   imports: [
     BrowserModule,

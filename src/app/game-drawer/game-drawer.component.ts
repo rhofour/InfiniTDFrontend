@@ -1,8 +1,7 @@
-import { Component, OnInit, ViewChild, Input, ChangeDetectorRef, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, ChangeDetectorRef, ChangeDetectionStrategy, Pipe, PipeTransform } from '@angular/core';
 import { MatList, MatSelectionList, MatSelectionListChange } from '@angular/material/list';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatExpansionModule } from '@angular/material/expansion';
-const clone = require('rfdc')()
 
 import { SelectionService, Selection, NewBuildSelection, GridSelection, NewMonsterSelection } from '../selection.service';
 import { GameConfig, TowerConfig, MonsterConfig } from '../game-config';
@@ -10,7 +9,7 @@ import { TowersBgState, TowerBgState } from '../battleground-state';
 import { User } from '../user';
 import { BackendService } from '../backend.service';
 import { LoggedInUser } from '../logged-in-user';
-import { findShortestPaths } from '../path';
+import { WouldBlockPathPipe } from '../would-block-path.pipe';
 
 function hasOwnProperty<X extends {}, Y extends PropertyKey>
   (obj: X, prop: Y): obj is X & Record<Y, unknown> {
@@ -161,18 +160,6 @@ export class GameDrawerComponent {
     this.backend.clearWave(loggedInUser).catch((err) => {
       this.handleBackendError("Error clearing wave:", err);
     });
-  }
-
-  wouldBlockPath(selection: GridSelection): boolean {
-    // Make a deep enough copy of the state
-    let possibleTowers: TowersBgState = clone(this.towersState);
-    // Which tower is placed is unimportant.
-    possibleTowers.towers[selection.row][selection.col] = { id: 0 };
-    const paths = findShortestPaths(
-      possibleTowers,
-      this.gameConfig.playfield.monsterEnter,
-      this.gameConfig.playfield.monsterExit);
-    return paths.length === 0;
   }
 
   startBattle(loggedInUser: LoggedInUser) {
