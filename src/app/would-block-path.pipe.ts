@@ -11,7 +11,6 @@ import { findShortestPaths } from './path';
 })
 export class WouldBlockPathPipe implements PipeTransform {
   transform(selection: GridSelection, gameConfig: GameConfig, towersState: TowersBgState): boolean {
-    console.log("wouldBlockPath pipe called");
     // Make a deep enough copy of the state
     let possibleTowers: TowersBgState = clone(towersState);
     // Which tower is placed is unimportant.
