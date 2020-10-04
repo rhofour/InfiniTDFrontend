@@ -20,17 +20,17 @@ export class BattleStateService {
         const respEvent = resp as MessageEvent;
         const event = JSON.parse(respEvent.data);
         if (typeof event === 'number') {
-          battleState.setServerTime(respEvent.data);
+          return battleState.setServerTime(respEvent.data);
+        }
+        const decoded = decoders.battleEvent.decode(event);
+        if (decoded.isOk()) {
+          battleState.processEvent(decoded.value);
         } else {
-          const decoded = decoders.battleEvent.decode(event);
-          if (decoded.isOk()) {
-            battleState.processEvent(decoded.value);
-          } else {
-            throw new Error(
-              'Failed to decode data for BattleState: ' + decoded.error);
-          }
+          console.warn(event);
+          throw new Error(
+            'Failed to decode data for BattleState: ' + decoded.error);
         }
         return battleState;
-      }, new BattleState()));
+      }, new BattleState(undefined)));
   }
 }

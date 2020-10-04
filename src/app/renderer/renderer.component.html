@@ -4,5 +4,8 @@
 <app-tower-layer-renderer *ngIf="state" [gameConfig]="gameConfig"
   [state]="state.towers" [stage]="stage" [cellSize]="cellSize">
 </app-tower-layer-renderer>
+<app-battle-layer-renderer [stage]="stage" [gameConfig]="gameConfig"
+  [state]="battleState" [cellSize]="cellSize">
+</app-battle-layer-renderer>
 <app-ui-layer-renderer [stage]="stage" [cellSize]="cellSize">
 </app-ui-layer-renderer>

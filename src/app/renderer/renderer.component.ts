@@ -3,6 +3,7 @@ import Konva from 'konva';
 
 import { GameConfig } from '../game-config';
 import { BattlegroundState } from '../battleground-state';
+import { BattleState } from '../battle-state';
 
 @Component({
   selector: 'app-renderer',
@@ -14,6 +15,7 @@ export class RendererComponent implements OnInit {
   public cellSize: number = 0;
   public stage!: Konva.Stage;
   @Input() state: BattlegroundState | undefined;
+  @Input() battleState!: BattleState;
   @Input() gameConfig!: GameConfig;
 
   constructor(

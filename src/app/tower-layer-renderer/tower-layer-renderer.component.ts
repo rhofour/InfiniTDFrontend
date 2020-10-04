@@ -11,8 +11,8 @@ import { TowersBgState, TowerBgState } from '../battleground-state';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TowerLayerRendererComponent extends BaseLayerRendererComponent implements OnInit, OnChanges {
-  private rows = 0;
-  private cols = 0;
+  private numRows = 0;
+  private numCols = 0;
   private towersConfig!: ConfigImageMap<TowerConfig>;
   @Input() state: TowersBgState | undefined;
   @Input() gameConfig!: GameConfig;
@@ -26,8 +26,8 @@ export class TowerLayerRendererComponent extends BaseLayerRendererComponent impl
       throw Error("Input gameConfig is undefined.");
     }
 
-    this.rows = this.gameConfig.playfield.numRows;
-    this.cols = this.gameConfig.playfield.numCols;
+    this.numRows = this.gameConfig.playfield.numRows;
+    this.numCols = this.gameConfig.playfield.numCols;
     this.towersConfig = this.gameConfig.towers;
   }
 
@@ -43,14 +43,14 @@ export class TowerLayerRendererComponent extends BaseLayerRendererComponent impl
       console.warn("TowerLayerRendererComponent.render called while state is undefined.");
       return;
     }
-    for (let row = 0; row < this.rows; row++) {
+    for (let row = 0; row < this.numRows; row++) {
       let actualCols = this.state.towers[row]?.length;
-      if (actualCols !== this.cols) {
+      if (actualCols !== this.numCols) {
         // Exit early if our game state doesn't match our expectations.
-        console.warn("On row " + row + " expected to find " + this.cols + " cols, but instead got: " + actualCols);
+        console.warn("On row " + row + " expected to find " + this.numCols + " cols, but instead got: " + actualCols);
         return;
       }
-      for (let col = 0; col < this.cols; col++) {
+      for (let col = 0; col < this.numCols; col++) {
         const towerId = this.state.towers[row][col]?.id;
         const towerImg = towerId === undefined ? undefined : this.towersConfig.get(towerId)?.img;
         if (towerImg) {

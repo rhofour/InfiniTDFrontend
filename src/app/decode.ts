@@ -117,11 +117,12 @@ export const objectType = JsonDecoder.enumeration<ObjectType>(ObjectType, 'Objec
 
 export const moveEvent = JsonDecoder.object<MoveEvent>(
   {
+    eventType: JsonDecoder.constant('move'),
     objType: objectType,
     id: JsonDecoder.number,
     configId: JsonDecoder.number,
     startPos: cellPos,
-    endPos: cellPos,
+    destPos: cellPos,
     startTime: JsonDecoder.number,
     endTime: JsonDecoder.number,
   },
@@ -129,6 +130,7 @@ export const moveEvent = JsonDecoder.object<MoveEvent>(
 
 export const deleteEvent = JsonDecoder.object<DeleteEvent>(
   {
+    eventType: JsonDecoder.constant('delete'),
     objType: objectType,
     id: JsonDecoder.number,
     startTime: JsonDecoder.number,
