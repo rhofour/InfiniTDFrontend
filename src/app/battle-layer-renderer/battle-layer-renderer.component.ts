@@ -33,7 +33,6 @@ export class BattleLayerRendererComponent extends BaseLayerRendererComponent imp
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.state) {
-      console.log("Battle state changed.");
       this.render();
     }
   }
@@ -67,7 +66,7 @@ export class BattleLayerRendererComponent extends BaseLayerRendererComponent imp
         } else if (objState.objType === ObjectType.Projectile) {
           console.warn("Loading projectile images is currently unsupported.");
         }
-        if (rawImg !== undefined) {
+        if (rawImg === undefined) {
           console.warn("Couldn't find image for object ID: " + objState.id);
           console.warn(objState);
           continue;
@@ -81,9 +80,9 @@ export class BattleLayerRendererComponent extends BaseLayerRendererComponent imp
         });
         this.objectImgs.set(objState.id, newObjImg);
         this.layer.add(newObjImg);
-        console.log("Added ID: " + objState.id);
       }
     }
     this.layer.batchDraw();
+    requestAnimationFrame(() => { this.render(); });
   }
 }

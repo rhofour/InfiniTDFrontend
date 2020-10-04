@@ -23,4 +23,13 @@ export class CellPos implements CellPosData {
   static fromNumber(numCols: number, num: number): CellPos {
     return new CellPos(Math.floor(num / numCols), num % numCols);
   }
+
+  interpolate(otherPos: CellPos, frac: number): CellPos {
+    if (frac < 0 || frac > 1) {
+      console.warn('CellPos.interpolate got invalid frac: ' + frac);
+    }
+    const row = this.row + frac * (otherPos.row - this.row);
+    const col = this.col + frac * (otherPos.col - this.col);
+    return new CellPos(row, col);
+  }
 }

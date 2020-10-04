@@ -1,7 +1,7 @@
 import { CellPos } from './types'
 
 export enum ObjectType {
-  Monster,
+  Monster = 1,
   Projectile,
 }
 
@@ -46,16 +46,14 @@ export class BattleState {
   ) { }
 
   processEvent(event: BattleEvent) {
-    console.log(event);
     this.events.push(event);
   }
 
   setServerTime(timeSecs: number): BattleState {
-    console.log(`BattleState time: ${timeSecs}`);
     if (timeSecs < 0) {
       return new BattleState(undefined);
     } else {
-      return new BattleState(Date.now() - timeSecs * 1000, this.events);
+      return new BattleState((Date.now() / 1000) - timeSecs, this.events);
     }
   }
 
@@ -63,19 +61,55 @@ export class BattleState {
     if (this.startedTimeSecs === undefined) {
       return undefined;
     }
+    // Convert to times relative to the start of the battle.
+    const relTimeSecs = timeSecs - this.startedTimeSecs;
+    const relLastUpdateTimeSecs = this.lastUpdateTimeSecs - this.startedTimeSecs;
     this.lastUpdateTimeSecs = timeSecs;
 
     let numPastEvents = 0;
+    let deletedIds: number[] = [];
+    let objects: ObjectState[] = [];
+    let inPast: boolean = true;
     for (let i = 0; i < this.events.length; i++) {
       const event: BattleEvent = this.events[i];
+      if (event.startTime > relTimeSecs) {
+        break; // Stop when we're caught up.
+      }
+      if (event.eventType === 'delete') {
+        if (event.startTime > relLastUpdateTimeSecs) {
+          deletedIds.push(event.id);
+          if (inPast) {
+            numPastEvents++;
+          }
+        }
+      } else if(event.eventType === 'move') {
+        if (event.endTime < relTimeSecs) {
+          if (inPast) {
+            numPastEvents++;
+          }
+          continue;
+        }
+
+        inPast = false;
+        const fracTravelled = (relTimeSecs - event.startTime) / (event.endTime - event.startTime);
+        const pos = event.startPos.interpolate(event.destPos, fracTravelled);
+        const newObj: ObjectState = {
+          objType: event.objType,
+          configId: event.configId,
+          id: event.id,
+          pos: pos,
+        };
+        objects.push(newObj);
+      }
     }
+
     while (numPastEvents--) {
       this.events.shift();
     }
 
     return {
-      objects: [],
-      deletedIds: [],
+      objects: objects,
+      deletedIds: deletedIds,
     }
   }
 }
