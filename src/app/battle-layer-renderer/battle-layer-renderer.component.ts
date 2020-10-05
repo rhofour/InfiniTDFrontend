@@ -17,6 +17,7 @@ export class BattleLayerRendererComponent extends BaseLayerRendererComponent imp
   private objectImgs: Map<number, Konva.Image> = new Map();
   @Input() gameConfig!: GameConfig;
   @Input() state!: BattleState;
+  animationRequestId: number | undefined = undefined;
 
   constructor() { super(); }
 
@@ -39,6 +40,10 @@ export class BattleLayerRendererComponent extends BaseLayerRendererComponent imp
   }
 
   resetRendering() {
+    if (this.animationRequestId) {
+      cancelAnimationFrame(this.animationRequestId);
+      this.animationRequestId = undefined;
+    }
     this.objectImgs = new Map();
     this.layer.destroyChildren();
   }
@@ -46,6 +51,7 @@ export class BattleLayerRendererComponent extends BaseLayerRendererComponent imp
   render() {
     const battleUpdate: BattleUpdate | undefined = this.state.getState(Date.now() / 1000);
     if (battleUpdate === undefined) {
+      this.animationRequestId = undefined;
       return;
     }
 
@@ -88,6 +94,6 @@ export class BattleLayerRendererComponent extends BaseLayerRendererComponent imp
       }
     }
     this.layer.batchDraw();
-    requestAnimationFrame(() => { this.render(); });
+    this.animationRequestId = requestAnimationFrame(() => { this.render(); });
   }
 }
