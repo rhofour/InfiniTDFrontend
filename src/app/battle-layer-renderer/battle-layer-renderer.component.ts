@@ -33,14 +33,19 @@ export class BattleLayerRendererComponent extends BaseLayerRendererComponent imp
 
   ngOnChanges(changes: SimpleChanges) {
     if (changes.state) {
+      this.resetRendering();
       this.render();
     }
+  }
+
+  resetRendering() {
+    this.objectImgs = new Map();
+    this.layer.destroyChildren();
   }
 
   render() {
     const battleUpdate: BattleUpdate | undefined = this.state.getState(Date.now() / 1000);
     if (battleUpdate === undefined) {
-      this.layer.destroyChildren();
       return;
     }
 
