@@ -7,7 +7,7 @@ import { GameConfig, TowerConfig, ConfigImageMap } from '../game-config';
 
 @Component({
   selector: 'app-battle-layer-renderer',
-  templateUrl: './battle-layer-renderer.component.html',
+  template: ``,
   styleUrls: ['./battle-layer-renderer.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })

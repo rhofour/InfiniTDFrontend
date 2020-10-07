@@ -24,7 +24,6 @@ export class SseService {
       };
 
       return function unsubscribe() {
-        console.log("Closing event source for: " + url);
         eventSource.close();
       };
     });
