@@ -4,8 +4,8 @@ import { scan } from 'rxjs/operators';
 
 import { SseService } from './sse.service';
 import { BattleState } from './battle-state';
-import { environment } from '../environments/environment';
 import * as decoders from './decode';
+import * as backend from './backend';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +15,7 @@ export class BattleStateService {
 
   getBattleState(username: string): Observable<BattleState> {
     return this.sseService
-      .getServerSentEvent(environment.serverAddress + '/battle/' + username)
+      .getServerSentEvent(backend.address + '/battle/' + username)
       .pipe(scan((battleState: BattleState, resp: unknown) => {
         const respEvent = resp as MessageEvent;
         const event = JSON.parse(respEvent.data);

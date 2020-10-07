@@ -6,12 +6,12 @@ import { from, of, throwError, Observable, BehaviorSubject, pipe } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
 import { switchMap, map, catchError, filter, distinctUntilChanged, tap } from 'rxjs/operators';
 
-import { environment } from '../environments/environment';
 import { User, UsersContainer } from './user';
 import { GameConfig, GameConfigData } from './game-config';
 import * as decoders from './decode';
 import { LoggedInUser } from './logged-in-user';
 import { GridSelection } from './selection.service';
+import * as backend from './backend';
 
 @Injectable({
   providedIn: 'root'
@@ -67,7 +67,7 @@ export class BackendService {
         return;
       }
       // Send request to get info to build a User.
-      this.authenticatedHttp(fbUser, environment.serverAddress + '/thisUser').then((user) => {
+      this.authenticatedHttp(fbUser, backend.address + '/thisUser').then((user) => {
         let decoded = decoders.user.decode(user);
         if (decoded.isOk()) {
           console.log('Found registered user.');
@@ -104,7 +104,7 @@ export class BackendService {
   }
 
   getUser(name: string): Promise<User | undefined> {
-    return this.http.get(environment.serverAddress + '/user/' + name).toPromise()
+    return this.http.get(backend.address + '/user/' + name).toPromise()
       .then(resp => decoders.user.decodePromise(resp), (resp => {
         if (resp.status == 404) {
           console.log('User ' + name + ' not found.');
@@ -117,7 +117,7 @@ export class BackendService {
   }
 
   getUsers(): Observable<User[]> {
-    return ajax.getJSON(environment.serverAddress + '/users').pipe(
+    return ajax.getJSON(backend.address + '/users').pipe(
       map(resp => {
         // Unwrap the value.
         let decoded = decoders.usersContainer.decode(resp);
@@ -141,7 +141,7 @@ export class BackendService {
     interface IsTakenResponse {
       isTaken: boolean,
     };
-    return this.http.get<IsTakenResponse>(environment.serverAddress + '/isNameTaken/' + name).toPromise().then(resp => {
+    return this.http.get<IsTakenResponse>(backend.address + '/isNameTaken/' + name).toPromise().then(resp => {
       if (resp && resp.isTaken !== undefined && typeof resp.isTaken === 'boolean') {
         return resp.isTaken;
       }
@@ -155,7 +155,7 @@ export class BackendService {
   register(loggedInUser: LoggedInUser, name: string): Promise<string | null> {
     return this.authenticatedHttpWithResponse(
       loggedInUser.fbUser,
-      environment.serverAddress + '/register/' + name, 'post').then((resp: HttpResponse<Object>) => {
+      backend.address + '/register/' + name, 'post').then((resp: HttpResponse<Object>) => {
         if (resp.status == 201) {
           console.log('Registration successful.');
           this.updateCurrentUser();
@@ -171,7 +171,7 @@ export class BackendService {
   }
 
   getGameConfig(): Promise<GameConfigData> {
-    return this.http.get(environment.serverAddress + '/gameConfig').toPromise()
+    return this.http.get(backend.address + '/gameConfig').toPromise()
       .then((resp) => decoders.gameConfigData.decodePromise(resp));
   }
 
@@ -180,7 +180,7 @@ export class BackendService {
     if (name === undefined) {
       return Promise.reject(new Error("Cannot build for user who is not registered."));
     }
-    const url = `${environment.serverAddress}/build/${name}/${gridSel.row}/${gridSel.col}`;
+    const url = `${backend.address}/build/${name}/${gridSel.row}/${gridSel.col}`;
     return this.authenticatedHttpWithResponse(
       loggedInUser.fbUser, url, 'post', `{"towerId": ${towerId}}`);
   }
@@ -190,7 +190,7 @@ export class BackendService {
     if (name === undefined) {
       return Promise.reject(new Error("Cannot sell for user who is not registered."));
     }
-    const url = `${environment.serverAddress}/sell/${name}/${gridSel.row}/${gridSel.col}`;
+    const url = `${backend.address}/sell/${name}/${gridSel.row}/${gridSel.col}`;
     return this.authenticatedHttpWithResponse(
       loggedInUser.fbUser, url, 'delete');
   }
@@ -200,7 +200,7 @@ export class BackendService {
     if (name === undefined) {
       return Promise.reject(new Error("Cannot add to wave for user who is not registered."));
     }
-    const url = `${environment.serverAddress}/wave/${name}`;
+    const url = `${backend.address}/wave/${name}`;
     return this.authenticatedHttpWithResponse(
       loggedInUser.fbUser, url, 'post', `{"monsterId": ${monsterId}}`);
   }
@@ -210,7 +210,7 @@ export class BackendService {
     if (name === undefined) {
       return Promise.reject(new Error("Cannot clear wave for user who is not registered."));
     }
-    const url = `${environment.serverAddress}/wave/${name}`;
+    const url = `${backend.address}/wave/${name}`;
     return this.authenticatedHttpWithResponse(loggedInUser.fbUser, url, 'delete');
   }
 
@@ -219,7 +219,7 @@ export class BackendService {
     if (name === undefined) {
       return Promise.reject(new Error("Cannot start battle for user who is not registered."));
     }
-    const url = `${environment.serverAddress}/controlBattle/${name}`;
+    const url = `${backend.address}/controlBattle/${name}`;
     return this.authenticatedHttpWithResponse(loggedInUser.fbUser, url, 'post');
   }
 }
