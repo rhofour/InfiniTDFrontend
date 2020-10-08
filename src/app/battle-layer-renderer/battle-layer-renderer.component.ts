@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectionStrategy, Input, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, Input, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
 import Konva from 'konva';
 
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
@@ -11,7 +11,7 @@ import { GameConfig, TowerConfig, ConfigImageMap } from '../game-config';
   styleUrls: ['./battle-layer-renderer.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class BattleLayerRendererComponent extends BaseLayerRendererComponent implements OnInit, OnChanges {
+export class BattleLayerRendererComponent extends BaseLayerRendererComponent implements OnInit, OnChanges, OnDestroy {
   private numRows = 0;
   private numCols = 0;
   private objectImgs: Map<number, Konva.Image> = new Map();
@@ -39,6 +39,10 @@ export class BattleLayerRendererComponent extends BaseLayerRendererComponent imp
     }
   }
 
+  ngOnDestroy() {
+    this.resetRendering();
+  }
+
   resetRendering() {
     if (this.animationRequestId) {
       cancelAnimationFrame(this.animationRequestId);
@@ -49,18 +53,20 @@ export class BattleLayerRendererComponent extends BaseLayerRendererComponent imp
   }
 
   render() {
+    this.animationRequestId = undefined;
     const battleUpdate: BattleUpdate | undefined = this.state.getState(Date.now() / 1000);
     if (battleUpdate === undefined) {
-      this.animationRequestId = undefined;
       return;
     }
 
     for (let i = 0; i < battleUpdate.deletedIds.length; i++) {
       const deletedId: number = battleUpdate.deletedIds[i];
-      let objImg = this.objectImgs.get(deletedId);
-      if (objImg) {
+      let objectImg = this.objectImgs.get(deletedId);
+      if (objectImg) {
         this.objectImgs.delete(deletedId);
-        objImg.destroy();
+        objectImg.destroy();
+      } else {
+        console.warn(`Attempted to remove ID ${deletedId}, but it wasn't found.`);
       }
     }
 
@@ -70,6 +76,8 @@ export class BattleLayerRendererComponent extends BaseLayerRendererComponent imp
       if (objImg) {
         objImg.x(objState.pos.col * this.cellSize_);
         objImg.y(objState.pos.row * this.cellSize_);
+        objImg.width(this.cellSize_);
+        objImg.height(this.cellSize_);
       } else {
         var rawImg;
         if (objState.objType === ObjectType.Monster) {
@@ -93,7 +101,12 @@ export class BattleLayerRendererComponent extends BaseLayerRendererComponent imp
         this.layer.add(newObjImg);
       }
     }
+
     this.layer.batchDraw();
-    this.animationRequestId = requestAnimationFrame(() => { this.render(); });
+    if (this.animationRequestId === undefined) {
+      this.animationRequestId = requestAnimationFrame(() => { this.render(); });
+    } else {
+      console.warn("Overlapping render calls detected.");
+    }
   }
 }

@@ -39,6 +39,7 @@ export interface BattleUpdate {
 
 export class BattleState {
   private lastUpdateTimeSecs: number = 0;
+  private numUpdates: number = 0;
 
   constructor(
     private startedTimeSecs: number | undefined,
@@ -70,13 +71,20 @@ export class BattleState {
     let deletedIds: number[] = [];
     let objects: ObjectState[] = [];
     let inPast: boolean = true;
+    let lastStartTime = 0;
     for (let i = 0; i < this.events.length; i++) {
       const event: BattleEvent = this.events[i];
+      if (event.startTime < lastStartTime) {
+        console.warn(`Events out of order. Received ${lastStartTime} then ${event.startTime}`);
+        console.log(this.events);
+        return undefined;
+      }
+      lastStartTime = event.startTime;
       if (event.startTime > relTimeSecs) {
         break; // Stop when we're caught up.
       }
       if (event.eventType === 'delete') {
-        if (event.startTime > relLastUpdateTimeSecs) {
+        if (event.startTime > relLastUpdateTimeSecs && this.numUpdates > 0) {
           deletedIds.push(event.id);
           if (inPast) {
             numPastEvents++;
@@ -106,6 +114,8 @@ export class BattleState {
     while (numPastEvents--) {
       this.events.shift();
     }
+
+    this.numUpdates++;
 
     return {
       objects: objects,
