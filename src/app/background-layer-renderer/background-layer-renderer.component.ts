@@ -6,7 +6,7 @@ import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-re
 import { GameConfig, TileConfig, ConfigImageMap } from '../game-config';
 import { SelectionService, GridSelection } from '../selection.service';
 import { TowersBgState, TowerBgState } from '../battleground-state';
-import { findShortestPaths } from '../path';
+import { makePathMap, PathMap } from '../path';
 
 @Component({
   selector: 'app-background-layer-renderer',
@@ -57,14 +57,16 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
     }
 
     this.pathTiles.fill(0);
-    const paths = findShortestPaths(
+    const pathMap: PathMap | undefined = makePathMap(
       this.towersState,
       this.gameConfig.playfield.monsterEnter,
       this.gameConfig.playfield.monsterExit);
-    for (const path of paths) {
-      for (const cell of path) {
-        this.pathTiles[cell] = 1;
-      }
+    if (pathMap === undefined) {
+      console.warn("No path found.");
+      return;
+    }
+    for (let i = 0; i < pathMap.dists.length; i++) {
+      this.pathTiles[i] = pathMap.dists[i] == -1 ? 0 : 1;
     }
   }
 
