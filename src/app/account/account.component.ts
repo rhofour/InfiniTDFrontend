@@ -31,7 +31,7 @@ export class AccountComponent implements OnInit {
   }
 
   googleLogin() {
-    this.afAuth.signInWithPopup(new auth.GoogleAuthProvider()).catch(this.loginError);
+    this.afAuth.signInWithPopup(new auth.GoogleAuthProvider()).catch(err => { this.loginError(err); });
   }
 
   setName(loggedInUser: LoggedInUser) {
