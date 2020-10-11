@@ -5,6 +5,7 @@ import { User, UsersContainer } from './user';
 import { TileConfig, PlayfieldConfig, MonsterConfig, TowerConfig, GameConfigData, MiscConfig } from './game-config';
 import { TowerBgState, TowersBgState, BattlegroundState } from './battleground-state';
 import { ObjectType, MoveEvent, DeleteEvent, BattleEvent } from './battle-state';
+import * as backend from './backend';
 
 export const user = JsonDecoder.object<User>(
   {
@@ -33,10 +34,14 @@ export const cellPosData = JsonDecoder.object<CellPosData>(
 export const cellPos = cellPosData.map<CellPos>(
   (data: CellPosData) => new CellPos(data.row, data.col));
 
+function addBackendToUrl(relUrl: string) {
+  return backend.address + '/' + relUrl;
+}
+
 export const tileConfig = JsonDecoder.object<TileConfig>(
   {
     id: JsonDecoder.number,
-    url: JsonDecoder.string,
+    url: JsonDecoder.string.map<string>(addBackendToUrl),
   },
   'TileConfig');
 
@@ -56,7 +61,7 @@ export const playfieldConfig = JsonDecoder.object<PlayfieldConfig>(
 export const monsterConfig = JsonDecoder.object<MonsterConfig>(
   {
     id: JsonDecoder.number,
-    url: JsonDecoder.string,
+    url: JsonDecoder.string.map<string>(addBackendToUrl),
     name: JsonDecoder.string,
     health: JsonDecoder.number,
     speed: JsonDecoder.number,
@@ -67,7 +72,7 @@ export const monsterConfig = JsonDecoder.object<MonsterConfig>(
 export const towerConfig = JsonDecoder.object<TowerConfig>(
   {
     id: JsonDecoder.number,
-    url: JsonDecoder.string,
+    url: JsonDecoder.string.map<string>(addBackendToUrl),
     name: JsonDecoder.string,
     cost: JsonDecoder.number,
     firingRate: JsonDecoder.number,
