@@ -4,6 +4,7 @@ import Konva from 'konva';
 import { GameConfig } from '../game-config';
 import { BattlegroundState } from '../battleground-state';
 import { BattleState } from '../battle-state';
+import { DebugService } from '../debug.service';
 
 @Component({
   selector: 'app-renderer',
@@ -22,6 +23,7 @@ export class RendererComponent implements OnInit, AfterViewInit {
     private hostElem: ElementRef,
     private cdRef: ChangeDetectorRef,
     private ngZone: NgZone,
+    private debug: DebugService,
   ) { }
 
   ngOnInit(): void {
@@ -69,6 +71,7 @@ export class RendererComponent implements OnInit, AfterViewInit {
     let divCellSize = this.calcCellSize(divSize);
     const resized = this.cellSize !== divCellSize;
     if (resized) {
+      this.debug.add(`Resized from ${this.cellSize} to ${divCellSize}`);
       // Without this Angular doesn't notice these changes because they're
       // triggered by the resize observer.
       this.ngZone.run(() => {

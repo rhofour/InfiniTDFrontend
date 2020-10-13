@@ -10,6 +10,7 @@ import { User } from '../user';
 import { BackendService } from '../backend.service';
 import { LoggedInUser } from '../logged-in-user';
 import { WouldBlockPathPipe } from '../would-block-path.pipe';
+import { DebugService } from '../debug.service';
 
 function hasOwnProperty<X extends {}, Y extends PropertyKey>
   (obj: X, prop: Y): obj is X & Record<Y, unknown> {
@@ -46,6 +47,7 @@ export class GameDrawerComponent {
     private selectionService: SelectionService,
     private snackBar: MatSnackBar,
     public backend: BackendService,
+    public debug: DebugService,
   ) {
     selectionService.getSelection().subscribe((newSelection) => {
       this.selection = newSelection;

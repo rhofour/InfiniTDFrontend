@@ -141,3 +141,14 @@
     </ng-container>
   </ng-container>
 </mat-expansion-panel>
+
+<mat-expansion-panel>
+  <mat-expansion-panel-header>
+    <mat-panel-title> Debug </mat-panel-title>
+  </mat-expansion-panel-header>
+  <mat-list>
+    <mat-list-item *ngFor="let msg of debug.getMessages()">
+      {{ msg }}
+    </mat-list-item>
+  </mat-list>
+</mat-expansion-panel>
