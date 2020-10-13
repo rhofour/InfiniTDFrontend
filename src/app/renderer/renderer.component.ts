@@ -24,7 +24,10 @@ export class RendererComponent implements OnInit, AfterViewInit {
     private cdRef: ChangeDetectorRef,
     private ngZone: NgZone,
     private debug: DebugService,
-  ) { }
+  ) {
+    debug.reset();
+    this.debug.add('Renderer constructed.')
+  }
 
   ngOnInit(): void {
     if (this.gameConfig === undefined) {
@@ -67,6 +70,7 @@ export class RendererComponent implements OnInit, AfterViewInit {
       width: this.hostElem.nativeElement.offsetWidth,
       height: this.hostElem.nativeElement.offsetHeight,
     }
+    this.debug.add(`adjustCanvas called with host size: ${divSize.width} x ${divSize.height}`);
     let konvaSize = this.stage.size();
     let divCellSize = this.calcCellSize(divSize);
     const resized = this.cellSize !== divCellSize;
