@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, Input, ChangeDetectionStrategy, ChangeDetectorRef, NgZone } from '@angular/core';
+import { Component, OnInit, ElementRef, Input, ChangeDetectionStrategy, ChangeDetectorRef, NgZone, AfterViewInit } from '@angular/core';
 import Konva from 'konva';
 
 import { GameConfig } from '../game-config';
@@ -11,7 +11,7 @@ import { BattleState } from '../battle-state';
   styleUrls: ['./renderer.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RendererComponent implements OnInit {
+export class RendererComponent implements OnInit, AfterViewInit {
   public cellSize: number = 0;
   public stage!: Konva.Stage;
   @Input() state: BattlegroundState | undefined;
@@ -29,11 +29,18 @@ export class RendererComponent implements OnInit {
       throw Error("Input gameConfig is undefined.");
     }
     this.setupKonva();
+  }
 
+  ngAfterViewInit(): void {
+    let divSize = {
+      width: this.hostElem.nativeElement.offsetWidth,
+      height: this.hostElem.nativeElement.offsetHeight,
+    }
     let resizeObserver = new ResizeObserver(entries => {
       this.adjustCanvas();
     });
     resizeObserver.observe(this.hostElem.nativeElement);
+    this.adjustCanvas();
   }
 
   setupKonva() {
