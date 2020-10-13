@@ -47,8 +47,8 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
   ngOnChanges(changes: SimpleChanges) {
     if (changes.towersState) {
       this.updatePath();
-      this.render();
     }
+    this.render();
   }
 
   updatePath() {
@@ -72,6 +72,9 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
 
   render() {
     this.layer.destroyChildren();
+    if (this.cellSize_ === 0) {
+      return;
+    }
     for (let row = 0; row < this.numRows; row++) {
       for (let col = 0; col < this.numCols; col++) {
         const cellPos = new CellPos(row, col);

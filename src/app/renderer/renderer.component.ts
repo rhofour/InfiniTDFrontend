@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, Input, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ElementRef, Input, ChangeDetectionStrategy, ChangeDetectorRef, NgZone } from '@angular/core';
 import Konva from 'konva';
 
 import { GameConfig } from '../game-config';
@@ -21,6 +21,7 @@ export class RendererComponent implements OnInit {
   constructor(
     private hostElem: ElementRef,
     private cdRef: ChangeDetectorRef,
+    private ngZone: NgZone,
   ) { }
 
   ngOnInit(): void {
@@ -58,17 +59,20 @@ export class RendererComponent implements OnInit {
       height: this.hostElem.nativeElement.offsetHeight,
     }
     let konvaSize = this.stage.size();
-    let resized = false;
     let divCellSize = this.calcCellSize(divSize);
-    resized = this.cellSize !== divCellSize;
+    const resized = this.cellSize !== divCellSize;
     if (resized) {
-      this.cellSize = divCellSize;
-      const newSize = {
-        width: divCellSize * this.gameConfig.playfield.numCols,
-        height: divCellSize * this.gameConfig.playfield.numRows,
-      }
-      this.stage.size(newSize);
-      this.cdRef.markForCheck();
+      // Without this Angular doesn't notice these changes because they're
+      // triggered by the resize observer.
+      this.ngZone.run(() => {
+        this.cellSize = divCellSize;
+        const newSize = {
+          width: divCellSize * this.gameConfig.playfield.numCols,
+          height: divCellSize * this.gameConfig.playfield.numRows,
+        }
+        this.stage.size(newSize);
+        this.cdRef.markForCheck();
+      });
     }
   }
 }
