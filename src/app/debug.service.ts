@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { List } from 'immutable';
-//const { List } = require("immutable");
 
 
 @Injectable({
@@ -14,6 +13,7 @@ export class DebugService {
 
   add(newMsg: string) {
     const currentMessages: List<string> = this.messages$.getValue()
+    console.log(`Debug: ${newMsg}`);
     this.messages$.next(currentMessages.push(newMsg));
   }
 

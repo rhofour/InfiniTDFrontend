@@ -37,10 +37,7 @@ export class RendererComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    let divSize = {
-      width: this.hostElem.nativeElement.offsetWidth,
-      height: this.hostElem.nativeElement.offsetHeight,
-    }
+    this.debug.add('ngAfterViewInit');
     let resizeObserver = new ResizeObserver(entries => {
       this.adjustCanvas();
     });
