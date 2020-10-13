@@ -99,7 +99,7 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
               height: this.cellSize_,
               image: tile.img,
           });
-          tileImg.on('click', (evt) => {
+          tileImg.on('click tap', (evt) => {
             this.selectionService.updateSelection(new GridSelection(row, col));
             evt.cancelBubble = true;
           });
