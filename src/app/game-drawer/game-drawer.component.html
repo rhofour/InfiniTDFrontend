@@ -150,8 +150,8 @@
     <mat-list-item *ngFor="let msg of messages">
       {{ msg }}
     </mat-list-item>
+    <ng-container *ngIf="messages.size === 0">
+      No messages.
+    </ng-container>
   </mat-list>
-  <ng-template #emptyDebug>
-    No debug information available.
-  </ng-template>
 </mat-expansion-panel>
