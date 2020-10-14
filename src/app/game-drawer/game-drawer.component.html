@@ -142,16 +142,15 @@
   </ng-container>
 </mat-expansion-panel>
 
-<mat-expansion-panel>
-  <mat-expansion-panel-header>
-    <mat-panel-title> Debug </mat-panel-title>
-  </mat-expansion-panel-header>
-  <mat-list *ngIf="debug.getMessages() | async as messages">
-    <mat-list-item *ngFor="let msg of messages">
-      {{ msg }}
-    </mat-list-item>
-    <ng-container *ngIf="messages.size === 0">
-      No messages.
-    </ng-container>
-  </mat-list>
-</mat-expansion-panel>
+<ng-container *ngIf="debug.getMessages() | async as messages">
+  <mat-expansion-panel *ngIf="messages.size > 0">
+    <mat-expansion-panel-header>
+      <mat-panel-title> Debug </mat-panel-title>
+    </mat-expansion-panel-header>
+    <mat-list>
+      <mat-list-item *ngFor="let msg of messages">
+        {{ msg }}
+      </mat-list-item>
+    </mat-list>
+  </mat-expansion-panel>
+</ng-container>
