@@ -146,7 +146,7 @@
   <mat-expansion-panel-header>
     <mat-panel-title> Debug </mat-panel-title>
   </mat-expansion-panel-header>
-  <mat-list *ngIf="debug.getMessages() | async as messages; else emptyDebug">
+  <mat-list *ngIf="debug.getMessages() | async as messages">
     <mat-list-item *ngFor="let msg of messages">
       {{ msg }}
     </mat-list-item>
