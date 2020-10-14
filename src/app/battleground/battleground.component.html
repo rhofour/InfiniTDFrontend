@@ -9,10 +9,10 @@
   </mat-toolbar>
   <ng-container *ngIf="gameConfig$ | async as gameConfig">
     <mat-drawer-container *ngIf="battlegroundState$ | async as bgState" fxFlex="1 1 100%" autosize>
-      <mat-drawer opened mode="side" position="end">
+      <mat-drawer opened mode="side" position="end" fxFlex="1 1 100%">
         <app-game-drawer [user]="user" [gameConfig]="gameConfig" [towersState]="bgState.towers"></app-game-drawer>
       </mat-drawer>
-      <mat-drawer-content *ngIf="battleState$ | async as battleState">
+      <mat-drawer-content *ngIf="battleState$ | async as battleState" fxFlex="1 1 100%" [ngStyle]="{'height': 'auto'}">
         <app-renderer [gameConfig]="gameConfig" [state]="bgState" [battleState]="battleState" fxFlex="1 1 100%">
         </app-renderer>
       </mat-drawer-content>
