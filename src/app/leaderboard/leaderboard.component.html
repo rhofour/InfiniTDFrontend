@@ -1,10 +1,13 @@
-<ul *ngIf="users$ | async as users">
-  <ng-container *ngFor="let user of users">
-    <li *ngIf="user.accumulatedGold > 0"
-      routerLink="/battleground/{{user.name}}"
-      >
-      {{user.name}} has accumulated {{user.accumulatedGold | number:'0.0-1'}} gold.
-      In battle: {{user.inBattle}}
-    </li>
-  </ng-container>
-</ul>
+<ng-container *ngIf="users$ | async as users">
+  <ul>
+    <ng-container *ngFor="let user of users">
+      <li *ngIf="user.accumulatedGold > 0"
+        routerLink="/battleground/{{user.name}}"
+        >
+        {{user.name}} has accumulated {{user.accumulatedGold | number:'0.0-1'}} gold.
+        In battle: {{user.inBattle}}
+      </li>
+    </ng-container>
+  </ul>
+  <div *ngIf="users.length === 0">No users yet.</div>
+</ng-container>
