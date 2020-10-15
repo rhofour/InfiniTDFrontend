@@ -68,7 +68,7 @@
       <button *ngIf="!user.inBattle" (click)="startBattle(lUser)" mat-stroked-button>
         Start battle
       </button>
-      <button *ngIf="user.inBattle" (click)="inBattle=false" mat-stroked-button>
+      <button *ngIf="user.inBattle" (click)="stopBattle(lUser)" mat-stroked-button>
         Stop battle
       </button>
     </ng-container>

@@ -169,4 +169,10 @@ export class GameDrawerComponent {
       this.handleBackendError("Error starting battle:", err);
     });
   }
+
+  stopBattle(loggedInUser: LoggedInUser) {
+    this.backend.stopBattle(loggedInUser).catch((err) => {
+      this.handleBackendError("Error stopping battle:", err);
+    });
+  }
 }

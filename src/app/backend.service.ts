@@ -79,10 +79,8 @@ export class BackendService {
   }
 
   private authenticatedHttpWithResponse(fbUser: FbUser, url: string, method = 'get', body?: any): Promise<HttpResponse<Object>> {
-    console.log('Sending authenticated request to ' + url);
     return fbUser.getIdToken().then((idToken) => {
       if (idToken) {
-        console.log('Actually sending request to ' + url);
         return this.http.request(method, url, {
           headers: new HttpHeaders({
             'Content-Type': 'application/json',
@@ -106,7 +104,7 @@ export class BackendService {
           return undefined;
         }
         console.warn('Unexpected failure looking up user ' + name);
-        console.log(resp);
+        console.warn(resp);
         return undefined;
       }));
   }
@@ -216,5 +214,14 @@ export class BackendService {
     }
     const url = `${backend.address}/controlBattle/${name}`;
     return this.authenticatedHttpWithResponse(loggedInUser.fbUser, url, 'post');
+  }
+
+  stopBattle(loggedInUser: LoggedInUser): Promise<Object> {
+    const name = loggedInUser?.user?.name;
+    if (name === undefined) {
+      return Promise.reject(new Error("Cannot stop battle for user who is not registered."));
+    }
+    const url = `${backend.address}/controlBattle/${name}`;
+    return this.authenticatedHttpWithResponse(loggedInUser.fbUser, url, 'delete');
   }
 }
