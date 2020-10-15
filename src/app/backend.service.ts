@@ -49,7 +49,6 @@ export class BackendService {
             Authorization: 'Bearer ' + idToken,
           })
         };
-        console.log('Actually sending request to ' + url);
         return this.http.request(method, url, httpOptions).toPromise();
       }
       throw new Error('No authenticated user.');
@@ -62,7 +61,6 @@ export class BackendService {
   updateUser(fbUser: FbUser | null) {
     this.ngZone.run(() => {
       if (fbUser === null) {
-        console.log('User not signed in.');
         this.loggedInUser$.next(undefined);
         return;
       }
@@ -70,13 +68,10 @@ export class BackendService {
       this.authenticatedHttp(fbUser, backend.address + '/thisUser').then((user) => {
         let decoded = decoders.user.decode(user);
         if (decoded.isOk()) {
-          console.log('Found registered user.');
           this.loggedInUser$.next(new LoggedInUser(fbUser, decoded.value));
         } else {
-          console.log('Decoding Error: ');
-          console.log(decoded);
           // We have a Firebase user, but no associated user in our backend.
-          console.log('Found unregistered user.');
+          // Likely the user hasn't registered yet.
           this.loggedInUser$.next(new LoggedInUser(fbUser));
         }
       });
