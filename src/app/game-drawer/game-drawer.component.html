@@ -51,8 +51,10 @@
   </div>
   <div *ngIf="backend.getLoggedInUser() | async as lUser">
     <ng-container *ngIf="lUser.user && lUser.user.name === user?.name">
-      <button (click)="addToWave(lUser, displayedMonster)" mat-stroked-button>
-        Add to wave
+      <button (click)="addToWave(lUser, displayedMonster)"
+            appClickShortcut shortcutKey="a"
+            mat-stroked-button>
+        (A)dd to wave
       </button>
     </ng-container>
   </div>
