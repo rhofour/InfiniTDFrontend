@@ -18,14 +18,16 @@
       <button *ngIf="selection.buildTower && selection.grid"
             (click)="build(lUser, selection.buildTower, selection.grid)"
             [disabled]="user.gold < selection.buildTower.cost || selection.gridTower !== undefined || (selection.grid | wouldBlockPath: gameConfig : towersState) || user.inBattle"
+            appClickShortcut shortcutKey="b"
             mat-stroked-button>
-        Build ({{selection.buildTower.cost}} gold)
+        (B)uild ({{selection.buildTower.cost}} gold)
       </button>
       <button *ngIf="selection.gridTower && selection.grid"
             (click)="sell(lUser, selection.grid)"
             [disabled]="user.inBattle"
+            appClickShortcut shortcutKey="s"
             mat-stroked-button>
-        Sell ({{Math.floor(selection.gridTower.cost * gameConfig.misc.sellMultiplier)}} gold)
+        (S)ell ({{Math.floor(selection.gridTower.cost * gameConfig.misc.sellMultiplier)}} gold)
       </button>
     </ng-container>
   </div>
