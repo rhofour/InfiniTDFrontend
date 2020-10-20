@@ -9,4 +9,8 @@ export class LoggedInUser {
     this.fbUser = fbUser;
     this.user = user;
   }
+
+  matches(otherUser: User) {
+    return this.user?.name == otherUser.name;
+  }
 }

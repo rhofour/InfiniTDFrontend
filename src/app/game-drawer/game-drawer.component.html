@@ -14,7 +14,7 @@
     </div>
   </div>
   <div *ngIf="backend.getLoggedInUser() | async as lUser">
-    <ng-container *ngIf="lUser.user && lUser.user.name === user?.name">
+    <ng-container *ngIf="lUser.matches(user)">
       <button *ngIf="selection.buildTower && selection.grid"
             (click)="build(lUser, selection.buildTower, selection.grid)"
             [disabled]="user.gold < selection.buildTower.cost || selection.gridTower !== undefined || (selection.grid | wouldBlockPath: gameConfig : towersState) || user.inBattle"
@@ -50,7 +50,7 @@
     </div>
   </div>
   <div *ngIf="backend.getLoggedInUser() | async as lUser">
-    <ng-container *ngIf="lUser.user && lUser.user.name === user?.name">
+    <ng-container *ngIf="lUser.matches(user)">
       <button (click)="addToWave(lUser, displayedMonster)"
             appClickShortcut shortcutKey="a"
             mat-stroked-button>
@@ -66,7 +66,7 @@
     <mat-panel-title> Battle </mat-panel-title>
   </mat-expansion-panel-header>
   <ng-container *ngIf="backend.getLoggedInUser() | async as lUser; else otherUser">
-    <ng-container *ngIf="lUser.user && lUser.user.name === user?.name; else otherUser">
+    <ng-container *ngIf="lUser.matches(user); else otherUser">
       <button *ngIf="!user.inBattle" (click)="startBattle(lUser)"
           [disabled]="user.wave.length === 0" mat-stroked-button>
         Start battle
@@ -87,7 +87,7 @@
 </mat-expansion-panel>
 
 <ng-container *ngIf="backend.getLoggedInUser() | async as lUser">
-  <mat-expansion-panel *ngIf="lUser.user && lUser.user.name === user?.name">
+  <mat-expansion-panel *ngIf="lUser.matches(user)">
     <mat-expansion-panel-header>
       <mat-panel-title> Build </mat-panel-title>
     </mat-expansion-panel-header>
@@ -108,31 +108,35 @@
   <mat-expansion-panel-header>
     <mat-panel-title> Wave </mat-panel-title>
   </mat-expansion-panel-header>
-  <ng-container *ngIf="backend.getLoggedInUser() | async as lUser">
-    Current wave:
-    <ng-container *ngIf="user.wave.length > 0; else emptyWave">
-      <mat-list>
-        <mat-list-item *ngFor="let monster of getWave()">
-          <img matListAvatar [src]="monster[1].url">
-          <span >{{monster[0]}} x {{monster[1].name}}</span>
-          <ng-template #invalidMonsterId>
-            Unknown monster
-          </ng-template>
-        </mat-list-item>
-      </mat-list>
-      <div *ngIf="getWaveStats() as waveStats" style="width: 0; min-width: 100%">
-        Wave contains {{waveStats.totalMonsters}} monsters with a total bounty of
-        {{waveStats.totalBounty}} gold.
-      </div>
-      <button [disabled]="user.inBattle" (click)="clearWave(lUser)"
-        mat-stroked-button>
-        Clear wave
-      </button>
+  Current wave:
+  <ng-container *ngIf="user.wave.length > 0; else emptyWave">
+    <mat-list>
+      <mat-list-item *ngFor="let monster of getWave()">
+        <img matListAvatar [src]="monster[1].url">
+        <span >{{monster[0]}} x {{monster[1].name}}</span>
+        <ng-template #invalidMonsterId>
+          Unknown monster
+        </ng-template>
+      </mat-list-item>
+    </mat-list>
+    <div *ngIf="getWaveStats() as waveStats" style="width: 0; min-width: 100%">
+      Wave contains {{waveStats.totalMonsters}} monsters with a total bounty of
+      {{waveStats.totalBounty}} gold.
+    </div>
+    <ng-container *ngIf="backend.getLoggedInUser() | async as lUser">
+      <ng-container *ngIf="lUser.matches(user)">
+        <button [disabled]="user.inBattle" (click)="clearWave(lUser)"
+          mat-stroked-button>
+          Clear wave
+        </button>
+      </ng-container>
     </ng-container>
-    <ng-template #emptyWave>
-      Empty
-    </ng-template>
-    <ng-container *ngIf="lUser.user && lUser.user.name === user?.name">
+  </ng-container>
+  <ng-template #emptyWave>
+    Empty
+  </ng-template>
+  <ng-container *ngIf="backend.getLoggedInUser() | async as lUser">
+    <ng-container *ngIf="lUser.matches(user)">
       <mat-divider></mat-divider>
       Add monster:
       <mat-selection-list id="monsterList" #monsterList [multiple]="false"
