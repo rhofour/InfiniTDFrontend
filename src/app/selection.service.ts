@@ -45,6 +45,14 @@ export class GridSelection {
   equals(other: GridSelection | undefined) {
     return other && this.row === other.row && this.col === other.col;
   }
+
+  move(deltaRow: number, deltaCol: number, rows: number, cols: number) {
+    const oldRow = this.row;
+    const oldCol = this.col;
+    this.row = Math.min(rows - 1, Math.max(0, this.row + deltaRow));
+    this.col = Math.min(cols - 1, Math.max(0, this.col + deltaCol));
+    return oldRow !== this.row || oldCol !== this.col;
+  }
 }
 export class Selection {
   buildTower: TowerConfig | undefined
@@ -59,12 +67,20 @@ export class Selection {
     this.gridTower = gridTower; // Tower selected from the battleground
     this.grid = grid;
   }
+
+  move(deltaRow: number, deltaCol: number, rows: number, cols: number): boolean {
+    if (this.grid) {
+      return this.grid.move(deltaRow, deltaCol, rows, cols);
+    }
+    return false;
+  }
 }
 
 @Injectable()
 export class SelectionService implements OnDestroy {
   private selection$: BehaviorSubject<Selection> = new BehaviorSubject<Selection>(new Selection());
-  private subscription: Subscription = Subscription.EMPTY;
+  private bgStateSub: Subscription = Subscription.EMPTY;
+  private gameConfigSub: Subscription = Subscription.EMPTY;
   private battlegroundState?: BattlegroundState;
   private gameConfig!: GameConfig;
 
@@ -72,14 +88,17 @@ export class SelectionService implements OnDestroy {
     private bgStateService: BattlegroundStateService,
     private gameConfigService: GameConfigService,
   ) {
-    // TODO: Add this to a subscription to be cleaned up later
-    gameConfigService.getConfig().subscribe((gameConfig) => this.gameConfig = gameConfig);
+    this.gameConfigSub =
+      gameConfigService.getConfig().subscribe((gameConfig) => {
+        this.gameConfig = gameConfig;
+      });
   }
 
   setUsername(username: string) {
-    this.subscription.unsubscribe();
-    this.subscription = this.bgStateService.getBattlegroundState(username)
-      .subscribe((bgState: BattlegroundState) => this.updateBattlegroundState(bgState));
+    this.bgStateSub.unsubscribe();
+    this.bgStateSub =
+      this.bgStateService.getBattlegroundState(username).subscribe(
+        (bgState: BattlegroundState) => this.updateBattlegroundState(bgState));
   }
 
   private updateBattlegroundState(bgState: BattlegroundState) {
@@ -95,6 +114,16 @@ export class SelectionService implements OnDestroy {
     return this.selection$.asObservable();
   }
 
+  move(deltaRow: number, deltaCol: number) {
+    let selection = this.selection$.getValue();
+    if (selection.move(deltaRow, deltaCol, this.gameConfig.playfield.numRows,
+        this.gameConfig.playfield.numCols)) {
+      this.selection$.next(this.updateGridTowerFromSelection(selection));
+    }
+  }
+
+  // TODO: See if we could better enforce these properties within the
+  // selection object.
   private updateGridTowerFromSelection(selection: Selection): Selection {
     if (this.battlegroundState === undefined) {
       console.warn("SelectionService battlegroundState is undefined when updateGridTowerFromSelection is called.");
@@ -166,6 +195,7 @@ export class SelectionService implements OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subscription.unsubscribe();
+    this.gameConfigSub.unsubscribe();
+    this.bgStateSub.unsubscribe();
   }
 }

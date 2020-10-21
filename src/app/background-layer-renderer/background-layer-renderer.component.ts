@@ -1,4 +1,4 @@
-import { Component, OnInit, OnChanges, Input, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, OnChanges, Input, SimpleChanges, ChangeDetectionStrategy, HostListener } from '@angular/core';
 import Konva from 'konva';
 
 import { CellPos } from '../types';
@@ -49,6 +49,26 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
       this.updatePath();
     }
     this.render();
+  }
+
+  @HostListener('document:keydown', ['$event'])
+  handleKeyboardEvent(event: KeyboardEvent) {
+    if (event.key === 'ArrowUp') {
+      this.selectionService.move(-1, 0);
+      return;
+    }
+    if (event.key === 'ArrowDown') {
+      this.selectionService.move(1, 0);
+      return;
+    }
+    if (event.key === 'ArrowLeft') {
+      this.selectionService.move(0, -1);
+      return;
+    }
+    if (event.key === 'ArrowRight') {
+      this.selectionService.move(0, 1);
+      return;
+    }
   }
 
   updatePath() {
