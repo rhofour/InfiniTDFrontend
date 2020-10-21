@@ -1,4 +1,4 @@
-import { Component, OnInit, ElementRef, Input, ChangeDetectionStrategy, ChangeDetectorRef, NgZone, AfterViewInit } from '@angular/core';
+import { Component, OnInit, ElementRef, Input, ChangeDetectionStrategy, ChangeDetectorRef, AfterViewInit } from '@angular/core';
 import Konva from 'konva';
 
 import { GameConfig } from '../game-config';
@@ -21,7 +21,6 @@ export class RendererComponent implements OnInit, AfterViewInit {
   constructor(
     private hostElem: ElementRef,
     private cdRef: ChangeDetectorRef,
-    private ngZone: NgZone,
   ) { }
 
   ngOnInit(): void {
@@ -55,6 +54,8 @@ export class RendererComponent implements OnInit, AfterViewInit {
 
   adjustCanvas() {
     if (this.gameConfig.playfield.numRows === 0 || this.gameConfig.playfield.numCols === 0) {
+      console.warn('adjustCanvas called with empty game config:');
+      console.warn(this.gameConfig);
       return;
     }
     let divSize = {
@@ -65,17 +66,13 @@ export class RendererComponent implements OnInit, AfterViewInit {
     let divCellSize = this.calcCellSize(divSize);
     const resized = this.cellSize !== divCellSize;
     if (resized) {
-      // Without this Angular doesn't notice these changes because they're
-      // triggered by the resize observer.
-      this.ngZone.run(() => {
-        this.cellSize = divCellSize;
-        const newSize = {
-          width: divCellSize * this.gameConfig.playfield.numCols,
-          height: divCellSize * this.gameConfig.playfield.numRows,
-        }
-        this.stage.size(newSize);
-        this.cdRef.markForCheck();
-      });
+      this.cellSize = divCellSize;
+      const newSize = {
+        width: divCellSize * this.gameConfig.playfield.numCols,
+        height: divCellSize * this.gameConfig.playfield.numRows,
+      }
+      this.stage.size(newSize);
+      this.cdRef.detectChanges();
     }
   }
 }
