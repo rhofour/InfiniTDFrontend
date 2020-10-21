@@ -68,11 +68,15 @@
   <ng-container *ngIf="backend.getLoggedInUser() | async as lUser; else otherUser">
     <ng-container *ngIf="lUser.matches(user); else otherUser">
       <button *ngIf="!user.inBattle" (click)="startBattle(lUser)"
-          [disabled]="user.wave.length === 0" mat-stroked-button>
-        Start battle
+          [disabled]="user.wave.length === 0"
+          appClickShortcut shortcutKey="s"
+          mat-stroked-button>
+        (S)tart battle
       </button>
-      <button *ngIf="user.inBattle" (click)="stopBattle(lUser)" mat-stroked-button>
-        Stop battle
+      <button *ngIf="user.inBattle" (click)="stopBattle(lUser)"
+          appClickShortcut shortcutKey="s"
+          mat-stroked-button>
+        (S)top battle
       </button>
     </ng-container>
   </ng-container>
