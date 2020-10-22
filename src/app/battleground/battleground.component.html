@@ -5,6 +5,8 @@
   <mat-toolbar>
     <span>{{user.name}}</span>
     <span class="spacer"></span>
+    vs. rofer (live)
+    <span class="spacer"></span>
     {{user.gold}} gold ({{user.goldPerMinute}} / min)
   </mat-toolbar>
   <ng-container *ngIf="gameConfig$ | async as gameConfig">

@@ -5,8 +5,14 @@ export enum ObjectType {
   Projectile,
 }
 
+export enum EventType {
+  UPDATE_TIME = 1,
+  MOVE,
+  DELETE,
+}
+
 export interface MoveEvent {
-  eventType: 'move'
+  eventType: EventType.MOVE
   objType: ObjectType
   id: number
   configId: number
@@ -17,13 +23,18 @@ export interface MoveEvent {
 }
 
 export interface DeleteEvent {
-  eventType: 'delete'
+  eventType: EventType.DELETE
   objType: ObjectType
   id: number
   startTime: number
 }
 
-export type BattleEvent = MoveEvent | DeleteEvent
+export interface TimeUpdateEvent {
+  eventType: EventType.UPDATE_TIME
+  startTime: number
+}
+
+export type BattleEvent = MoveEvent | DeleteEvent | TimeUpdateEvent
 
 export interface ObjectState {
   objType: ObjectType
@@ -83,14 +94,14 @@ export class BattleState {
       if (event.startTime > relTimeSecs) {
         break; // Stop when we're caught up.
       }
-      if (event.eventType === 'delete') {
+      if (event.eventType === EventType.DELETE) {
         if (event.startTime > relLastUpdateTimeSecs && this.numUpdates > 0) {
           deletedIds.push(event.id);
           if (inPast) {
             numPastEvents++;
           }
         }
-      } else if(event.eventType === 'move') {
+      } else if(event.eventType === EventType.MOVE) {
         if (event.endTime < relTimeSecs) {
           if (inPast) {
             numPastEvents++;

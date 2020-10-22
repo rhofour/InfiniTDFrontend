@@ -4,7 +4,7 @@ import { CellPos, CellPosData } from './types';
 import { User, UsersContainer } from './user';
 import { TileConfig, PlayfieldConfig, MonsterConfig, TowerConfig, GameConfigData, MiscConfig } from './game-config';
 import { TowerBgState, TowersBgState, BattlegroundState } from './battleground-state';
-import { ObjectType, MoveEvent, DeleteEvent, BattleEvent } from './battle-state';
+import { ObjectType, EventType, MoveEvent, DeleteEvent, BattleEvent } from './battle-state';
 import * as backend from './backend';
 
 export const user = JsonDecoder.object<User>(
@@ -120,9 +120,11 @@ export const battlegroundState = JsonDecoder.object<BattlegroundState>(
 
 export const objectType = JsonDecoder.enumeration<ObjectType>(ObjectType, 'ObjectType')
 
+export const eventType = JsonDecoder.enumeration<EventType>(EventType, 'EventType')
+
 export const moveEvent = JsonDecoder.object<MoveEvent>(
   {
-    eventType: JsonDecoder.constant('move'),
+    eventType: JsonDecoder.isExactly(EventType.MOVE),
     objType: objectType,
     id: JsonDecoder.number,
     configId: JsonDecoder.number,
@@ -135,7 +137,7 @@ export const moveEvent = JsonDecoder.object<MoveEvent>(
 
 export const deleteEvent = JsonDecoder.object<DeleteEvent>(
   {
-    eventType: JsonDecoder.constant('delete'),
+    eventType: JsonDecoder.isExactly(EventType.DELETE),
     objType: objectType,
     id: JsonDecoder.number,
     startTime: JsonDecoder.number,
