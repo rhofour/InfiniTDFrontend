@@ -25,9 +25,9 @@
       <button *ngIf="selection.gridTower && selection.grid"
             (click)="sell(lUser, selection.grid)"
             [disabled]="user.inBattle"
-            appClickShortcut shortcutKey="s"
+            appClickShortcut shortcutKey="e"
             mat-stroked-button>
-        (S)ell ({{Math.floor(selection.gridTower.cost * gameConfig.misc.sellMultiplier)}} gold)
+        S(e)ll ({{Math.floor(selection.gridTower.cost * gameConfig.misc.sellMultiplier)}} gold)
       </button>
     </ng-container>
   </div>
