@@ -6,8 +6,7 @@ export enum ObjectType {
 }
 
 export enum EventType {
-  UPDATE_TIME = 1,
-  MOVE,
+  MOVE = 1,
   DELETE,
 }
 
@@ -29,12 +28,7 @@ export interface DeleteEvent {
   startTime: number
 }
 
-export interface TimeUpdateEvent {
-  eventType: EventType.UPDATE_TIME
-  startTime: number
-}
-
-export type BattleEvent = MoveEvent | DeleteEvent | TimeUpdateEvent
+export type BattleEvent = MoveEvent | DeleteEvent
 
 export interface ObjectState {
   objType: ObjectType
