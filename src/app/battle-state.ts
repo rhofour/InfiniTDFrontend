@@ -30,6 +30,11 @@ export interface DeleteEvent {
 
 export type BattleEvent = MoveEvent | DeleteEvent
 
+export interface StartBattle {
+  name: string
+  time: number
+}
+
 export interface ObjectState {
   objType: ObjectType
   configId: number
@@ -49,17 +54,19 @@ export class BattleState {
   constructor(
     private startedTimeSecs: number | undefined,
     private events: BattleEvent[] = [],
+    public name: string = '',
   ) { }
 
   processEvent(event: BattleEvent) {
     this.events.push(event);
   }
 
-  setServerTime(timeSecs: number): BattleState {
-    if (timeSecs < 0) {
+  processStartBattle(start: StartBattle): BattleState {
+    if (start.time < 0) {
       return new BattleState(undefined);
     } else {
-      return new BattleState((Date.now() / 1000) - timeSecs, this.events);
+      return new BattleState(
+        (Date.now() / 1000) - start.time, this.events, start.name);
     }
   }
 

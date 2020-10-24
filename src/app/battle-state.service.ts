@@ -19,16 +19,17 @@ export class BattleStateService {
       .pipe(scan((battleState: BattleState, resp: unknown) => {
         const respEvent = resp as MessageEvent;
         const event = JSON.parse(respEvent.data);
-        if (typeof event === 'number') {
-          return battleState.setServerTime(respEvent.data);
+        const decodedStart = decoders.startBattle.decode(event);
+        if (decodedStart.isOk()) {
+          return battleState.processStartBattle(decodedStart.value);
         }
-        const decoded = decoders.battleEvent.decode(event);
-        if (decoded.isOk()) {
-          battleState.processEvent(decoded.value);
+        const decodedEvent = decoders.battleEvent.decode(event);
+        if (decodedEvent.isOk()) {
+          battleState.processEvent(decodedEvent.value);
         } else {
           console.warn(event);
           throw new Error(
-            'Failed to decode data for BattleState: ' + decoded.error);
+            'Failed to decode data for BattleEvent: ' + decodedEvent.error);
         }
         return battleState;
       }, new BattleState(undefined)));

@@ -4,7 +4,7 @@ import { CellPos, CellPosData } from './types';
 import { User, UsersContainer } from './user';
 import { TileConfig, PlayfieldConfig, MonsterConfig, TowerConfig, GameConfigData, MiscConfig } from './game-config';
 import { TowerBgState, TowersBgState, BattlegroundState } from './battleground-state';
-import { ObjectType, EventType, MoveEvent, DeleteEvent, BattleEvent } from './battle-state';
+import { ObjectType, EventType, MoveEvent, DeleteEvent, BattleEvent, StartBattle } from './battle-state';
 import * as backend from './backend';
 
 export const user = JsonDecoder.object<User>(
@@ -146,3 +146,10 @@ export const deleteEvent = JsonDecoder.object<DeleteEvent>(
 
 export const battleEvent = JsonDecoder.oneOf<BattleEvent>(
   [moveEvent, deleteEvent], 'BattleEvent');
+
+export const startBattle = JsonDecoder.object<StartBattle>(
+  {
+    name: JsonDecoder.string,
+    time: JsonDecoder.number,
+  },
+  'StartBattle');
