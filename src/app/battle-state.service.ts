@@ -23,6 +23,11 @@ export class BattleStateService {
         if (decodedStart.isOk()) {
           return battleState.processStartBattle(decodedStart.value);
         }
+        const decodedResults = decoders.battleResults.decode(event);
+        if (decodedResults.isOk()) {
+          console.log(decodedResults.value);
+          // TODO: write battleState.processResults
+        }
         const decodedEvent = decoders.battleEvent.decode(event);
         if (decodedEvent.isOk()) {
           battleState.processEvent(decodedEvent.value);

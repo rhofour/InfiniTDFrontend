@@ -35,6 +35,13 @@ export interface StartBattle {
   time: number
 }
 
+export interface BattleResults {
+  monstersDefeated: Map<number, [number, number]>
+  bonuses: number[]
+  reward: number
+  timeSecs: number
+}
+
 export interface ObjectState {
   objType: ObjectType
   configId: number

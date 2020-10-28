@@ -1,10 +1,10 @@
-import { JsonDecoder } from 'ts.data.json';
+import { JsonDecoder, err, ok } from 'ts.data.json';
 
 import { CellPos, CellPosData } from './types';
 import { User, UsersContainer } from './user';
 import { TileConfig, PlayfieldConfig, MonsterConfig, TowerConfig, GameConfigData, MiscConfig } from './game-config';
 import { TowerBgState, TowersBgState, BattlegroundState } from './battleground-state';
-import { ObjectType, EventType, MoveEvent, DeleteEvent, BattleEvent, StartBattle } from './battle-state';
+import { ObjectType, EventType, MoveEvent, DeleteEvent, BattleEvent, StartBattle, BattleResults } from './battle-state';
 import * as backend from './backend';
 
 export const user = JsonDecoder.object<User>(
@@ -153,3 +153,53 @@ export const startBattle = JsonDecoder.object<StartBattle>(
     time: JsonDecoder.number,
   },
   'StartBattle');
+
+// TODO: remove this once it's merged into ts.data.json
+// This turns a tuple of decoders into a tuple of their results.
+type TupleOfResults<T extends readonly [] | readonly JsonDecoder.Decoder<any>[]> = {
+  [K in keyof T]: T[K] extends JsonDecoder.Decoder<infer R> ? R : never
+};
+const tuple = <T extends readonly [] | readonly JsonDecoder.Decoder<any>[]>(
+  decoders: T,
+  decoderName: string
+): JsonDecoder.Decoder<TupleOfResults<T>> => {
+  return new JsonDecoder.Decoder<TupleOfResults<T>>(json => {
+    if (json instanceof Array) {
+      const arr = [];
+      if (json.length !== decoders.length) {
+        return err<TupleOfResults<T>>(`Length mismatch in <${decoderName}>: json.length (${json.length}) !== ` +
+          `decoders.length  (${decoders.length}).`);
+      }
+      for (let i =-0; i < json.length; i++) {
+        const result = decoders[i].decode(json[i]);
+        if (result.isOk()) {
+          arr.push(result.value);
+        } else {
+          return err<TupleOfResults<T>>('array error');
+        }
+      }
+      // Cast to a tuple of the right type.
+      return ok<TupleOfResults<T>>(arr as unknown as TupleOfResults<T>);
+    } else {
+      return err<TupleOfResults<T>>('primitive error');
+    }
+  });
+};
+
+const monstersDefeatedDict: JsonDecoder.Decoder<{ [name: string]: [number, number] }> =
+  JsonDecoder.dictionary<[number, number]>(
+    tuple([JsonDecoder.number, JsonDecoder.number], '[number, number]'),
+    'monstersDefeatedDict');
+
+const monstersDefeated: JsonDecoder.Decoder<Map<number, [number, number]>> =
+  monstersDefeatedDict.map<Map<number, [number, number]>>((dict: { [name: string]: [number, number] }) => {
+    let res: Map<number, [number, number]> = new Map();
+    return res;
+  });
+
+export const battleResults  = JsonDecoder.object<BattleResults>({
+  monstersDefeated: monstersDefeated,
+  bonuses: JsonDecoder.array(JsonDecoder.number, 'number[]'),
+  reward: JsonDecoder.number,
+  timeSecs: JsonDecoder.number,
+}, 'BattleResults');
