@@ -1,0 +1,17 @@
+Monsters defeated:
+<mat-list>
+  <mat-list-item *ngFor="let m of monstersDefeated">
+    {{m.numDefeated}} of {{m.numSent}} {{m.monster.name}} defeated =
+    {{m.numDefeated * m.monster.bounty}} gold earned.
+  </mat-list-item>
+</mat-list>
+Subtotal: {{ subtotal }}<br />
+Awards:
+<mat-list>
+  <mat-list-item *ngFor="let bonus of bonuses">
+    {{ bonus.name }} {{ displayBonusAmount(bonus) }}
+  </mat-list-item>
+</mat-list>
+Total: {{ battleResults.reward | number : '1.0-1' }} gold <br />
+Time: {{ battleResults.timeSecs | number : '1.2-2' }}s <br />
+Gold Rate: {{ battleResults.reward / battleResults.timeSecs | number : '1.0-1'}} gold / s
