@@ -11,16 +11,30 @@
       {{user.gold}} gold ({{user.goldPerMinute}} / min)
     </mat-toolbar>
     <ng-container *ngIf="gameConfig$ | async as gameConfig">
-      <mat-drawer-container *ngIf="battlegroundState$ | async as bgState" fxFlex="1 1 100%" autosize>
-        <mat-drawer opened mode="side" position="end" fxFlex="1 1 100%">
-          <app-game-drawer [user]="user" [gameConfig]="gameConfig" [towersState]="bgState.towers">
-          </app-game-drawer>
-        </mat-drawer>
-        <mat-drawer-content fxFlex="1 1 100%" [ngStyle]="{'height': 'auto'}">
-          <app-renderer [gameConfig]="gameConfig" [state]="bgState" [battleState]="battleState" fxFlex="1 1 100%">
-          </app-renderer>
-        </mat-drawer-content>
-      </mat-drawer-container>
+      <mat-tab-group fxFlex="1 1 100%">
+        <mat-tab label="Battleground">
+          <mat-drawer-container *ngIf="battlegroundState$ | async as bgState" fxFlex="1 1 100%" autosize>
+            <mat-drawer opened mode="side" position="end" fxFlex="1 1 100%">
+              <app-game-drawer [user]="user" [gameConfig]="gameConfig" [towersState]="bgState.towers">
+              </app-game-drawer>
+            </mat-drawer>
+            <mat-drawer-content fxFlex="1 1 100%" [ngStyle]="{'height': 'auto'}">
+              <app-renderer [gameConfig]="gameConfig" [state]="bgState" [battleState]="battleState" fxFlex="1 1 100%">
+              </app-renderer>
+            </mat-drawer-content>
+          </mat-drawer-container>
+        </mat-tab>
+        <mat-tab label="Results" *ngIf="battleState.results as results">
+          <!-- TODO: replace this with a battle results component taking results as input-->
+          <mat-list>
+            <mat-list-item *ngFor="let monsterDefeated of results.monstersDefeated | keyvalue">
+              {{monsterDefeated.value[0]}} / {{monsterDefeated.value[1]}} defeated
+            </mat-list-item>
+          </mat-list>
+          Earned {{ results.reward }} gold in {{ results.timeSecs }}s
+          ({{ results.reward / results.timeSecs}}).
+        </mat-tab>
+      </mat-tab-group>
     </ng-container>
   </ng-container>
 </div>

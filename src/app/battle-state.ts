@@ -62,6 +62,7 @@ export class BattleState {
     private startedTimeSecs: number | undefined,
     private events: BattleEvent[] = [],
     public name: string = '',
+    public results: BattleResults | undefined = undefined
   ) { }
 
   processEvent(event: BattleEvent) {
@@ -75,6 +76,10 @@ export class BattleState {
       return new BattleState(
         (Date.now() / 1000) - start.time, this.events, start.name);
     }
+  }
+
+  processResults(results: BattleResults): BattleState {
+    return new BattleState(undefined, [], '', results);
   }
 
   getState(timeSecs: number): BattleUpdate | undefined {

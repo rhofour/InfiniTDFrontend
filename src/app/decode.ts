@@ -194,6 +194,14 @@ const monstersDefeatedDict: JsonDecoder.Decoder<{ [name: string]: [number, numbe
 const monstersDefeated: JsonDecoder.Decoder<Map<number, [number, number]>> =
   monstersDefeatedDict.map<Map<number, [number, number]>>((dict: { [name: string]: [number, number] }) => {
     let res: Map<number, [number, number]> = new Map();
+    for (let [key, [numDefeated, numSent]] of Object.entries(dict)) {
+      const monsterId = parseInt(key);
+      if (isNaN(monsterId)) {
+        console.warn(`Got non-integer monster ID (${key}) when parsing monstersDefeated.`);
+        continue;
+      }
+      res.set(monsterId, [numDefeated, numSent]);
+    }
     return res;
   });
 

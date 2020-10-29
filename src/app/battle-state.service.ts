@@ -25,8 +25,7 @@ export class BattleStateService {
         }
         const decodedResults = decoders.battleResults.decode(event);
         if (decodedResults.isOk()) {
-          console.log(decodedResults.value);
-          // TODO: write battleState.processResults
+          return battleState.processResults(decodedResults.value);
         }
         const decodedEvent = decoders.battleEvent.decode(event);
         if (decodedEvent.isOk()) {
