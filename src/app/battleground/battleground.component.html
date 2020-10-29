@@ -25,14 +25,8 @@
           </mat-drawer-container>
         </mat-tab>
         <mat-tab label="Results" *ngIf="battleState.results as results">
-          <!-- TODO: replace this with a battle results component taking results as input-->
-          <mat-list>
-            <mat-list-item *ngFor="let monsterDefeated of results.monstersDefeated | keyvalue">
-              {{monsterDefeated.value[0]}} / {{monsterDefeated.value[1]}} defeated
-            </mat-list-item>
-          </mat-list>
-          Earned {{ results.reward }} gold in {{ results.timeSecs }}s
-          ({{ results.reward / results.timeSecs}}).
+          <app-battle-results [gameConfig]="gameConfig" [battleResults]="results">
+          </app-battle-results>
         </mat-tab>
       </mat-tab-group>
     </ng-container>

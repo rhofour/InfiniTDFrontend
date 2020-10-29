@@ -1,5 +1,4 @@
 import { Component, OnInit, ElementRef, ViewChild, ChangeDetectionStrategy } from '@angular/core';
-import { MatListModule } from '@angular/material/list';
 import { ActivatedRoute } from '@angular/router';
 import Konva from 'konva';
 import { Observable, EMPTY } from 'rxjs';

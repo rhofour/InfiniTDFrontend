@@ -33,6 +33,7 @@ import { BenchmarkComponent } from './benchmark/benchmark.component';
 import { WouldBlockPathPipe } from './would-block-path.pipe';
 import { BattleLayerRendererComponent } from './battle-layer-renderer/battle-layer-renderer.component';
 import { ClickShortcutDirective } from './click-shortcut.directive';
+import { BattleResultsComponent } from './battle-results/battle-results.component';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { ClickShortcutDirective } from './click-shortcut.directive';
     WouldBlockPathPipe,
     BattleLayerRendererComponent,
     ClickShortcutDirective,
+    BattleResultsComponent,
   ],
   imports: [
     BrowserModule,
