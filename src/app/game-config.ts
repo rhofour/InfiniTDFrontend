@@ -35,8 +35,39 @@ export interface TowerConfig {
   damage: number,
 }
 
-export interface MiscConfig {
+export enum BonusType {
+  ADDITIVE = 1,
+  MULTIPLICATIVE,
+}
+
+export interface BonusCondition {
+  percentDefeated: number,
+}
+
+export interface BattleBonus {
+  id: number,
+  name: string,
+  bonusType: BonusType,
+  bonusAmount: number,
+  conditions: BonusCondition[],
+}
+
+export interface MiscConfigData {
   sellMultiplier: number,
+  battleBonuses: BattleBonus[],
+}
+
+export class MiscConfig {
+  readonly sellMultiplier: number;
+  readonly battleBonuses: Map<number, BattleBonus>;
+
+  constructor(data: MiscConfigData) {
+    this.sellMultiplier = data.sellMultiplier;
+    this.battleBonuses = new Map();
+    for (let bonus of data.battleBonuses) {
+      this.battleBonuses.set(bonus.id, bonus);
+    }
+  }
 }
 
 export interface GameConfigData {
@@ -44,7 +75,7 @@ export interface GameConfigData {
   tiles: TileConfig[],
   towers: TowerConfig[],
   monsters: MonsterConfig[],
-  misc: MiscConfig,
+  misc: MiscConfigData,
 }
 
 export type ConfigAndImage<T> = T & { img: HTMLImageElement };
@@ -79,7 +110,7 @@ export class GameConfig {
   static fromConfig(configData: GameConfigData): Promise<GameConfig> {
     return Promise.all([configArrayToMap(configData.tiles), configArrayToMap(configData.towers), configArrayToMap(configData.monsters)]).
       then(([tiles, towers, monsters]) => {
-        return new GameConfig(configData.playfield, tiles, towers, monsters, configData.misc);
+        return new GameConfig(configData.playfield, tiles, towers, monsters, new MiscConfig(configData.misc));
       });
   }
 

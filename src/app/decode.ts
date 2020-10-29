@@ -2,7 +2,7 @@ import { JsonDecoder, err, ok } from 'ts.data.json';
 
 import { CellPos, CellPosData } from './types';
 import { User, UsersContainer } from './user';
-import { TileConfig, PlayfieldConfig, MonsterConfig, TowerConfig, GameConfigData, MiscConfig } from './game-config';
+import { TileConfig, PlayfieldConfig, MonsterConfig, TowerConfig, GameConfigData, MiscConfigData, BonusType, BonusCondition, BattleBonus } from './game-config';
 import { TowerBgState, TowersBgState, BattlegroundState } from './battleground-state';
 import { ObjectType, EventType, MoveEvent, DeleteEvent, BattleEvent, StartBattle, BattleResults } from './battle-state';
 import * as backend from './backend';
@@ -81,11 +81,28 @@ export const towerConfig = JsonDecoder.object<TowerConfig>(
   },
   'TowerConfig');
 
-export const miscConfig = JsonDecoder.object<MiscConfig>(
+export const bonusType = JsonDecoder.enumeration<BonusType>(BonusType, 'BonusType');
+
+export const bonusCondition = JsonDecoder.object<BonusCondition>(
+  {
+    percentDefeated: JsonDecoder.number,
+  }, 'BonusCondition');
+
+export const battleBonus = JsonDecoder.object<BattleBonus>(
+  {
+    id: JsonDecoder.number,
+    name: JsonDecoder.string,
+    bonusType: bonusType,
+    bonusAmount: JsonDecoder.number,
+    conditions: JsonDecoder.array<BonusCondition>(bonusCondition, 'BonusCondition[]'),
+  }, 'BattleBonus');
+
+export const miscConfigData = JsonDecoder.object<MiscConfigData>(
   {
     sellMultiplier: JsonDecoder.number,
+    battleBonuses: JsonDecoder.array<BattleBonus>(battleBonus, 'BattleBonus[]'),
   },
-  'MiscConfig');
+  'MiscConfigData');
 
 export const gameConfigData = JsonDecoder.object<GameConfigData>(
   {
@@ -93,7 +110,7 @@ export const gameConfigData = JsonDecoder.object<GameConfigData>(
     playfield: playfieldConfig,
     monsters: JsonDecoder.array<MonsterConfig>(monsterConfig, 'MonsterConfig[]'),
     towers: JsonDecoder.array<TowerConfig>(towerConfig, 'TowerConfig[]'),
-    misc: miscConfig,
+    misc: miscConfigData,
   },
   'GameConfigData');
 
