@@ -1,8 +1,9 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { auth } from 'firebase/app';
 import { FormControl, Validators } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
+import { MatInputModule } from '@angular/material/input';
 
 import { BackendService } from '../backend.service';
 import { LoggedInUser } from '../logged-in-user';
@@ -14,15 +15,14 @@ import { LoggedInUser } from '../logged-in-user';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccountComponent implements OnInit {
-  loginErrorMsg = '';
-  registrationErrorMsg = '';
-  desiredName = new FormControl('', [
-    Validators.minLength(2),
-  ]);
+  public loginErrorMsg = '';
+  public registrationErrorMsg = '';
+  desiredName = new FormControl('');
 
   constructor(
     public afAuth: AngularFireAuth,
     public backend: BackendService,
+    private cdRef: ChangeDetectorRef,
   ) { }
 
   loginError(err: auth.Error) {
@@ -48,6 +48,7 @@ export class AccountComponent implements OnInit {
       if (registrationError) {
         this.registrationErrorMsg = registrationError;
         console.log('registrationErrorMsg is now: ' + this.registrationErrorMsg);
+        this.cdRef.markForCheck();
       }
     });
   }

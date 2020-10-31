@@ -13,6 +13,8 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatListModule } from '@angular/material/list';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -34,6 +36,7 @@ import { WouldBlockPathPipe } from './would-block-path.pipe';
 import { BattleLayerRendererComponent } from './battle-layer-renderer/battle-layer-renderer.component';
 import { ClickShortcutDirective } from './click-shortcut.directive';
 import { BattleResultsComponent } from './battle-results/battle-results.component';
+import { NameTakenValidatorDirective } from './name-taken-validator';
 
 @NgModule({
   declarations: [
@@ -52,6 +55,7 @@ import { BattleResultsComponent } from './battle-results/battle-results.componen
     BattleLayerRendererComponent,
     ClickShortcutDirective,
     BattleResultsComponent,
+    NameTakenValidatorDirective,
   ],
   imports: [
     BrowserModule,
@@ -70,6 +74,8 @@ import { BattleResultsComponent } from './battle-results/battle-results.componen
     MatListModule,
     MatSnackBarModule,
     MatExpansionModule,
+    MatFormFieldModule,
+    MatInputModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

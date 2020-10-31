@@ -5,19 +5,25 @@
   </div>
   <ng-template #showRegister>
     Please choose a display name:
-    <input type="text" id="desiredName" name="desireName" [formControl]="desiredName">
-    <p>
-    <button mat-stroked-button (click)="setName(lUser)" [disabled]="desiredName.invalid || desiredName.pristine">
+    <mat-form-field>
+      <mat-label>Username</mat-label>
+      <input matInput id="desiredName" name="desiredName" [formControl]="desiredName"
+        nameTakenValidator minlength="2" required>
+      <mat-error *ngIf="desiredName?.errors?.required">
+        A username is required
+      </mat-error>
+      <mat-error *ngIf="desiredName?.errors?.minlength">
+        Your display name must be at least 2 characters long.
+      </mat-error>
+      <mat-error *ngIf="desiredName?.errors?.nameTaken">
+        {{ desiredName.value }} is already taken.
+      </mat-error>
+    </mat-form-field>
+    <p><button mat-stroked-button (click)="setName(lUser)" [disabled]="desiredName.invalid || desiredName.pristine">
       Set Name
     </button></p>
-    <div *ngIf="desiredName.invalid && (desiredName.dirty || desiredName.touched)"
-      class="alert alert-danger">
-      <div *ngIf="desiredName.errors && desiredName.errors.minlength">
-        Your display name must be at least 2 characters long.
-      </div>
-    </div>
-    <div class="alert alert-danger">
-      {{registrationErrorMsg}}
+    <div class="alert alert-danger" *ngIf="registrationErrorMsg">
+      Error: {{ registrationErrorMsg }}
     </div>
   </ng-template>
   <button mat-stroked-button (click)="logout()">Logout</button>

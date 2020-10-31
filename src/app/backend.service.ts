@@ -70,9 +70,16 @@ export class BackendService {
         if (decoded.isOk()) {
           this.loggedInUser$.next(new LoggedInUser(fbUser, decoded.value));
         } else {
+          throw new Error(`Error decoding User: ${decoded.error}`);
+        }
+      }, (err: HttpErrorResponse) => {
+        if (err.status === 404) {
           // We have a Firebase user, but no associated user in our backend.
           // Likely the user hasn't registered yet.
           this.loggedInUser$.next(new LoggedInUser(fbUser));
+        } else {
+          console.warn(err);
+          console.warn("Received unexpected error from /thisUser.");
         }
       });
     });
@@ -134,15 +141,16 @@ export class BackendService {
     interface IsTakenResponse {
       isTaken: boolean,
     };
-    return this.http.get<IsTakenResponse>(backend.address + '/isNameTaken/' + name).toPromise().then(resp => {
-      if (resp && resp.isTaken !== undefined && typeof resp.isTaken === 'boolean') {
-        return resp.isTaken;
+    return this.http.get(backend.address + '/user/' + name).toPromise().then(
+      resp => true,
+      (err: HttpErrorResponse) => {
+        if (err.status === 404) {
+          return false;
+        }
+        console.warn(err);
+        return Promise.reject(new Error(`Received unexpected error from name check for ${name}`));
       }
-      return Promise.reject(new Error('Could not parse response from isNameTaken: ' + resp));
-    }, error => {
-      console.error('Error in response from isNameTaken/' + name + ': ' + error);
-      return Promise.reject(error);
-    });
+    );
   }
 
   register(loggedInUser: LoggedInUser, name: string): Promise<string | null> {

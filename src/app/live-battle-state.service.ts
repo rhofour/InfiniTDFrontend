@@ -15,7 +15,7 @@ export class LiveBattleStateService {
 
   getLiveBattleState(username: string): Observable<BattleState> {
     return this.sseService
-      .getServerSentEvent(backend.address + '/battle/' + username)
+      .getServerSentEvent(backend.address + '/battleStream/' + username)
       .pipe(scan((battleState: BattleState, resp: unknown) => {
         const respEvent = resp as MessageEvent;
         const event = JSON.parse(respEvent.data);
