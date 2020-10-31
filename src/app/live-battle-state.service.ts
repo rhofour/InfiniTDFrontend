@@ -10,10 +10,10 @@ import * as backend from './backend';
 @Injectable({
   providedIn: 'root'
 })
-export class BattleStateService {
+export class LiveBattleStateService {
   constructor(private sseService: SseService) { }
 
-  getBattleState(username: string): Observable<BattleState> {
+  getLiveBattleState(username: string): Observable<BattleState> {
     return this.sseService
       .getServerSentEvent(backend.address + '/battle/' + username)
       .pipe(scan((battleState: BattleState, resp: unknown) => {

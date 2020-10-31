@@ -1,12 +1,13 @@
 import { Component, OnInit, ElementRef, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import Konva from 'konva';
-import { Observable, EMPTY } from 'rxjs';
+import { Observable, EMPTY, merge } from 'rxjs';
 
 import { User } from '../user';
 import { UserService } from '../user.service';
 import { BattleState } from '../battle-state';
-import { BattleStateService } from '../battle-state.service';
+import { LiveBattleStateService } from '../live-battle-state.service';
+import { RecordedBattleStateService } from '../recorded-battle-state.service';
 import { BattlegroundState } from '../battleground-state';
 import { BattlegroundStateService } from '../battleground-state.service';
 import { SelectionService } from '../selection.service';
@@ -31,7 +32,8 @@ export class BattlegroundComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private userService: UserService,
-    private battleStateService: BattleStateService,
+    private liveBattleStateService: LiveBattleStateService,
+    private recordedBattleStateService: RecordedBattleStateService,
     private bgStateService: BattlegroundStateService,
     private selectionService: SelectionService,
     private gameConfigService: GameConfigService,
@@ -55,7 +57,9 @@ export class BattlegroundComponent implements OnInit {
       this.selectionService.setUsername(username);
       this.user$ = this.userService.getUser(username);
       this.battlegroundState$ = this.bgStateService.getBattlegroundState(username);
-      this.battleState$ = this.battleStateService.getBattleState(username);
+      const liveBattleState$ = this.liveBattleStateService.getLiveBattleState(username);
+      const recordedBattleState$ = this.recordedBattleStateService.getRecordedBattleState();
+      this.battleState$ = merge(liveBattleState$, recordedBattleState$);
     } else {
       this.setError('No username provided.');
     }

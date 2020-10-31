@@ -32,7 +32,7 @@ export type BattleEvent = MoveEvent | DeleteEvent
 
 export enum BattleStatus {
   PENDING = 1,
-  OFFLINE,
+  FINISHED,
   LIVE,
 }
 
@@ -78,15 +78,24 @@ export class BattleState {
   }
 
   processBattleMetadata(metadata: BattleMetadata): BattleState {
-    if (metadata.status === BattleStatus.PENDING) {
-      return new BattleState(undefined, [], metadata.name);
+    switch (metadata.status) {
+      case BattleStatus.PENDING:
+        return new BattleState(undefined, [], metadata.name);
+      case BattleStatus.LIVE:
+        if (metadata.time === undefined) {
+          console.warn(metadata);
+          throw new Error('Received live BattleMetadata with no time.');
+        }
+        return new BattleState(
+          (Date.now() / 1000) - metadata.time, this.events, metadata.name, undefined, true);
+      case BattleStatus.FINISHED:
+        return new BattleState(
+          (Date.now() / 1000), this.events, metadata.name, undefined, false);
+      default: {
+        const _exhaustiveCheck: never = metadata.status;
+        return _exhaustiveCheck;
+      }
     }
-    if (metadata.status === BattleStatus.LIVE && metadata.time !== undefined) {
-      return new BattleState(
-        (Date.now() / 1000) - metadata.time, this.events, metadata.name, undefined, true);
-    }
-    console.warn(metadata);
-    throw new Error('Received unexpected BattleMetadata in processBattleMetadata');
   }
 
   processResults(results: BattleResults): BattleState {
