@@ -4,7 +4,7 @@ import { CellPos, CellPosData } from './types';
 import { User, UsersContainer } from './user';
 import { TileConfig, PlayfieldConfig, MonsterConfig, TowerConfig, GameConfigData, MiscConfigData, BonusType, BonusCondition, BattleBonus } from './game-config';
 import { TowerBgState, TowersBgState, BattlegroundState } from './battleground-state';
-import { ObjectType, EventType, MoveEvent, DeleteEvent, BattleEvent, StartBattle, BattleResults } from './battle-state';
+import { ObjectType, EventType, MoveEvent, DeleteEvent, BattleEvent, BattleStatus, BattleMetadata, BattleResults } from './battle-state';
 import * as backend from './backend';
 
 export const user = JsonDecoder.object<User>(
@@ -135,9 +135,9 @@ export const battlegroundState = JsonDecoder.object<BattlegroundState>(
   },
   'BattlegroundState');
 
-export const objectType = JsonDecoder.enumeration<ObjectType>(ObjectType, 'ObjectType')
+export const objectType = JsonDecoder.enumeration<ObjectType>(ObjectType, 'ObjectType');
 
-export const eventType = JsonDecoder.enumeration<EventType>(EventType, 'EventType')
+export const eventType = JsonDecoder.enumeration<EventType>(EventType, 'EventType');
 
 export const moveEvent = JsonDecoder.object<MoveEvent>(
   {
@@ -164,12 +164,14 @@ export const deleteEvent = JsonDecoder.object<DeleteEvent>(
 export const battleEvent = JsonDecoder.oneOf<BattleEvent>(
   [moveEvent, deleteEvent], 'BattleEvent');
 
-export const startBattle = JsonDecoder.object<StartBattle>(
+export const battleStatus = JsonDecoder.enumeration<BattleStatus>(BattleStatus, 'BattleStatus');
+export const battleMetadata = JsonDecoder.object<BattleMetadata>(
   {
     name: JsonDecoder.string,
-    time: JsonDecoder.number,
+    status: battleStatus,
+    time: JsonDecoder.optional(JsonDecoder.number),
   },
-  'StartBattle');
+  'BattleMetadata');
 
 const monstersDefeatedDict: JsonDecoder.Decoder<{ [name: string]: [number, number] }> =
   JsonDecoder.dictionary<[number, number]>(

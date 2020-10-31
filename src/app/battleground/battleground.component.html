@@ -7,6 +7,9 @@
       <span>{{user.name}}</span>
       <span class="spacer"></span>
       {{ battleState.name }}
+      <span *ngIf="battleState.live">
+        &nbsp;(LIVE)
+      </span>
       <span class="spacer"></span>
       {{user.gold}} gold ({{user.goldPerMinute}} / min)
     </mat-toolbar>

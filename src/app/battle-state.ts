@@ -30,9 +30,16 @@ export interface DeleteEvent {
 
 export type BattleEvent = MoveEvent | DeleteEvent
 
-export interface StartBattle {
+export enum BattleStatus {
+  PENDING = 1,
+  OFFLINE,
+  LIVE,
+}
+
+export interface BattleMetadata {
+  status: BattleStatus
   name: string
-  time: number
+  time?: number
 }
 
 export interface BattleResults {
@@ -62,24 +69,28 @@ export class BattleState {
     private startedTimeSecs: number | undefined,
     private events: BattleEvent[] = [],
     public name: string = '',
-    public results: BattleResults | undefined = undefined
+    public results: BattleResults | undefined = undefined,
+    public live: boolean = false,
   ) { }
 
   processEvent(event: BattleEvent) {
     this.events.push(event);
   }
 
-  processStartBattle(start: StartBattle): BattleState {
-    if (start.time < 0) {
-      return new BattleState(undefined);
-    } else {
-      return new BattleState(
-        (Date.now() / 1000) - start.time, this.events, start.name);
+  processBattleMetadata(metadata: BattleMetadata): BattleState {
+    if (metadata.status === BattleStatus.PENDING) {
+      return new BattleState(undefined, [], metadata.name);
     }
+    if (metadata.status === BattleStatus.LIVE && metadata.time !== undefined) {
+      return new BattleState(
+        (Date.now() / 1000) - metadata.time, this.events, metadata.name, undefined, true);
+    }
+    console.warn(metadata);
+    throw new Error('Received unexpected BattleMetadata in processBattleMetadata');
   }
 
   processResults(results: BattleResults): BattleState {
-    return new BattleState(undefined, [], '', results);
+    return new BattleState(undefined, this.events, this.name, results);
   }
 
   getState(timeSecs: number): BattleUpdate | undefined {

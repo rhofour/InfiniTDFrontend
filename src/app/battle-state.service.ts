@@ -19,9 +19,9 @@ export class BattleStateService {
       .pipe(scan((battleState: BattleState, resp: unknown) => {
         const respEvent = resp as MessageEvent;
         const event = JSON.parse(respEvent.data);
-        const decodedStart = decoders.startBattle.decode(event);
-        if (decodedStart.isOk()) {
-          return battleState.processStartBattle(decodedStart.value);
+        const decodedMetadata = decoders.battleMetadata.decode(event);
+        if (decodedMetadata.isOk()) {
+          return battleState.processBattleMetadata(decodedMetadata.value);
         }
         const decodedResults = decoders.battleResults.decode(event);
         if (decodedResults.isOk()) {
