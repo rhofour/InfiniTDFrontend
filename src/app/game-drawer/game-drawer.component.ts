@@ -11,6 +11,7 @@ import { BackendService } from '../backend.service';
 import { LoggedInUser } from '../logged-in-user';
 import { WouldBlockPathPipe } from '../would-block-path.pipe';
 import { DebugService } from '../debug.service';
+import { RecordedBattleStateService } from '../recorded-battle-state.service';
 
 function hasOwnProperty<X extends {}, Y extends PropertyKey>
   (obj: X, prop: Y): obj is X & Record<Y, unknown> {
@@ -48,6 +49,7 @@ export class GameDrawerComponent {
     private snackBar: MatSnackBar,
     public backend: BackendService,
     public debug: DebugService,
+    private recordedBattleState: RecordedBattleStateService,
   ) {
     selectionService.getSelection().subscribe((newSelection) => {
       this.selection = newSelection;
@@ -174,5 +176,13 @@ export class GameDrawerComponent {
     this.backend.stopBattle(loggedInUser).catch((err) => {
       this.handleBackendError("Error stopping battle:", err);
     });
+  }
+
+  showBattle(attackerName: string, defenderName: string) {
+    this.recordedBattleState.requestBattleState(attackerName, defenderName);
+  }
+
+  stopShownBattle() {
+    this.recordedBattleState.stopBattle();
   }
 }

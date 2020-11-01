@@ -59,6 +59,7 @@ export class BattlegroundComponent implements OnInit {
       this.battlegroundState$ = this.bgStateService.getBattlegroundState(username);
       const liveBattleState$ = this.liveBattleStateService.getLiveBattleState(username);
       const recordedBattleState$ = this.recordedBattleStateService.getRecordedBattleState();
+      // TODO: Do a more sophisticated merging
       this.battleState$ = merge(liveBattleState$, recordedBattleState$);
     } else {
       this.setError('No username provided.');

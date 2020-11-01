@@ -4,7 +4,7 @@ import { CellPos, CellPosData } from './types';
 import { User, UsersContainer } from './user';
 import { TileConfig, PlayfieldConfig, MonsterConfig, TowerConfig, GameConfigData, MiscConfigData, BonusType, BonusCondition, BattleBonus } from './game-config';
 import { TowerBgState, TowersBgState, BattlegroundState } from './battleground-state';
-import { ObjectType, EventType, MoveEvent, DeleteEvent, BattleEvent, BattleStatus, BattleMetadata, BattleResults } from './battle-state';
+import { ObjectType, EventType, MoveEvent, DeleteEvent, BattleEvent, BattleStatus, BattleMetadata, BattleResults, Battle } from './battle-state';
 import * as backend from './backend';
 
 export const user = JsonDecoder.object<User>(
@@ -192,9 +192,15 @@ const monstersDefeated: JsonDecoder.Decoder<Map<number, [number, number]>> =
     return res;
   });
 
-export const battleResults  = JsonDecoder.object<BattleResults>({
+export const battleResults = JsonDecoder.object<BattleResults>({
   monstersDefeated: monstersDefeated,
   bonuses: JsonDecoder.array(JsonDecoder.number, 'number[]'),
   reward: JsonDecoder.number,
   timeSecs: JsonDecoder.number,
 }, 'BattleResults');
+
+export const battle = JsonDecoder.object<Battle>({
+  name: JsonDecoder.string,
+  events: JsonDecoder.array(battleEvent, 'BattleEvent[]'),
+  results: battleResults,
+}, 'Battle');

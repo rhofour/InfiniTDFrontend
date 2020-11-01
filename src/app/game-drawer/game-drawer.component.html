@@ -81,11 +81,10 @@
     </ng-container>
   </ng-container>
   <ng-template #otherUser>
-    <button *ngIf="!inBattle" mat-stroked-button>
-      Show battle
-    </button>
-    <button *ngIf="inBattle" mat-stroked-button>
-      Stop battle
+    <button (click)="showBattle(user.name, user.name)"
+        appClickShortcut shortcutKey="s"
+        mat-stroked-button>
+      (S)how battle
     </button>
   </ng-template>
 </mat-expansion-panel>

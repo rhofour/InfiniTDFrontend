@@ -49,6 +49,12 @@ export interface BattleResults {
   timeSecs: number
 }
 
+export interface Battle {
+  name: string
+  events: BattleEvent[]
+  results: BattleResults
+}
+
 export interface ObjectState {
   objType: ObjectType
   configId: number
