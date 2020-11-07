@@ -85,6 +85,7 @@ export class BattleState {
     public name: string = '',
     public results: BattleResults | undefined = undefined,
     public live: boolean = false,
+    private deletedIds: Set<number> = new Set(),
   ) { }
 
   processEvent(event: BattleEvent) {
@@ -126,7 +127,7 @@ export class BattleState {
     this.lastUpdateTimeSecs = timeSecs;
 
     let numPastEvents = 0;
-    let deletedIds: number[] = [];
+    let newlyDeletedIds: number[] = [];
     let objects: ObjectState[] = [];
     let inPast: boolean = true;
     let lastStartTime = 0;
@@ -143,13 +144,14 @@ export class BattleState {
       }
       if (event.eventType === EventType.DELETE) {
         if (event.startTime > relLastUpdateTimeSecs && this.numUpdates > 0) {
-          deletedIds.push(event.id);
+          newlyDeletedIds.push(event.id);
+          this.deletedIds.add(event.id);
           if (inPast) {
             numPastEvents++;
           }
         }
       } else if(event.eventType === EventType.MOVE) {
-        if (event.endTime < relTimeSecs) {
+        if (event.endTime < relTimeSecs || this.deletedIds.has(event.id)) {
           if (inPast) {
             numPastEvents++;
           }
@@ -175,9 +177,12 @@ export class BattleState {
 
     this.numUpdates++;
 
+    // Remove any objects that were deleted.
+    let nonDeletedObjects = objects.filter(obj => !this.deletedIds.has(obj.id));
+
     return {
-      objects: objects,
-      deletedIds: deletedIds,
+      objects: nonDeletedObjects,
+      deletedIds: newlyDeletedIds,
     }
   }
 }
