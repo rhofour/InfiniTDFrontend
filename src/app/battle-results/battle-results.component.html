@@ -14,4 +14,4 @@ Awards:
 </mat-list>
 Total: {{ battleResults.reward | number : '1.0-1' }} gold <br />
 Time: {{ battleResults.timeSecs | number : '1.2-2' }}s <br />
-Gold Rate: {{ battleResults.reward / battleResults.timeSecs | number : '1.0-1'}} gold / s
+Gold Rate: {{ 60 * battleResults.reward / battleResults.timeSecs | number : '1.0-1'}} gold / min
