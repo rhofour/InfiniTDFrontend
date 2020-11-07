@@ -73,17 +73,34 @@ export class BattleLayerRendererComponent extends BaseLayerRendererComponent imp
     for (let i = 0; i < battleUpdate.objects.length; i++) {
       const objState = battleUpdate.objects[i];
       let objImg = this.objectImgs.get(objState.id);
+
+      // Determine the size of the objects
+      let size = 0;
+      if (objState.objType === ObjectType.Monster) {
+        size = 1.0;
+      } else if (objState.objType === ObjectType.Projectile) {
+        const tileSize = this.gameConfig.playfield.tileSize;
+        const projectileConfig = this.gameConfig.projectiles.get(objState.configId);
+        if (projectileConfig === undefined) {
+          throw Error(`Could not find projectile: ${objState.configId}`);
+        }
+        size = projectileConfig.size / tileSize;
+      }
+      if (size > 1.0) {
+        console.warn(`Got size > 1: ${size}`);
+      }
+
       if (objImg) {
-        objImg.x(objState.pos.col * this.cellSize_);
-        objImg.y(objState.pos.row * this.cellSize_);
-        objImg.width(this.cellSize_);
-        objImg.height(this.cellSize_);
+        objImg.x((objState.pos.col + ((1 - size) / 2)) * this.cellSize_);
+        objImg.y((objState.pos.row + ((1 - size) / 2)) * this.cellSize_);
+        objImg.width(this.cellSize_ * size);
+        objImg.height(this.cellSize_ * size);
       } else {
         var rawImg;
         if (objState.objType === ObjectType.Monster) {
           rawImg = this.gameConfig.monsters.get(objState.configId)?.img;
         } else if (objState.objType === ObjectType.Projectile) {
-          console.warn("Loading projectile images is currently unsupported.");
+          rawImg = this.gameConfig.projectiles.get(objState.configId)?.img;
         }
         if (rawImg === undefined) {
           console.warn("Couldn't find image for object ID: " + objState.id);
@@ -91,10 +108,10 @@ export class BattleLayerRendererComponent extends BaseLayerRendererComponent imp
           continue;
         }
         let newObjImg = new Konva.Image({
-          x: objState.pos.col * this.cellSize_,
-          y: objState.pos.row * this.cellSize_,
-          width: this.cellSize_,
-          height: this.cellSize_,
+          x: (objState.pos.col + ((1 - size) / 2)) * this.cellSize_,
+          y: (objState.pos.row + ((1 - size) / 2)) * this.cellSize_,
+          width: this.cellSize_ * size,
+          height: this.cellSize_ * size,
           image: rawImg,
         });
         this.objectImgs.set(objState.id, newObjImg);

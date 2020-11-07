@@ -2,9 +2,9 @@ import { JsonDecoder, err, ok } from 'ts.data.json';
 
 import { CellPos, CellPosData } from './types';
 import { User, UsersContainer } from './user';
-import { TileConfig, PlayfieldConfig, MonsterConfig, TowerConfig, GameConfigData, MiscConfigData, BonusType, BonusCondition, BattleBonus } from './game-config';
+import { TileConfig, PlayfieldConfig, MonsterConfig, TowerConfig, ProjectileConfig, GameConfigData, MiscConfigData, BonusType, BonusCondition, BattleBonus } from './game-config';
 import { TowerBgState, TowersBgState, BattlegroundState } from './battleground-state';
-import { ObjectType, EventType, MoveEvent, DeleteEvent, BattleEvent, BattleStatus, BattleMetadata, BattleResults, Battle } from './battle-state';
+import { ObjectType, EventType, MoveEvent, DeleteEvent, DamageEvent, BattleEvent, BattleStatus, BattleMetadata, BattleResults, Battle } from './battle-state';
 import * as backend from './backend';
 
 export const user = JsonDecoder.object<User>(
@@ -55,6 +55,7 @@ export const playfieldConfig = JsonDecoder.object<PlayfieldConfig>(
     pathId: JsonDecoder.number,
     pathStartId: JsonDecoder.number,
     pathEndId: JsonDecoder.number,
+    tileSize: JsonDecoder.number,
   },
   'PlayfieldConfig');
 
@@ -78,8 +79,18 @@ export const towerConfig = JsonDecoder.object<TowerConfig>(
     firingRate: JsonDecoder.number,
     range: JsonDecoder.number,
     damage: JsonDecoder.number,
+    projectileSpeed: JsonDecoder.number,
+    projectileId: JsonDecoder.number,
   },
   'TowerConfig');
+
+export const projectileConfig = JsonDecoder.object<ProjectileConfig>(
+  {
+    id: JsonDecoder.number,
+    url: JsonDecoder.string.map<string>(addBackendToUrl),
+    size: JsonDecoder.number,
+  },
+  'ProjectileConfig');
 
 export const bonusType = JsonDecoder.enumeration<BonusType>(BonusType, 'BonusType');
 
@@ -110,6 +121,7 @@ export const gameConfigData = JsonDecoder.object<GameConfigData>(
     playfield: playfieldConfig,
     monsters: JsonDecoder.array<MonsterConfig>(monsterConfig, 'MonsterConfig[]'),
     towers: JsonDecoder.array<TowerConfig>(towerConfig, 'TowerConfig[]'),
+    projectiles: JsonDecoder.array<ProjectileConfig>(projectileConfig, 'ProjectileConfig[]'),
     misc: miscConfigData,
   },
   'GameConfigData');
@@ -161,8 +173,17 @@ export const deleteEvent = JsonDecoder.object<DeleteEvent>(
   },
   'DeleteEvent');
 
+export const damageEvent = JsonDecoder.object<DamageEvent>(
+  {
+    eventType: JsonDecoder.isExactly(EventType.DAMAGE),
+    id: JsonDecoder.number,
+    startTime: JsonDecoder.number,
+    health: JsonDecoder.number,
+  },
+  'DeleteEvent');
+
 export const battleEvent = JsonDecoder.oneOf<BattleEvent>(
-  [moveEvent, deleteEvent], 'BattleEvent');
+  [moveEvent, deleteEvent, damageEvent], 'BattleEvent');
 
 export const battleStatus = JsonDecoder.enumeration<BattleStatus>(BattleStatus, 'BattleStatus');
 export const battleMetadata = JsonDecoder.object<BattleMetadata>(

@@ -14,6 +14,7 @@ export interface PlayfieldConfig {
   pathId: number,
   pathStartId: number,
   pathEndId: number,
+  tileSize: number,
 }
 
 export interface MonsterConfig {
@@ -33,6 +34,14 @@ export interface TowerConfig {
   firingRate: number,
   range: number,
   damage: number,
+  projectileSpeed: number,
+  projectileId: number,
+}
+
+export interface ProjectileConfig {
+  id: number,
+  url: string,
+  size: number,
 }
 
 export enum BonusType {
@@ -74,6 +83,7 @@ export interface GameConfigData {
   playfield: PlayfieldConfig,
   tiles: TileConfig[],
   towers: TowerConfig[],
+  projectiles: ProjectileConfig[],
   monsters: MonsterConfig[],
   misc: MiscConfigData,
 }
@@ -104,21 +114,25 @@ export class GameConfig {
   readonly playfield: PlayfieldConfig;
   readonly tiles: ConfigImageMap<TileConfig>;
   readonly towers: ConfigImageMap<TowerConfig>;
+  readonly projectiles: ConfigImageMap<ProjectileConfig>;
   readonly monsters: ConfigImageMap<MonsterConfig>;
   readonly misc: MiscConfig;
 
   static fromConfig(configData: GameConfigData): Promise<GameConfig> {
-    return Promise.all([configArrayToMap(configData.tiles), configArrayToMap(configData.towers), configArrayToMap(configData.monsters)]).
-      then(([tiles, towers, monsters]) => {
-        return new GameConfig(configData.playfield, tiles, towers, monsters, new MiscConfig(configData.misc));
+    return Promise.all([
+      configArrayToMap(configData.tiles), configArrayToMap(configData.towers),
+      configArrayToMap(configData.projectiles), configArrayToMap(configData.monsters)
+    ]).then(([tiles, towers, projectiles, monsters]) => {
+        return new GameConfig(configData.playfield, tiles, towers, projectiles, monsters, new MiscConfig(configData.misc));
       });
   }
 
   constructor(playfield: PlayfieldConfig, tiles: ConfigImageMap<TileConfig>, towers: ConfigImageMap<TowerConfig>,
-     monsters: ConfigImageMap<MonsterConfig>, misc: MiscConfig) {
+     projectiles: ConfigImageMap<ProjectileConfig>, monsters: ConfigImageMap<MonsterConfig>, misc: MiscConfig) {
     this.playfield = playfield;
     this.tiles = tiles;
     this.towers = towers;
+    this.projectiles = projectiles;
     this.monsters = monsters;
     this.misc = misc;
   }

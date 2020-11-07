@@ -8,6 +8,7 @@ export enum ObjectType {
 export enum EventType {
   MOVE = 1,
   DELETE,
+  DAMAGE
 }
 
 export interface MoveEvent {
@@ -28,7 +29,14 @@ export interface DeleteEvent {
   startTime: number
 }
 
-export type BattleEvent = MoveEvent | DeleteEvent
+export interface DamageEvent {
+  eventType: EventType.DAMAGE
+  id: number
+  startTime: number
+  health: number
+}
+
+export type BattleEvent = MoveEvent | DeleteEvent | DamageEvent
 
 export enum BattleStatus {
   PENDING = 1,
