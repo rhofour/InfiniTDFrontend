@@ -19,6 +19,7 @@ interface MonsterDefeated {
 export class BattleResultsComponent implements OnInit {
   @Input() gameConfig!: GameConfig;
   @Input() battleResults!: BattleResults;
+  Math = Math;
 
   constructor() { }
 

@@ -13,5 +13,7 @@ Awards:
   </mat-list-item>
 </mat-list>
 Total: {{ battleResults.reward | number : '1.0-1' }} gold <br />
-Time: {{ battleResults.timeSecs | number : '1.2-2' }}s <br />
-Gold Rate: {{ 60 * battleResults.reward / battleResults.timeSecs | number : '1.0-1'}} gold / min
+Time: {{ battleResults.timeSecs | number : '1.2-2' }}s
+<span *ngIf="battleResults.timeSecs < 60.0">(Note: There can only be one battle per minute)
+<br />
+Gold Rate: {{ battleResults.reward / Math.max(1.0, battleResults.timeSecs / 60.0) | number : '1.0-1'}} gold / min
