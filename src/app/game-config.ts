@@ -74,7 +74,12 @@ export class MiscConfig {
     this.sellMultiplier = data.sellMultiplier;
     this.battleBonuses = new Map();
     for (let bonus of data.battleBonuses) {
-      this.battleBonuses.set(bonus.id, bonus);
+      if (this.battleBonuses.has(bonus.id)) {
+        console.warn(`Received a duplicate of bonus id ${bonus.id}:`);
+        console.log(bonus);
+      } else {
+        this.battleBonuses.set(bonus.id, bonus);
+      }
     }
   }
 }
@@ -105,7 +110,12 @@ function configArrayToMap<T extends {id: number, url: string}>(arr: T[]): Promis
     });
     configImagePair.img.src = elem.url;
     promises.push(loadPromise);
-    map.set(elem.id, configImagePair);
+    if (map.has(elem.id)) {
+      console.warn(`Received a duplicate of id ${elem.id}:`);
+      console.log(elem);
+    } else {
+      map.set(elem.id, configImagePair);
+    }
   }
   return Promise.all(promises).then(() => map);
 }
