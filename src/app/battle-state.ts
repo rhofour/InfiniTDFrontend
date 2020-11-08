@@ -1,8 +1,9 @@
 import { CellPos } from './types'
+import { GameConfig, MonsterConfig } from './game-config';
 
 export enum ObjectType {
-  Monster = 1,
-  Projectile,
+  MONSTER = 1,
+  PROJECTILE,
 }
 
 export enum EventType {
@@ -68,6 +69,8 @@ export interface ObjectState {
   configId: number
   id: number
   pos: CellPos
+  health?: number
+  maxHealth?: number
 }
 
 export interface BattleUpdate {
@@ -117,7 +120,7 @@ export class BattleState {
     return new BattleState(undefined, this.events, this.name, results);
   }
 
-  getState(timeSecs: number): BattleUpdate | undefined {
+  getState(timeSecs: number, gameConfig: GameConfig): BattleUpdate | undefined {
     if (this.startedTimeSecs === undefined) {
       return undefined;
     }
@@ -142,32 +145,70 @@ export class BattleState {
       if (event.startTime > relTimeSecs) {
         break; // Stop when we're caught up.
       }
-      if (event.eventType === EventType.DELETE) {
-        if (event.startTime > relLastUpdateTimeSecs && this.numUpdates > 0) {
-          newlyDeletedIds.push(event.id);
-          this.deletedIds.add(event.id);
-          if (inPast) {
-            numPastEvents++;
+      switch (event.eventType) {
+        case EventType.DELETE: {
+          if (event.startTime > relLastUpdateTimeSecs && this.numUpdates > 0) {
+            newlyDeletedIds.push(event.id);
+            this.deletedIds.add(event.id);
+            if (inPast) {
+              numPastEvents++;
+            }
           }
+          break;
         }
-      } else if(event.eventType === EventType.MOVE) {
-        if (event.endTime < relTimeSecs || this.deletedIds.has(event.id)) {
-          if (inPast) {
-            numPastEvents++;
+        case EventType.MOVE: {
+          if (event.endTime < relTimeSecs || this.deletedIds.has(event.id)) {
+            if (inPast) {
+              numPastEvents++;
+            }
+            continue;
           }
-          continue;
-        }
 
-        inPast = false;
-        const fracTravelled = (relTimeSecs - event.startTime) / (event.endTime - event.startTime);
-        const pos = event.startPos.interpolate(event.destPos, fracTravelled);
-        const newObj: ObjectState = {
-          objType: event.objType,
-          configId: event.configId,
-          id: event.id,
-          pos: pos,
-        };
-        objects.push(newObj);
+          inPast = false;
+          const fracTravelled = (relTimeSecs - event.startTime) / (event.endTime - event.startTime);
+          const pos = event.startPos.interpolate(event.destPos, fracTravelled);
+          switch (event.objType) {
+            case ObjectType.MONSTER: {
+              const monsterConfig = gameConfig.monsters.get(event.configId);
+              if (monsterConfig === undefined) {
+                throw Error(`Could not find config for monster ID ${event.configId}.`);
+              }
+              const newObj: ObjectState = {
+                objType: event.objType,
+                configId: event.configId,
+                id: event.id,
+                pos: pos,
+                health: monsterConfig.health,
+                maxHealth: monsterConfig.health,
+              };
+              objects.push(newObj);
+              break;
+            }
+            case ObjectType.PROJECTILE: {
+              const newObj: ObjectState = {
+                objType: event.objType,
+                configId: event.configId,
+                id: event.id,
+                pos: pos,
+              };
+              objects.push(newObj);
+              break;
+            }
+            default:
+              const _exhaustiveCheck: never = event.objType;
+          }
+          break;
+        }
+        case EventType.DAMAGE: {
+          for (let obj of objects) {
+            if (obj.id === event.id) {
+              obj.health = event.health;
+            }
+          }
+          break;
+        }
+        default:
+          const _exhaustiveCheck: never = event;
       }
     }
 

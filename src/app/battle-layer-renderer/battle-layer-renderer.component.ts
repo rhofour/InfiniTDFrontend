@@ -3,7 +3,7 @@ import Konva from 'konva';
 
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
 import { BattleState, BattleUpdate, ObjectType, ObjectState } from '../battle-state';
-import { GameConfig, TowerConfig, ConfigImageMap } from '../game-config';
+import { GameConfig, ConfigAndImage, TowerConfig, ConfigImageMap, MonsterConfig, ProjectileConfig } from '../game-config';
 
 @Component({
   selector: 'app-battle-layer-renderer',
@@ -14,7 +14,7 @@ import { GameConfig, TowerConfig, ConfigImageMap } from '../game-config';
 export class BattleLayerRendererComponent extends BaseLayerRendererComponent implements OnInit, OnChanges, OnDestroy {
   private numRows = 0;
   private numCols = 0;
-  private objectImgs: Map<number, Konva.Image> = new Map();
+  private objectGroups: Map<number, Konva.Group> = new Map();
   @Input() gameConfig!: GameConfig;
   @Input() state!: BattleState;
   animationRequestId: number | undefined = undefined;
@@ -48,23 +48,49 @@ export class BattleLayerRendererComponent extends BaseLayerRendererComponent imp
       cancelAnimationFrame(this.animationRequestId);
       this.animationRequestId = undefined;
     }
-    this.objectImgs = new Map();
+    this.objectGroups = new Map();
     this.layer.destroyChildren();
+  }
+
+  getConfig(objState: ObjectState): ConfigAndImage<MonsterConfig | ProjectileConfig> {
+    switch (objState.objType) {
+      case ObjectType.MONSTER: {
+        const monsterConfig = this.gameConfig.monsters.get(objState.configId);
+        if (monsterConfig === undefined) {
+          throw Error(`Could not find monster: ${objState.configId}`);
+        }
+        return monsterConfig;
+        break;
+      }
+      case ObjectType.PROJECTILE: {
+        const projectileConfig = this.gameConfig.projectiles.get(objState.configId);
+        if (projectileConfig === undefined) {
+          throw Error(`Could not find projectile: ${objState.configId}`);
+        }
+        return projectileConfig;
+        break;
+      }
+      default:
+        const _exhaustiveCheck: never = objState.objType;
+        return _exhaustiveCheck;
+    }
   }
 
   render() {
     this.animationRequestId = undefined;
-    const battleUpdate: BattleUpdate | undefined = this.state.getState(Date.now() / 1000);
+    const battleUpdate: BattleUpdate | undefined = this.state.getState(
+      Date.now() / 1000, this.gameConfig);
+    const tileSize = this.gameConfig.playfield.tileSize;
     if (battleUpdate === undefined) {
       return;
     }
 
     for (let i = 0; i < battleUpdate.deletedIds.length; i++) {
       const deletedId: number = battleUpdate.deletedIds[i];
-      let objectImg = this.objectImgs.get(deletedId);
-      if (objectImg) {
-        this.objectImgs.delete(deletedId);
-        objectImg.destroy();
+      let objGroup = this.objectGroups.get(deletedId);
+      if (objGroup) {
+        this.objectGroups.delete(deletedId);
+        objGroup.destroy();
       } else {
         console.warn(`Attempted to remove ID ${deletedId}, but it wasn't found.`);
       }
@@ -72,50 +98,78 @@ export class BattleLayerRendererComponent extends BaseLayerRendererComponent imp
 
     for (let i = 0; i < battleUpdate.objects.length; i++) {
       const objState = battleUpdate.objects[i];
-      let objImg = this.objectImgs.get(objState.id);
+      let objGroup = this.objectGroups.get(objState.id);
 
       // Determine the size of the objects
-      let size = 0;
-      if (objState.objType === ObjectType.Monster) {
-        size = 1.0;
-      } else if (objState.objType === ObjectType.Projectile) {
-        const tileSize = this.gameConfig.playfield.tileSize;
-        const projectileConfig = this.gameConfig.projectiles.get(objState.configId);
-        if (projectileConfig === undefined) {
-          throw Error(`Could not find projectile: ${objState.configId}`);
-        }
-        size = projectileConfig.size / tileSize;
-      }
-      if (size > 1.0) {
-        console.warn(`Got size > 1: ${size}`);
+      const config = this.getConfig(objState);
+      const size = config.size / tileSize;
+      if (size === undefined || size <= 0.0 || size > 1.0) {
+        console.warn(`Got invalid size: ${size}`);
       }
 
-      if (objImg) {
-        objImg.x((objState.pos.col + ((1 - size) / 2)) * this.cellSize_);
-        objImg.y((objState.pos.row + ((1 - size) / 2)) * this.cellSize_);
-        objImg.width(this.cellSize_ * size);
-        objImg.height(this.cellSize_ * size);
-      } else {
-        var rawImg;
-        if (objState.objType === ObjectType.Monster) {
-          rawImg = this.gameConfig.monsters.get(objState.configId)?.img;
-        } else if (objState.objType === ObjectType.Projectile) {
-          rawImg = this.gameConfig.projectiles.get(objState.configId)?.img;
+      if (objGroup) {
+        objGroup.x(objState.pos.col * this.cellSize_);
+        objGroup.y(objState.pos.row * this.cellSize_);
+        objGroup.scaleX(this.cellSize_ / tileSize);
+        objGroup.scaleY(this.cellSize_ / tileSize);
+
+        // Adjust health.
+        if (objState.health !== undefined && objState.maxHealth !== undefined) {
+          const innerHealthBar = objGroup.findOne('.innerHealthBar');
+          if (innerHealthBar === undefined) {
+            throw Error(`Object ${objState.id} has health, but no inner health bar.`);
+          }
+          innerHealthBar.width(tileSize * 0.9 * (objState.health / objState.maxHealth));
         }
+      } else {
+        var rawImg = config.img;
         if (rawImg === undefined) {
           console.warn("Couldn't find image for object ID: " + objState.id);
           console.warn(objState);
           continue;
         }
-        let newObjImg = new Konva.Image({
-          x: (objState.pos.col + ((1 - size) / 2)) * this.cellSize_,
-          y: (objState.pos.row + ((1 - size) / 2)) * this.cellSize_,
-          width: this.cellSize_ * size,
-          height: this.cellSize_ * size,
+        // Group is normalized based on tileSize.
+        let newGroup = new Konva.Group({
+          x: objState.pos.col * this.cellSize_,
+          y: objState.pos.row * this.cellSize_,
+          scaleX: this.cellSize_ / tileSize,
+          scaleY: this.cellSize_ / tileSize,
+        });
+
+        let newImg = new Konva.Image({
+          x: (((1 - size) / 2)) * tileSize,
+          y: (((1 - size) / 2)) * tileSize,
+          width: tileSize * size,
+          height: tileSize * size,
           image: rawImg,
         });
-        this.objectImgs.set(objState.id, newObjImg);
-        this.layer.add(newObjImg);
+        newGroup.add(newImg);
+
+        if (objState.health !== undefined) {
+          if (objState.maxHealth === undefined) {
+            throw Error(`Found object ${objState.id} with health, but not maxHealth.`);
+          }
+          let outerHealthBar = new Konva.Rect({
+            x: tileSize * 0.05,
+            width: tileSize * 0.9,
+            height: tileSize * 0.075,
+            name: 'outerHealthBar',
+            stroke: 'red',
+            strokeWidth: tileSize * 0.013,
+          });
+          let innerHealthBar = new Konva.Rect({
+            x: tileSize * 0.05,
+            width: tileSize * 0.9 * (objState.health / objState.maxHealth),
+            height: tileSize * 0.075,
+            name: 'innerHealthBar',
+            fill: 'red',
+          });
+          newGroup.add(outerHealthBar);
+          newGroup.add(innerHealthBar);
+        }
+
+        this.objectGroups.set(objState.id, newGroup);
+        this.layer.add(newGroup);
       }
     }
 

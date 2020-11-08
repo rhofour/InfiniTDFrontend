@@ -67,6 +67,7 @@ export const monsterConfig = JsonDecoder.object<MonsterConfig>(
     health: JsonDecoder.number,
     speed: JsonDecoder.number,
     bounty: JsonDecoder.number,
+    size: JsonDecoder.number,
   },
   'MonsterConfig');
 

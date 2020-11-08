@@ -24,6 +24,7 @@ export interface MonsterConfig {
   health: number,
   speed: number,
   bounty: number,
+  size: number,
 }
 
 export interface TowerConfig {
