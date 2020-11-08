@@ -117,11 +117,15 @@ export class BattleState {
   }
 
   processResults(results: BattleResults): BattleState {
-    return new BattleState(undefined, this.events, this.name, results);
+    return new BattleState(this.startedTimeSecs, this.events, this.name, results);
   }
 
   getState(timeSecs: number, gameConfig: GameConfig): BattleUpdate | undefined {
     if (this.startedTimeSecs === undefined) {
+      return undefined;
+    }
+    if (this.events.length === 0) {
+      console.log("Battle finished.");
       return undefined;
     }
     // Convert to times relative to the start of the battle.
