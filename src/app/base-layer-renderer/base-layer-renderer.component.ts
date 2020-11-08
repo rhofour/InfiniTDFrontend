@@ -14,19 +14,24 @@ export abstract class BaseLayerRendererComponent implements OnInit {
   @Input() set cellSize(v: number) {
     this.cellSize_ = v;
     if (this.initialized) {
+      this.layer.zIndex(this.zIndex);
       this.render();
     }
   }
   @Input() stage!: Konva.Stage;
+  @Input() zIndex!: number;
 
   abstract render(): void;
 
   ngOnInit() {
     if (this.stage === undefined) {
-      throw new Error("Attribute 'stage' is required.");
+      throw new Error("Input 'stage' is required.");
     }
     if (this.cellSize_ === undefined) {
-      throw new Error("Attribute 'cellSize' is required.");
+      throw new Error("Input 'cellSize' is required.");
+    }
+    if (this.cellSize_ === undefined) {
+      throw new Error("Input 'zIndex' is required.");
     }
     this.stage.add(this.layer);
     this.initialized = true;

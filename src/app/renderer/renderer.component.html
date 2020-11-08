@@ -1,11 +1,12 @@
 <app-background-layer-renderer [stage]="stage" [gameConfig]="gameConfig"
-  [towersState]="state?.towers" [cellSize]="cellSize">
+  [towersState]="state?.towers" [cellSize]="cellSize" [zIndex]=0>
 </app-background-layer-renderer>
 <app-tower-layer-renderer *ngIf="state" [gameConfig]="gameConfig"
-  [state]="state.towers" [stage]="stage" [cellSize]="cellSize">
+  [state]="state.towers" [stage]="stage" [cellSize]="cellSize" [zIndex]=1>
 </app-tower-layer-renderer>
 <app-battle-layer-renderer [stage]="stage" [gameConfig]="gameConfig"
-  [state]="battleState" [cellSize]="cellSize">
+  [state]="battleState" [cellSize]="cellSize" [zIndex]=2>
 </app-battle-layer-renderer>
-<app-ui-layer-renderer [stage]="stage" [cellSize]="cellSize">
+<app-ui-layer-renderer [stage]="stage" [cellSize]="cellSize" [gameConfig]="gameConfig"
+  [zIndex]=3>
 </app-ui-layer-renderer>
