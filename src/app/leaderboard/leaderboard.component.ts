@@ -6,7 +6,7 @@ import { LoggedInUser } from '../logged-in-user';
 import { User } from '../user'
 import { BackendService } from '../backend.service'
 
-const REFRESH_MS = 10000; // Refresh every 10s
+const REFRESH_MS = 5000; // Refresh every 5s
 
 @Component({
   selector: 'app-leaderboard',
@@ -15,7 +15,7 @@ const REFRESH_MS = 10000; // Refresh every 10s
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LeaderboardComponent {
-  displayedColumns = [ 'rank', 'name', 'accumulatedGold', 'goldPerMinute' ];
+  displayedColumns = [ 'rank', 'name', 'accumulatedGold', 'goldPerMinute', 'battleStatus' ];
 
   constructor(
     private backend: BackendService
