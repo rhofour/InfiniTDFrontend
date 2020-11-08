@@ -12,9 +12,11 @@ import { BackendService } from '../backend.service'
 })
 export class LeaderboardComponent {
   users$: Observable<User[]> = EMPTY;
+  displayedColumns = [ 'rank', 'name', 'accumulatedGold', 'goldPerMinute' ];
+  console = console;
 
   constructor(
-    private backend: BackendService
+    public backend: BackendService
   ) {
     this.users$ = backend.getUsers();
   }

@@ -1,0 +1,15 @@
+table {
+  width: 100%;
+}
+
+tr.other-user-row:hover {
+  background: whitesmoke;
+}
+
+tr.this-user-row {
+  background: lemonchiffon;
+}
+
+tr.this-user-row:hover {
+  background: khaki;
+}

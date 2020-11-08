@@ -1,13 +1,40 @@
 <ng-container *ngIf="users$ | async as users">
-  <ul>
-    <ng-container *ngFor="let user of users">
-      <li *ngIf="user.accumulatedGold > 0"
-        routerLink="/battleground/{{user.name}}"
-        >
-        {{user.name}} has accumulated {{user.accumulatedGold | number:'0.0-1'}} gold.
-        In battle: {{user.inBattle}}
-      </li>
+  <table mat-table [dataSource]="users">
+    <ng-container matColumnDef="rank">
+      <th mat-header-cell *matHeaderCellDef> Rank </th>
+      <td mat-cell *matCellDef="let index = index"> {{index + 1}} </td>
     </ng-container>
-  </ul>
+
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Name </th>
+      <td mat-cell *matCellDef="let user"> {{user.name}} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="accumulatedGold">
+      <th mat-header-cell *matHeaderCellDef> Accumulated Gold </th>
+      <td mat-cell *matCellDef="let user">
+        {{user.accumulatedGold | number:'0.0-1'}}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="goldPerMinute">
+      <th mat-header-cell *matHeaderCellDef> Gold / Min </th>
+      <td mat-cell *matCellDef="let user">
+        {{user.goldPerMinute | number:'0.0-1'}}
+      </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <ng-container *ngIf="backend.getLoggedInUser() | async as lUser; else noLoggedInUser">
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+        [ngClass]="(lUser.matches(row)) ? 'this-user-row' : 'other-user-row'"
+        routerLink="/battleground/{{row.name}}"></tr>
+    </ng-container>
+    <ng-template #noLoggedInUser>
+      <tr mat-row other-user-row *matRowDef="let row; columns: displayedColumns;"
+        routerLink="/battleground/{{row.name}}"></tr>
+    </ng-template>
+  </table>
+
   <div *ngIf="users.length === 0">No users yet.</div>
 </ng-container>
