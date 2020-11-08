@@ -1,4 +1,4 @@
-<ng-container *ngIf="users$ | async as users">
+<ng-container *ngIf="usersRowData$ | async as users">
   <table mat-table [dataSource]="users">
     <ng-container matColumnDef="rank">
       <th mat-header-cell *matHeaderCellDef> Rank </th>
@@ -24,16 +24,11 @@
       </td>
     </ng-container>
 
-    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <ng-container *ngIf="backend.getLoggedInUser() | async as lUser; else noLoggedInUser">
-      <tr mat-row *matRowDef="let row; columns: displayedColumns;"
-        [ngClass]="(lUser.matches(row)) ? 'this-user-row' : 'other-user-row'"
-        routerLink="/battleground/{{row.name}}"></tr>
-    </ng-container>
-    <ng-template #noLoggedInUser>
-      <tr mat-row other-user-row *matRowDef="let row; columns: displayedColumns;"
-        routerLink="/battleground/{{row.name}}"></tr>
-    </ng-template>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+      [ngClass]="(row.loggedIn) ? 'this-user-row' : 'other-user-row'"
+      routerLink="/battleground/{{row.name}}">
+    </tr>
   </table>
 
   <div *ngIf="users.length === 0">No users yet.</div>
