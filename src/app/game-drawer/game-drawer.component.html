@@ -25,9 +25,9 @@
       <button *ngIf="selection.gridTower && selection.grid"
             (click)="sell(lUser, selection.grid)"
             [disabled]="user.inBattle"
-            appClickShortcut shortcutKey="e"
+            appClickShortcut shortcutKey="s"
             mat-stroked-button>
-        S(e)ll ({{Math.floor(selection.gridTower.cost * gameConfig.misc.sellMultiplier)}} gold)
+        (S)ell ({{Math.floor(selection.gridTower.cost * gameConfig.misc.sellMultiplier)}} gold)
       </button>
     </ng-container>
   </div>
@@ -69,22 +69,22 @@
     <ng-container *ngIf="lUser.matches(user); else otherUser">
       <button *ngIf="!user.inBattle" (click)="startBattle(lUser)"
           [disabled]="user.wave.length === 0"
-          appClickShortcut shortcutKey="s"
+          appClickShortcut shortcutKey=" "
           mat-stroked-button>
-        (S)tart battle
+        Start battle
       </button>
       <button *ngIf="user.inBattle" (click)="stopBattle(lUser)"
-          appClickShortcut shortcutKey="s"
+          appClickShortcut shortcutKey=" "
           mat-stroked-button>
-        (S)top battle
+        Stop battle
       </button>
     </ng-container>
   </ng-container>
   <ng-template #otherUser>
     <button (click)="showBattle(user.name, user.name)"
-        appClickShortcut shortcutKey="s"
+        appClickShortcut shortcutKey=" "
         mat-stroked-button>
-      (S)how battle
+      Show battle
     </button>
   </ng-template>
 </mat-expansion-panel>
