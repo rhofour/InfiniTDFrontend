@@ -107,7 +107,7 @@ export class UiLayerRendererComponent extends BaseLayerRendererComponent impleme
               return;
             }
             for (let i = 0; i < numRings; i++) {
-              const modTime = (firingPeriod * i + (frame.time / 1000)) % (firingPeriod * numRings);
+              const modTime = (-firingPeriod * i + (frame.time / 1000)) % (firingPeriod * numRings);
               const radius = modTime / firingDuration;
               if (radius > 1.0 || (frame.time / 1000) < firingPeriod * i) {
                 rings[i].radius(0);
