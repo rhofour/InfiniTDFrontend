@@ -63,7 +63,7 @@ export class UiLayerRendererComponent extends BaseLayerRendererComponent impleme
         let outerRangeCircle = new Konva.Circle({
           x: (this.selection.grid.col + 0.5) * this.cellSize_,
           y: (this.selection.grid.row + 0.5) * this.cellSize_,
-          radius: gridTower.range / 100 * this.cellSize_,
+          radius: gridTower.range * this.cellSize_,
           fillEnabled: false,
           stroke: 'black',
           strokeWidth: this.cellSize_ * 0.05,
@@ -73,7 +73,7 @@ export class UiLayerRendererComponent extends BaseLayerRendererComponent impleme
         let innerRangeCircle = new Konva.Circle({
           x: (this.selection.grid.col + 0.5) * this.cellSize_,
           y: (this.selection.grid.row + 0.5) * this.cellSize_,
-          radius: gridTower.range / 100 * this.cellSize_,
+          radius: gridTower.range * this.cellSize_,
           fillEnabled: false,
           stroke: 'lime',
           strokeWidth: this.cellSize_ * 0.025,
@@ -83,7 +83,7 @@ export class UiLayerRendererComponent extends BaseLayerRendererComponent impleme
 
         if (gridTower.firingRate > 0) {
           const firingPeriod = 1 / gridTower.firingRate;
-          const firingDuration = gridTower.range / gridTower.projectileSpeed / 100;
+          const firingDuration = gridTower.range / gridTower.projectileSpeed;
           const numRings = Math.ceil(firingDuration / firingPeriod);
           let rings: Konva.Circle[] = [];
           for (let i = 0; i < numRings; i++) {
@@ -112,7 +112,7 @@ export class UiLayerRendererComponent extends BaseLayerRendererComponent impleme
               if (radius > 1.0 || (frame.time / 1000) < firingPeriod * i) {
                 rings[i].radius(0);
               } else {
-                rings[i].radius(gridTower.range / 100 * this.cellSize_ * radius);
+                rings[i].radius(gridTower.range * this.cellSize_ * radius);
               }
             }
           }, this.layer);
