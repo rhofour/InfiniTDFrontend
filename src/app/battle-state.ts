@@ -225,6 +225,9 @@ export class BattleState {
     // Remove any objects that were deleted.
     let nonDeletedObjects = objects.filter(obj => !this.deletedIds.has(obj.id));
 
+    // Remove any events that reference deleted objects.
+    this.events = this.events.filter(obj => !this.deletedIds.has(obj.id));
+
     return {
       objects: nonDeletedObjects,
       deletedIds: newlyDeletedIds,
