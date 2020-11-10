@@ -117,7 +117,8 @@ export class BattleState {
   }
 
   processResults(results: BattleResults): BattleState {
-    return new BattleState(this.startedTimeSecs, this.events, this.name, results);
+    return new BattleState(
+      this.startedTimeSecs, this.events, this.name, results, false, this.deletedIds);
   }
 
   getState(timeSecs: number, gameConfig: GameConfig): BattleUpdate | undefined {
