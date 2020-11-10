@@ -58,14 +58,24 @@ export class UiLayerRendererComponent extends BaseLayerRendererComponent impleme
       });
       this.layer.add(selectionBox);
 
+      let rangeEffectOpacity = 0;
+      let selectedTower: TowerConfig | undefined = undefined;
       if (this.selection.gridTower) {
-        const gridTower = this.selection.gridTower;
+        selectedTower = this.selection.gridTower;
+        rangeEffectOpacity = 1.0;
+      } else if (this.selection.buildTower) {
+        selectedTower = this.selection.buildTower;
+        rangeEffectOpacity = 0.5;
+      }
+      if (selectedTower !== undefined && this.selection.grid !== undefined &&
+          rangeEffectOpacity > 0) {
         let outerRangeCircle = new Konva.Circle({
           x: (this.selection.grid.col + 0.5) * this.cellSize_,
           y: (this.selection.grid.row + 0.5) * this.cellSize_,
-          radius: gridTower.range * this.cellSize_,
+          radius: selectedTower.range * this.cellSize_,
           fillEnabled: false,
           stroke: 'black',
+          opacity: rangeEffectOpacity,
           strokeWidth: this.cellSize_ * 0.05,
           shadowEnabled: false,
         });
@@ -73,17 +83,18 @@ export class UiLayerRendererComponent extends BaseLayerRendererComponent impleme
         let innerRangeCircle = new Konva.Circle({
           x: (this.selection.grid.col + 0.5) * this.cellSize_,
           y: (this.selection.grid.row + 0.5) * this.cellSize_,
-          radius: gridTower.range * this.cellSize_,
+          radius: selectedTower.range * this.cellSize_,
           fillEnabled: false,
           stroke: 'lime',
+          opacity: rangeEffectOpacity,
           strokeWidth: this.cellSize_ * 0.025,
           shadowEnabled: false,
         });
         this.layer.add(innerRangeCircle);
 
-        if (gridTower.firingRate > 0) {
-          const firingPeriod = 1 / gridTower.firingRate;
-          const firingDuration = gridTower.range / gridTower.projectileSpeed;
+        if (selectedTower.firingRate > 0) {
+          const firingPeriod = 1 / selectedTower.firingRate;
+          const firingDuration = selectedTower.range / selectedTower.projectileSpeed;
           const numRings = Math.ceil(firingDuration / firingPeriod);
           let rings: Konva.Circle[] = [];
           for (let i = 0; i < numRings; i++) {
@@ -93,6 +104,7 @@ export class UiLayerRendererComponent extends BaseLayerRendererComponent impleme
               radius: 0,
               fillEnabled: false,
               stroke: 'red',
+              opacity: rangeEffectOpacity,
               strokeWidth: this.cellSize_ * 0.025,
               shadowEnabled: false,
             });
@@ -102,6 +114,11 @@ export class UiLayerRendererComponent extends BaseLayerRendererComponent impleme
           if (this.ringAnim) {
             this.ringAnim.stop();
           }
+          // Without this TS thinks selectedTower could be undefined in the
+          // animation function.
+          const definedSelectedTower: TowerConfig = selectedTower;
+          // TODO: Replace any with IFrame once
+          // https://github.com/konvajs/konva/issues/1009 is fixed.
           this.ringAnim = new Konva.Animation((frame: any | undefined) => {
             if (frame === undefined) {
               return;
@@ -112,7 +129,7 @@ export class UiLayerRendererComponent extends BaseLayerRendererComponent impleme
               if (radius > 1.0 || (frame.time / 1000) < firingPeriod * i) {
                 rings[i].radius(0);
               } else {
-                rings[i].radius(gridTower.range * this.cellSize_ * radius);
+                rings[i].radius(definedSelectedTower.range * this.cellSize_ * radius);
               }
             }
           }, this.layer);
