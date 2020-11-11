@@ -59,16 +59,17 @@ export class UiLayerRendererComponent extends BaseLayerRendererComponent impleme
       this.layer.add(selectionBox);
 
       let rangeEffectOpacity = 0;
-      let selectedTower: TowerConfig | undefined = undefined;
+      let maybeSelectedTower: TowerConfig | undefined = undefined;
       if (this.selection.gridTower) {
-        selectedTower = this.selection.gridTower;
+        maybeSelectedTower = this.selection.gridTower;
         rangeEffectOpacity = 1.0;
       } else if (this.selection.buildTower) {
-        selectedTower = this.selection.buildTower;
+        maybeSelectedTower = this.selection.buildTower;
         rangeEffectOpacity = 0.5;
       }
-      if (selectedTower !== undefined && this.selection.grid !== undefined &&
+      if (maybeSelectedTower !== undefined && this.selection.grid !== undefined &&
           rangeEffectOpacity > 0) {
+        const selectedTower : TowerConfig = maybeSelectedTower;
         let outerRangeCircle = new Konva.Circle({
           x: (this.selection.grid.col + 0.5) * this.cellSize_,
           y: (this.selection.grid.row + 0.5) * this.cellSize_,
@@ -114,9 +115,6 @@ export class UiLayerRendererComponent extends BaseLayerRendererComponent impleme
           if (this.ringAnim) {
             this.ringAnim.stop();
           }
-          // Without this TS thinks selectedTower could be undefined in the
-          // animation function.
-          const definedSelectedTower: TowerConfig = selectedTower;
           this.ringAnim = new Konva.Animation(frame => {
             if (frame === undefined) {
               return;
@@ -127,7 +125,7 @@ export class UiLayerRendererComponent extends BaseLayerRendererComponent impleme
               if (radius > 1.0 || (frame.time / 1000) < firingPeriod * i) {
                 rings[i].radius(0);
               } else {
-                rings[i].radius(definedSelectedTower.range * this.cellSize_ * radius);
+                rings[i].radius(selectedTower.range * this.cellSize_ * radius);
               }
             }
           }, this.layer);
