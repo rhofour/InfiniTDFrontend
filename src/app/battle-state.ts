@@ -88,6 +88,7 @@ export class BattleState {
     private events: BattleEvent[] = [],
     public live: boolean = false,
     public results: BattleResults | undefined = undefined,
+    private enemyHealth: Map<number, number> = new Map(),
   ) { }
 
   processEvent(event: BattleEvent) {
@@ -117,7 +118,7 @@ export class BattleState {
 
   processResults(results: BattleResults): BattleState {
     return new BattleState(
-      this.name, this.startedTimeSecs, this.events, false, results);
+      this.name, this.startedTimeSecs, this.events, false, results, this.enemyHealth);
   }
 
   getState(timeSecs: number, gameConfig: GameConfig): BattleUpdate | undefined {
@@ -184,7 +185,7 @@ export class BattleState {
                 configId: event.configId,
                 id: event.id,
                 pos: pos,
-                health: monsterConfig.health,
+                health: this.enemyHealth.get(event.id) || monsterConfig.health,
                 maxHealth: monsterConfig.health,
               };
               objects.push(newObj);
@@ -206,6 +207,7 @@ export class BattleState {
           break;
         }
         case EventType.DAMAGE: {
+          this.enemyHealth.set(event.id, event.health);
           for (let obj of objects) {
             if (obj.id === event.id) {
               obj.health = event.health;
