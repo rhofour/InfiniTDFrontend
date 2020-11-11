@@ -36,6 +36,6 @@ export class LiveBattleStateService {
             'Failed to decode data for BattleEvent: ' + decodedEvent.error);
         }
         return battleState;
-      }, new BattleState(undefined)));
+      }, new BattleState('')));
   }
 }

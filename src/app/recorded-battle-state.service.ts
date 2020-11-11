@@ -24,7 +24,8 @@ export class RecordedBattleStateService {
         const decodedBattle = decoders.battle.decode(resp);
         if (decodedBattle.isOk()) {
           const battle: Battle = decodedBattle.value;
-          this.battleState$.next(new BattleState(Date.now() / 1000, battle.events, battle.name, battle.results, false));
+          this.battleState$.next(new BattleState(battle.name, Date.now() / 1000, battle.events,
+            false, battle.results));
         } else {
           console.warn(`Failed to decode battle: ${decodedBattle.error}`);
         }
@@ -34,7 +35,7 @@ export class RecordedBattleStateService {
 
   stopBattle() {
     // Send an empty battle state.
-    this.battleState$.next(new BattleState(undefined));
+    this.battleState$.next(new BattleState(''));
   }
 
   getRecordedBattleState(): Observable<BattleState> {

@@ -83,12 +83,11 @@ export class BattleState {
   private numUpdates: number = 0;
 
   constructor(
-    private startedTimeSecs: number | undefined,
+    public name: string,
+    private startedTimeSecs: number | undefined = undefined,
     private events: BattleEvent[] = [],
-    public name: string = '',
-    public results: BattleResults | undefined = undefined,
     public live: boolean = false,
-    private deletedIds: Set<number> = new Set(),
+    public results: BattleResults | undefined = undefined,
   ) { }
 
   processEvent(event: BattleEvent) {
@@ -98,17 +97,17 @@ export class BattleState {
   processBattleMetadata(metadata: BattleMetadata): BattleState {
     switch (metadata.status) {
       case BattleStatus.PENDING:
-        return new BattleState(undefined, [], metadata.name);
+        return new BattleState(metadata.name);
       case BattleStatus.LIVE:
         if (metadata.time === undefined) {
           console.warn(metadata);
           throw new Error('Received live BattleMetadata with no time.');
         }
         return new BattleState(
-          (Date.now() / 1000) - metadata.time, this.events, metadata.name, undefined, true);
+          metadata.name, (Date.now() / 1000) - metadata.time, this.events, true);
       case BattleStatus.FINISHED:
         return new BattleState(
-          (Date.now() / 1000), this.events, metadata.name, undefined, false);
+          metadata.name, (Date.now() / 1000), this.events, false);
       default: {
         const _exhaustiveCheck: never = metadata.status;
         return _exhaustiveCheck;
@@ -118,7 +117,7 @@ export class BattleState {
 
   processResults(results: BattleResults): BattleState {
     return new BattleState(
-      this.startedTimeSecs, this.events, this.name, results, false, this.deletedIds);
+      this.name, this.startedTimeSecs, this.events, false, results);
   }
 
   getState(timeSecs: number, gameConfig: GameConfig): BattleUpdate | undefined {
@@ -151,9 +150,12 @@ export class BattleState {
       }
       switch (event.eventType) {
         case EventType.DELETE: {
-          if (event.startTime > relLastUpdateTimeSecs && this.numUpdates > 0) {
-            newlyDeletedIds.push(event.id);
-            this.deletedIds.add(event.id);
+          if (event.startTime > relLastUpdateTimeSecs) {
+            if (this.numUpdates > 0) {
+              // Don't mark an enemy as deleted if the UI has and will never
+              // see them.
+              newlyDeletedIds.push(event.id);
+            }
             if (inPast) {
               numPastEvents++;
             }
@@ -161,7 +163,7 @@ export class BattleState {
           break;
         }
         case EventType.MOVE: {
-          if (event.endTime < relTimeSecs || this.deletedIds.has(event.id)) {
+          if (event.endTime < relTimeSecs || newlyDeletedIds.includes(event.id)) {
             if (inPast) {
               numPastEvents++;
             }
@@ -223,10 +225,10 @@ export class BattleState {
     this.numUpdates++;
 
     // Remove any objects that were deleted.
-    let nonDeletedObjects = objects.filter(obj => !this.deletedIds.has(obj.id));
+    let nonDeletedObjects = objects.filter(obj => !newlyDeletedIds.includes(obj.id));
 
     // Remove any events that reference deleted objects.
-    this.events = this.events.filter(obj => !this.deletedIds.has(obj.id));
+    this.events = this.events.filter(obj => !newlyDeletedIds.includes(obj.id));
 
     return {
       objects: nonDeletedObjects,
