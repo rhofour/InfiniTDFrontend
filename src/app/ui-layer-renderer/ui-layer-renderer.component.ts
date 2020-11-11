@@ -117,9 +117,7 @@ export class UiLayerRendererComponent extends BaseLayerRendererComponent impleme
           // Without this TS thinks selectedTower could be undefined in the
           // animation function.
           const definedSelectedTower: TowerConfig = selectedTower;
-          // TODO: Replace any with IFrame once
-          // https://github.com/konvajs/konva/issues/1009 is fixed.
-          this.ringAnim = new Konva.Animation((frame: any | undefined) => {
+          this.ringAnim = new Konva.Animation(frame => {
             if (frame === undefined) {
               return;
             }
