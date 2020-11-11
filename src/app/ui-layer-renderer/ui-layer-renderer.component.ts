@@ -66,6 +66,20 @@ export class UiLayerRendererComponent extends BaseLayerRendererComponent impleme
       } else if (this.selection.buildTower) {
         maybeSelectedTower = this.selection.buildTower;
         rangeEffectOpacity = 0.5;
+
+        // Render the selected tower as transparent.
+        const towerImgData = this.gameConfig.towers.get(maybeSelectedTower.id)?.img;
+        if (towerImgData && this.selection.grid) {
+          let towerImg = new Konva.Image({
+              x: this.selection.grid.col * this.cellSize_,
+              y: this.selection.grid.row * this.cellSize_,
+              width: this.cellSize_,
+              height: this.cellSize_,
+              image: towerImgData,
+              opacity: 0.5,
+          });
+          this.layer.add(towerImg);
+        }
       }
       if (maybeSelectedTower !== undefined && this.selection.grid !== undefined &&
           rangeEffectOpacity > 0) {
