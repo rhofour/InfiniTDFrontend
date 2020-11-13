@@ -1,5 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core';
 import { MatListModule } from '@angular/material/list';
+import { MatCardModule } from '@angular/material/card';
 
 import { BattleResults } from '../battle-state';
 import { GameConfig, ConfigImageMap, MonsterConfig, BattleBonus, BonusType } from '../game-config';
@@ -20,6 +21,8 @@ export class BattleResultsComponent implements OnInit {
   @Input() gameConfig!: GameConfig;
   @Input() battleResults!: BattleResults;
   Math = Math;
+  monstersColumns = [ 'name', 'numDefeated', 'numSent', 'reward' ];
+  awardsColumns = [ 'name', 'modifier', 'subtotal' ];
 
   constructor() { }
 
@@ -49,15 +52,30 @@ export class BattleResultsComponent implements OnInit {
     return res;
   }
 
-  get bonuses(): BattleBonus[] {
-    let res: BattleBonus[] = [];
+  get bonuses(): (BattleBonus & { subtotal: number })[] {
+    let res: (BattleBonus & { subtotal: number })[] = [];
+    let subtotal: number = this.subtotal;
     for (let bonusId of this.battleResults.bonuses) {
       const bonus: BattleBonus | undefined = this.gameConfig.misc.battleBonuses.get(bonusId);
       if (bonus === undefined) {
         console.warn(`Game config isn't aware of bonus ${bonusId}.`);
         return [];
       }
-      res.push(bonus);
+      switch (bonus.bonusType) {
+        case BonusType.ADDITIVE:
+          subtotal += bonus.bonusAmount;
+          break;
+        case BonusType.MULTIPLICATIVE:
+          subtotal *= bonus.bonusAmount;
+          break;
+        default:
+          const _exhaustiveCheck: never = bonus.bonusType;
+      }
+      res.push(Object.assign({}, bonus, {subtotal: subtotal}));
+    }
+    if (Math.abs(subtotal - this.battleResults.reward) > 0.001) {
+      console.warn(`Calculated final total ${subtotal} doesn't match battle reward ` +
+        `${this.battleResults.reward}.`);
     }
     return res;
   }
@@ -79,5 +97,13 @@ export class BattleResultsComponent implements OnInit {
       subtotal += m.numDefeated * m.monster.bounty;
     }
     return subtotal;
+  }
+
+  get totalDefeated(): number {
+    return this.monstersDefeated.reduce( (acc, x) => acc + x.numDefeated, 0 );
+  }
+
+  get totalSent(): number {
+    return this.monstersDefeated.reduce( (acc, x) => acc + x.numSent, 0 );
   }
 }

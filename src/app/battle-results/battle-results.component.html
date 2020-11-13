@@ -1,19 +1,71 @@
-Monsters defeated:
-<mat-list>
-  <mat-list-item *ngFor="let m of monstersDefeated">
-    {{m.numDefeated}} of {{m.numSent}} {{m.monster.name}} defeated =
-    {{m.numDefeated * m.monster.bounty}} gold earned.
-  </mat-list-item>
-</mat-list>
-Subtotal: {{ subtotal }}<br />
-Awards:
-<mat-list>
-  <mat-list-item *ngFor="let bonus of bonuses">
-    {{ bonus.name }} {{ displayBonusAmount(bonus) }}
-  </mat-list-item>
-</mat-list>
-Total: {{ battleResults.reward | number : '1.0-1' }} gold <br />
-Time: {{ battleResults.timeSecs | number : '1.2-2' }}s
-<span *ngIf="battleResults.timeSecs < 60.0">(Note: There can only be one battle per minute)
-<br />
-Gold Rate: {{ battleResults.reward / Math.max(1.0, battleResults.timeSecs / 60.0) | number : '1.0-1'}} gold / min
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Monsters defeated</mat-card-title>
+  </mat-card-header>
+  <table mat-table [dataSource]="monstersDefeated">
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Name </th>
+      <td mat-cell *matCellDef="let m"> {{m.monster.name}} </td>
+      <td mat-footer-cell *matFooterCellDef>Subtotal</td>
+    </ng-container>
+    <ng-container matColumnDef="numDefeated">
+      <th mat-header-cell *matHeaderCellDef> Defeated </th>
+      <td mat-cell *matCellDef="let m"> {{m.numDefeated}} </td>
+      <td mat-footer-cell *matFooterCellDef> {{ totalDefeated }} </td>
+    </ng-container>
+    <ng-container matColumnDef="numSent">
+      <th mat-header-cell *matHeaderCellDef> Sent </th>
+      <td mat-cell *matCellDef="let m"> {{m.numSent}} </td>
+      <td mat-footer-cell *matFooterCellDef> {{ totalSent }} </td>
+    </ng-container>
+    <ng-container matColumnDef="reward">
+      <th mat-header-cell *matHeaderCellDef> Reward </th>
+      <td mat-cell *matCellDef="let m"> {{m.numDefeated * m.monster.bounty}} </td>
+      <td mat-footer-cell *matFooterCellDef> {{ subtotal }} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="monstersColumns;"></tr>
+    <tr mat-row *matRowDef="let row; columns: monstersColumns;"></tr>
+    <tr mat-footer-row *matFooterRowDef="monstersColumns"></tr>
+  </table>
+</mat-card>
+
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Awards</mat-card-title>
+  </mat-card-header>
+  <table mat-table [dataSource]="bonuses">
+    <ng-container matColumnDef="name">
+      <th mat-header-cell *matHeaderCellDef> Name </th>
+      <td mat-cell *matCellDef="let bonus"> {{ bonus.name }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="modifier">
+      <th mat-header-cell *matHeaderCellDef> Modifier </th>
+      <td mat-cell *matCellDef="let bonus"> {{ displayBonusAmount(bonus) }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="subtotal">
+      <th mat-header-cell *matHeaderCellDef> Subtotal </th>
+      <td mat-cell *matCellDef="let bonus"> {{ bonus.subtotal }} </td>
+    </ng-container>
+
+    <tr mat-header-row *matHeaderRowDef="awardsColumns;"></tr>
+    <tr mat-row *matRowDef="let row; columns: awardsColumns;"></tr>
+  </table>
+</mat-card>
+
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Final Results</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    Total: {{ battleResults.reward | number : '1.0-1' }} gold <br />
+    Time: {{ battleResults.timeSecs | number : '1.2-2' }}s
+    <span *ngIf="battleResults.timeSecs < 60.0">
+      (Note: There can only be one battle per minute)
+    </span>
+    <br />
+    Gold Rate: {{ battleResults.reward / Math.max(1.0, battleResults.timeSecs / 60.0) | number : '1.0-1'}} gold / min
+  </mat-card-content>
+</mat-card>
