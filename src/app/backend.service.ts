@@ -1,6 +1,7 @@
 import { Injectable, NgZone } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
-import firebase from 'firebase';
+import firebase from 'firebase/app';
+import 'firebase/auth';
 import { HttpClient, HttpHeaders, HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { from, of, throwError, Observable, BehaviorSubject, pipe } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
@@ -13,7 +14,6 @@ import { LoggedInUser } from './logged-in-user';
 import { GridSelection } from './selection.service';
 import * as backend from './backend';
 
-type FbUser = firebase.User;
 @Injectable({
   providedIn: 'root'
 })
@@ -41,7 +41,7 @@ export class BackendService {
     return this.loggedInUser$.pipe(map(x => x?.user));
   }
 
-  private authenticatedHttp(fbUser: FbUser, url: string, method = 'get'): Promise<Object> {
+  private authenticatedHttp(fbUser: firebase.User, url: string, method = 'get'): Promise<Object> {
     return fbUser.getIdToken().then((idToken) => {
       if (idToken) {
         const httpOptions = {
@@ -59,7 +59,7 @@ export class BackendService {
   }
 
   // Update the user$ attribute from the Firebase user.
-  updateUser(fbUser: FbUser | null) {
+  updateUser(fbUser: firebase.User | null) {
     this.ngZone.run(() => {
       if (fbUser === null) {
         this.loggedInUser$.next(undefined);
@@ -86,7 +86,8 @@ export class BackendService {
     });
   }
 
-  private authenticatedHttpWithResponse(fbUser: FbUser, url: string, method = 'get', body?: any): Promise<HttpResponse<Object>> {
+  private authenticatedHttpWithResponse(fbUser: firebase.User, url: string,
+      method = 'get', body?: any): Promise<HttpResponse<Object>> {
     return fbUser.getIdToken().then((idToken) => {
       if (idToken) {
         return this.http.request(method, url, {
