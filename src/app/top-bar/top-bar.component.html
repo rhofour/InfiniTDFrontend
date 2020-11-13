@@ -1,20 +1,20 @@
 <mat-toolbar color="primary">
   <span>InfiniTD</span>
 </mat-toolbar>
-<nav mat-tab-nav-bar>
+<nav mat-tab-nav-bar *ngIf="path$ | async as path">
   <a mat-tab-link
     [routerLink]="'/leaderboard'"
-    [active]="'/leaderboard' == location.path()">
+    [active]="'/leaderboard' == path">
     Leaderboard
   </a>
   <a mat-tab-link *ngIf="backend.getRegisteredUser() | async as user"
     [routerLink]="'/battleground/' + user.name"
-    [active]="'/battleground/' + user.name == location.path()">
+    [active]="'/battleground/' + user.name == path">
     My Battleground
   </a>
   <a mat-tab-link
     [routerLink]="'/account'"
-    [active]="'/account' == location.path()">
+    [active]="'/account' == path">
     <span *ngIf="backend.getRegisteredUser() | async as user; else noUser">
       {{ user.name }}
     </span>
