@@ -1,5 +1,5 @@
 import { Component, OnInit, ElementRef, ViewChild, ChangeDetectionStrategy } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import Konva from 'konva';
 import { Observable, EMPTY, merge } from 'rxjs';
 
@@ -37,8 +37,10 @@ export class BattlegroundComponent implements OnInit {
     private bgStateService: BattlegroundStateService,
     private selectionService: SelectionService,
     private gameConfigService: GameConfigService,
+    private router: Router
   ) {
     this.gameConfig$ = gameConfigService.getConfig();
+    this.router.routeReuseStrategy.shouldReuseRoute = () => false;
   }
 
   ngOnInit(): void {
