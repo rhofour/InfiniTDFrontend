@@ -1,6 +1,6 @@
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { auth } from 'firebase/app';
+import firebase from 'firebase';
 import { FormControl, Validators } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 import { MatInputModule } from '@angular/material/input';
@@ -25,13 +25,14 @@ export class AccountComponent implements OnInit {
     private cdRef: ChangeDetectorRef,
   ) { }
 
-  loginError(err: auth.Error) {
+  loginError(err: firebase.auth.Error) {
     console.log(err);
     this.loginErrorMsg = 'Login error: ' + err.message;
   }
 
   googleLogin() {
-    this.afAuth.signInWithPopup(new auth.GoogleAuthProvider()).catch(err => { this.loginError(err); });
+    this.afAuth.signInWithPopup(new firebase.auth.GoogleAuthProvider())
+      .catch(err => { this.loginError(err); });
   }
 
   setName(loggedInUser: LoggedInUser) {

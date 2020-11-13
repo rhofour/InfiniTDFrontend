@@ -1,6 +1,6 @@
 import { Injectable, NgZone } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/auth';
-import { auth, User as FbUser } from 'firebase/app';
+import firebase from 'firebase';
 import { HttpClient, HttpHeaders, HttpResponse, HttpErrorResponse } from '@angular/common/http';
 import { from, of, throwError, Observable, BehaviorSubject, pipe } from 'rxjs';
 import { ajax } from 'rxjs/ajax';
@@ -13,6 +13,7 @@ import { LoggedInUser } from './logged-in-user';
 import { GridSelection } from './selection.service';
 import * as backend from './backend';
 
+type FbUser = firebase.User;
 @Injectable({
   providedIn: 'root'
 })
