@@ -6,6 +6,7 @@ import { TileConfig, PlayfieldConfig, MonsterConfig, TowerConfig, ProjectileConf
 import { TowerBgState, TowersBgState, BattlegroundState } from './battleground-state';
 import { ObjectType, EventType, MoveEvent, DeleteEvent, DamageEvent, BattleEvent, BattleStatus, BattleMetadata, BattleResults, Battle } from './battle-state';
 import * as backend from './backend';
+import { LogEntry, LogEntryContainer } from './log-entry';
 
 export const user = JsonDecoder.object<User>(
   {
@@ -226,3 +227,16 @@ export const battle = JsonDecoder.object<Battle>({
   events: JsonDecoder.array(battleEvent, 'BattleEvent[]'),
   results: battleResults,
 }, 'Battle');
+
+export const logEntry = JsonDecoder.object<LogEntry>({
+  time: JsonDecoder.string,
+  requestId: JsonDecoder.number,
+  uid: JsonDecoder.string,
+  handler: JsonDecoder.string,
+  msg: JsonDecoder.string,
+  verbosity: JsonDecoder.number,
+}, 'LogEntry');
+
+export const logEntries = JsonDecoder.object<LogEntryContainer>({
+  logs: JsonDecoder.array(logEntry, 'LogEntry[]'),
+}, 'LogEntryContainer');

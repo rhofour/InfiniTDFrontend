@@ -39,6 +39,7 @@ import { BattleLayerRendererComponent } from './battle-layer-renderer/battle-lay
 import { ClickShortcutDirective } from './click-shortcut.directive';
 import { BattleResultsComponent } from './battle-results/battle-results.component';
 import { NameTakenValidatorDirective } from './name-taken-validator';
+import { DebugLogsComponent } from './debug-logs/debug-logs.component';
 
 @NgModule({
   declarations: [
@@ -58,6 +59,7 @@ import { NameTakenValidatorDirective } from './name-taken-validator';
     ClickShortcutDirective,
     BattleResultsComponent,
     NameTakenValidatorDirective,
+    DebugLogsComponent,
   ],
   imports: [
     BrowserModule,
