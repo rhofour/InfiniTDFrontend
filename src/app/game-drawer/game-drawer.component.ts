@@ -44,7 +44,7 @@ export class GameDrawerComponent {
   Math = Math;
 
   constructor(
-    private ref: ChangeDetectorRef,
+    private cdRef: ChangeDetectorRef,
     private selectionService: SelectionService,
     private snackBar: MatSnackBar,
     public backend: BackendService,
@@ -54,7 +54,7 @@ export class GameDrawerComponent {
     selectionService.getSelection().subscribe((newSelection) => {
       this.selection = newSelection;
       this.updateFromSelection(this.selection);
-      this.ref.markForCheck();
+      this.cdRef.markForCheck();
     });
   }
 

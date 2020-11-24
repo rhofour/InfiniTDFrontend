@@ -46,12 +46,17 @@ export class GridSelection {
     return other && this.row === other.row && this.col === other.col;
   }
 
-  move(deltaRow: number, deltaCol: number, rows: number, cols: number) {
+  // Make a new object so things like the WouldBlockPathPipe can detect the
+  // change.
+  move(deltaRow: number, deltaCol: number, rows: number, cols: number) : GridSelection | undefined {
     const oldRow = this.row;
     const oldCol = this.col;
-    this.row = Math.min(rows - 1, Math.max(0, this.row + deltaRow));
-    this.col = Math.min(cols - 1, Math.max(0, this.col + deltaCol));
-    return oldRow !== this.row || oldCol !== this.col;
+    const newRow = Math.min(rows - 1, Math.max(0, this.row + deltaRow));
+    const newCol = Math.min(cols - 1, Math.max(0, this.col + deltaCol));
+    if (oldRow !== newRow || oldCol !== newCol) {
+      return new GridSelection(newRow, newCol);
+    }
+    return undefined;
   }
 }
 export class Selection {
@@ -70,7 +75,11 @@ export class Selection {
 
   move(deltaRow: number, deltaCol: number, rows: number, cols: number): boolean {
     if (this.grid) {
-      return this.grid.move(deltaRow, deltaCol, rows, cols);
+      const newGrid = this.grid.move(deltaRow, deltaCol, rows, cols);
+      if (newGrid) {
+        this.grid = newGrid;
+        return true;
+      }
     }
     return false;
   }
