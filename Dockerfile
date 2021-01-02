@@ -1,9 +1,9 @@
 FROM node:erbium AS build
 
-COPY package.json /usr/angular-workdir/
+COPY package.json package-lock.json /usr/angular-workdir/
 WORKDIR /usr/angular-workdir
+ENV NG_CLI_ANALYTICS=false
 RUN npm install
-ENV NG_CLI_ANALYTICS=ci
 RUN npm install -g @angular/cli
 
 COPY ./ /usr/angular-workdir
