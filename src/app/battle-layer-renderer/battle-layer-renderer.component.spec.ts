@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import Konva from 'konva';
 
 import { BattleLayerRendererComponent } from './battle-layer-renderer.component';
@@ -9,7 +9,7 @@ describe('BattleLayerRendererComponent', () => {
   let fixture: ComponentFixture<BattleLayerRendererComponent>;
   let stageSpy: jasmine.SpyObj<Konva.Stage>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     stageSpy = jasmine.createSpyObj('Konva.Stage', ['add']);
 
     TestBed.configureTestingModule({

@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import Konva from 'konva';
 
 import { BackgroundLayerRendererComponent } from './background-layer-renderer.component';
@@ -11,7 +11,7 @@ describe('BackgroundLayerRendererComponent', () => {
   let selectionServiceSpy: jasmine.SpyObj<SelectionService>;
   let stageSpy: jasmine.SpyObj<Konva.Stage>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     stageSpy = jasmine.createSpyObj('Konva.Stage', ['add']);
 
     TestBed.configureTestingModule({

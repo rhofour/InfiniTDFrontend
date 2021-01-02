@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { of } from 'rxjs';
 
@@ -14,7 +14,7 @@ describe('GameDrawerComponent', () => {
   let matSnackBarSpy: jasmine.SpyObj<MatSnackBar>;
   let backendServiceSpy: jasmine.SpyObj<BackendService>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     selectionServiceSpy = jasmine.createSpyObj('SelectionService', ['getSelection']);
     const getSelectionSpy = selectionServiceSpy.getSelection.and.returnValue(of(new Selection()));
     backendServiceSpy = jasmine.createSpyObj('BackendService', ['getLoggedInUser']);

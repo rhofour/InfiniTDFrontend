@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { of } from 'rxjs';
 
@@ -10,7 +10,7 @@ describe('LeaderboardComponent', () => {
   let fixture: ComponentFixture<LeaderboardComponent>;
   let backendServiceSpy: jasmine.SpyObj<BackendService>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     backendServiceSpy = jasmine.createSpyObj('BackendService', ['getUsers']);
     backendServiceSpy.getUsers.and.returnValue(of([]));
 

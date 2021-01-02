@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { AngularFireAuth } from '@angular/fire/auth';
 import { of } from 'rxjs';
@@ -11,7 +11,7 @@ describe('TopBarComponent', () => {
   let fixture: ComponentFixture<TopBarComponent>;
   let backendServiceSpy: jasmine.SpyObj<BackendService>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     backendServiceSpy = jasmine.createSpyObj('BackendService', ['getRegisteredUser']);
     const getRegisteredUserSpy = backendServiceSpy.getRegisteredUser.and.returnValue(of(undefined));
 

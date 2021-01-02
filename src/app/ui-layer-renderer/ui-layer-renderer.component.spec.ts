@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import Konva from 'konva';
 import { of } from 'rxjs';
 
@@ -11,7 +11,7 @@ describe('UiLayerRendererComponent', () => {
   let stageSpy: jasmine.SpyObj<Konva.Stage>;
   let selectionServiceSpy: jasmine.SpyObj<SelectionService>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     stageSpy = jasmine.createSpyObj('Konva.Stage', ['add']);
     selectionServiceSpy = jasmine.createSpyObj('SelectionService', ['getSelection']);
     const getSelectionSpy = selectionServiceSpy.getSelection.and.returnValue(of(new Selection()));
