@@ -7,7 +7,7 @@
         <input matInput [(ngModel)]="inputText">
     </mat-form-field>
     <br>
-    <button mat-stroked-button (click)="close()">
+    <button mat-stroked-button cdkFocusInitial (click)="close()">
         Close
     </button>
     <button mat-stroked-button [disabled]="inputText != 'yes'" (click)="proceed()">

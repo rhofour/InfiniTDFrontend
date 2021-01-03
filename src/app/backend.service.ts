@@ -234,4 +234,12 @@ export class BackendService {
     const url = `${backend.address}/controlBattle/${name}`;
     return this.authenticatedHttpWithResponse(loggedInUser.fbUser, url, 'delete');
   }
+
+  resetGameData(loggedInUser: LoggedInUser): Promise<Object> {
+    if (loggedInUser?.user?.admin !== true) {
+      return Promise.reject(new Error("Reset game request comes from a non-admin user."));
+    }
+    const url = `${backend.address}/admin/resetGame`;
+    return this.authenticatedHttpWithResponse(loggedInUser.fbUser, url, 'post');
+  }
 }

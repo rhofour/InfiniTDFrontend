@@ -3,6 +3,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { AreYouSureDialogComponent, AreYouSureData } from '../are-you-sure-dialog/are-you-sure-dialog.component';
+import { BackendService } from '../backend.service';
+import { LoggedInUser } from '../logged-in-user';
 
 @Component({
   selector: 'app-admin',
@@ -15,22 +17,31 @@ export class AdminComponent {
   constructor(
     private _snackBar: MatSnackBar,
     private _dialog: MatDialog,
+    public backend: BackendService,
   ) { }
 
-  todoSnackBar() {
+  todoSnackBar(lUser: LoggedInUser) {
     this._snackBar.open("TODO", "Dismiss", {duration: 1500});
   }
 
   // Global actions
-  resetGameDialog() {
+  resetGameDialog(lUser: LoggedInUser) {
     const dialogRef = this._dialog.open(AreYouSureDialogComponent, {
       data: {
         msg: "This will wipe all game progress on the server.",
-        fn: (() => console.log("test")),
+        fn: (() => this.backend.resetGameData(lUser)),
       }
     });
-    dialogRef.afterClosed().subscribe(result => {
-      console.log(result);
+    dialogRef.afterClosed().subscribe((result: Promise<Object>) => {
+      result.then(
+        _ => {
+          this._snackBar.open("Game successfully reset.", "Dismiss");
+        },
+        err => {
+          console.warn("Error resetting game.");
+          this._snackBar.open(`Error: ${err.message}`, "Dismiss")
+        },
+      );
     });
   }
 }
