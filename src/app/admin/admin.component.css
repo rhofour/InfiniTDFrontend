@@ -1,0 +1,7 @@
+.mat-card {
+    margin: 16px
+}
+
+:host {
+    background: #f5f5f5
+}

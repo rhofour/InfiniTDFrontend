@@ -5,6 +5,7 @@ import { BattlegroundComponent } from './battleground/battleground.component';
 import { AccountComponent } from './account/account.component';
 import { BenchmarkComponent } from './benchmark/benchmark.component';
 import { DebugLogsComponent } from './debug-logs/debug-logs.component';
+import { AdminComponent } from './admin/admin.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/leaderboard', pathMatch: 'full' },
@@ -13,6 +14,7 @@ const routes: Routes = [
   { path: 'battleground/:username', component: BattlegroundComponent },
   { path: 'benchmark', component: BenchmarkComponent },
   { path: 'debug/logs', component: DebugLogsComponent },
+  { path: 'admin', component: AdminComponent },
 ];
 
 @NgModule({

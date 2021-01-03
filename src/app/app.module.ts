@@ -40,6 +40,7 @@ import { ClickShortcutDirective } from './click-shortcut.directive';
 import { BattleResultsComponent } from './battle-results/battle-results.component';
 import { NameTakenValidatorDirective } from './name-taken-validator';
 import { DebugLogsComponent } from './debug-logs/debug-logs.component';
+import { AdminComponent } from './admin/admin.component';
 
 @NgModule({
   declarations: [
@@ -60,6 +61,7 @@ import { DebugLogsComponent } from './debug-logs/debug-logs.component';
     BattleResultsComponent,
     NameTakenValidatorDirective,
     DebugLogsComponent,
+    AdminComponent,
   ],
   imports: [
     BrowserModule,

@@ -5,6 +5,7 @@ export interface User {
   goldPerMinute: number,
   inBattle: boolean,
   wave: number[],
+  admin: boolean,
 }
 
 export interface UsersContainer {
