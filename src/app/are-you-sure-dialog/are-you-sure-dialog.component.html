@@ -1,0 +1,16 @@
+<h1 mat-dialog-title>Are you sure?</h1>
+<div mat-dialog-content>
+    {{data.msg}}
+    <br>
+    <mat-form-field style="padding-top: 1.25em;">
+        <mat-label>Type "yes" to proceed.</mat-label>
+        <input matInput [(ngModel)]="inputText">
+    </mat-form-field>
+    <br>
+    <button mat-stroked-button (click)="close()">
+        Close
+    </button>
+    <button mat-stroked-button [disabled]="inputText != 'yes'" (click)="proceed()">
+        Proceed
+    </button>
+</div>

@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFireAuthModule } from '@angular/fire/auth';
 import { HttpClientModule } from '@angular/common/http';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule} from '@angular/material/toolbar';
@@ -17,6 +17,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
+import { MatDialogModule } from '@angular/material/dialog';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -41,6 +42,7 @@ import { BattleResultsComponent } from './battle-results/battle-results.componen
 import { NameTakenValidatorDirective } from './name-taken-validator';
 import { DebugLogsComponent } from './debug-logs/debug-logs.component';
 import { AdminComponent } from './admin/admin.component';
+import { AreYouSureDialogComponent } from './are-you-sure-dialog/are-you-sure-dialog.component';
 
 @NgModule({
   declarations: [
@@ -62,6 +64,7 @@ import { AdminComponent } from './admin/admin.component';
     NameTakenValidatorDirective,
     DebugLogsComponent,
     AdminComponent,
+    AreYouSureDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -84,6 +87,8 @@ import { AdminComponent } from './admin/admin.component';
     MatInputModule,
     MatTableModule,
     MatCardModule,
+    MatDialogModule,
+    FormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
