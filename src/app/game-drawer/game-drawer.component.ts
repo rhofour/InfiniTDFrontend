@@ -135,10 +135,10 @@ export class GameDrawerComponent {
   handleBackendError(actionErrDesc: string, err: Object) {
     console.warn(actionErrDesc);
     console.warn(err);
-    if (hasOwnProperty(err, 'message')) {
-      this.snackBar.open(`${err.message}`);
+    if (hasOwnProperty(err, "message")) {
+      this.snackBar.open(`${err.message}`, "Dismiss");
     } else {
-      this.snackBar.open(`${err}`);
+      this.snackBar.open(`${err}`, "Dismiss");
     }
   }
 
