@@ -2,8 +2,13 @@ import { Component, OnInit, ChangeDetectionStrategy, Input, OnChanges, SimpleCha
 import Konva from 'konva';
 
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
-import { BattleState, BattleUpdate, ObjectType, ObjectState } from '../battle-state';
+import { BattleState, ObjectType, ObjectState } from '../battle-state';
 import { GameConfig, ConfigAndImage, TowerConfig, ConfigImageMap, MonsterConfig, ProjectileConfig } from '../game-config';
+
+export interface LocalObjState {
+  group: Konva.Group;
+  updated: boolean;
+}
 
 @Component({
   selector: 'app-battle-layer-renderer',
@@ -14,7 +19,7 @@ import { GameConfig, ConfigAndImage, TowerConfig, ConfigImageMap, MonsterConfig,
 export class BattleLayerRendererComponent extends BaseLayerRendererComponent implements OnInit, OnChanges, OnDestroy {
   private numRows = 0;
   private numCols = 0;
-  private objectGroups: Map<number, Konva.Group> = new Map();
+  private objectStates: Map<number, LocalObjState> = new Map();
   @Input() gameConfig!: GameConfig;
   @Input() state!: BattleState;
   animationRequestId: number | undefined = undefined;
@@ -48,7 +53,7 @@ export class BattleLayerRendererComponent extends BaseLayerRendererComponent imp
       cancelAnimationFrame(this.animationRequestId);
       this.animationRequestId = undefined;
     }
-    this.objectGroups = new Map();
+    this.objectStates = new Map();
     this.layer.destroyChildren();
   }
 
@@ -78,27 +83,19 @@ export class BattleLayerRendererComponent extends BaseLayerRendererComponent imp
 
   render() {
     this.animationRequestId = undefined;
-    const battleUpdate: BattleUpdate | undefined = this.state.getState(
+    const battleUpdate: ObjectState[] | undefined = this.state.getState(
       Date.now() / 1000, this.gameConfig);
     const tileSize = this.gameConfig.playfield.tileSize;
     if (battleUpdate === undefined) {
       return;
     }
 
-    for (let i = 0; i < battleUpdate.deletedIds.length; i++) {
-      const deletedId: number = battleUpdate.deletedIds[i];
-      let objGroup = this.objectGroups.get(deletedId);
-      if (objGroup) {
-        this.objectGroups.delete(deletedId);
-        objGroup.destroy();
-      } else {
-        console.warn(`Attempted to remove ID ${deletedId}, but it wasn't found.`);
-      }
-    }
+    // Mark every existing object as not updated. Any that remain unupdated will be removed at the end.
+    this.objectStates.forEach((value, key, map) => value.updated = false);
 
-    for (let i = 0; i < battleUpdate.objects.length; i++) {
-      const objState = battleUpdate.objects[i];
-      let objGroup = this.objectGroups.get(objState.id);
+    for (let i = 0; i < battleUpdate.length; i++) {
+      const objState = battleUpdate[i];
+      let localObjState = this.objectStates.get(objState.id);
 
       // Determine the size of the objects
       const config = this.getConfig(objState);
@@ -107,15 +104,17 @@ export class BattleLayerRendererComponent extends BaseLayerRendererComponent imp
         console.warn(`Got invalid size: ${size}`);
       }
 
-      if (objGroup) {
-        objGroup.x(objState.pos.col * this.cellSize_);
-        objGroup.y(objState.pos.row * this.cellSize_);
-        objGroup.scaleX(this.cellSize_ / tileSize);
-        objGroup.scaleY(this.cellSize_ / tileSize);
+      if (localObjState) {
+        localObjState.updated = true;
+        let group = localObjState.group;
+        group.x(objState.pos.col * this.cellSize_);
+        group.y(objState.pos.row * this.cellSize_);
+        group.scaleX(this.cellSize_ / tileSize);
+        group.scaleY(this.cellSize_ / tileSize);
 
         // Adjust health.
         if (objState.health !== undefined && objState.maxHealth !== undefined) {
-          const innerHealthBar = objGroup.findOne('.innerHealthBar');
+          const innerHealthBar = group.findOne('.innerHealthBar');
           if (innerHealthBar === undefined) {
             throw Error(`Object ${objState.id} has health, but no inner health bar.`);
           }
@@ -168,10 +167,21 @@ export class BattleLayerRendererComponent extends BaseLayerRendererComponent imp
           newGroup.add(innerHealthBar);
         }
 
-        this.objectGroups.set(objState.id, newGroup);
+        this.objectStates.set(objState.id, {
+          updated: true,
+          group: newGroup,
+        });
         this.layer.add(newGroup);
       }
     }
+
+    // Delete any local objects not mentioned in the update.
+    this.objectStates.forEach((value, key, map) => {
+      if (!value.updated) {
+        value.group.destroy();
+        map.delete(key);
+      }
+    });
 
     this.layer.batchDraw();
     if (this.animationRequestId === undefined) {

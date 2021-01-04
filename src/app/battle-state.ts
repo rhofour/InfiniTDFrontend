@@ -1,4 +1,4 @@
-import { CellPos } from './types'
+import { CellPos } from './types';
 import { GameConfig, MonsterConfig } from './game-config';
 
 export enum ObjectType {
@@ -73,11 +73,6 @@ export interface ObjectState {
   maxHealth?: number
 }
 
-export interface BattleUpdate {
-  objects: ObjectState[]
-  deletedIds: number[]
-}
-
 export class BattleState {
   private lastUpdateTimeSecs: number = 0;
   private numUpdates: number = 0;
@@ -121,7 +116,7 @@ export class BattleState {
       this.name, this.startedTimeSecs, this.events, false, results, this.enemyHealth);
   }
 
-  getState(timeSecs: number, gameConfig: GameConfig): BattleUpdate | undefined {
+  getState(timeSecs: number, gameConfig: GameConfig): ObjectState[] | undefined {
     if (this.startedTimeSecs === undefined) {
       return undefined;
     }
@@ -134,8 +129,11 @@ export class BattleState {
     this.lastUpdateTimeSecs = timeSecs;
 
     let numPastEvents = 0;
-    let newlyDeletedIds: number[] = [];
+    let deletedIds: number[] = [];
     let objects: ObjectState[] = [];
+    // inPast keeps track of when we can safely remove from the front of the events array.
+    // Some events like moves have a start and end time which means we have to wait for the end
+    // rather than the start before removing it.
     let inPast: boolean = true;
     let lastStartTime = 0;
     for (let i = 0; i < this.events.length; i++) {
@@ -152,19 +150,17 @@ export class BattleState {
       switch (event.eventType) {
         case EventType.DELETE: {
           if (event.startTime > relLastUpdateTimeSecs) {
-            if (this.numUpdates > 0) {
-              // Don't mark an enemy as deleted if the UI has and will never
-              // see them.
-              newlyDeletedIds.push(event.id);
-            }
             if (inPast) {
               numPastEvents++;
             }
           }
+          // Always mark this as deleted until we remove the event to handle moves that extend past
+          // an object's deletion.
+          deletedIds.push(event.id);
           break;
         }
         case EventType.MOVE: {
-          if (event.endTime < relTimeSecs || newlyDeletedIds.includes(event.id)) {
+          if (event.endTime < relTimeSecs) {
             if (inPast) {
               numPastEvents++;
             }
@@ -227,14 +223,10 @@ export class BattleState {
     this.numUpdates++;
 
     // Remove any objects that were deleted.
-    let nonDeletedObjects = objects.filter(obj => !newlyDeletedIds.includes(obj.id));
+    // If this ever becomes a slowspot we can store deleted object IDs in a set
+    // and intersect them with all known object ideas to make this a bit faster.
+    const nonDeletedObjects = objects.filter(obj => !deletedIds.includes(obj.id));
 
-    // Remove any events that reference deleted objects.
-    this.events = this.events.filter(obj => !newlyDeletedIds.includes(obj.id));
-
-    return {
-      objects: nonDeletedObjects,
-      deletedIds: newlyDeletedIds,
-    }
+    return nonDeletedObjects;
   }
 }
