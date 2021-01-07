@@ -23,3 +23,7 @@ td.mat-cell {
   max-width: 3em;
   overflow-x: hidden;
 }
+
+.mat-column-msg {
+  white-space: pre-wrap;
+}
