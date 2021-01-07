@@ -1,5 +1,5 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
-import { HttpClient, HttpResponse, HttpErrorResponse } from '@angular/common/http';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { HttpClient, HttpResponse, HttpErrorResponse, HttpParams } from '@angular/common/http';
 
 import { Observable, EMPTY } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -14,14 +14,27 @@ import * as backend from '../backend';
   styleUrls: ['./debug-logs.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DebugLogsComponent implements OnInit {
+export class DebugLogsComponent {
   public logs$: Observable<LogEntry[]> = EMPTY;
   public displayedColumns = ['time', 'uid', 'requestId', 'handler', 'msg', 'verbosity'];
+  minVerbosity = "-";
+  maxVerbosity = "-";
 
   constructor(
     private http: HttpClient,
   ) {
-    this.logs$ = this.http.get(backend.address + '/debug/logs').pipe(
+    this.updateLogs();
+  }
+
+  public updateLogs() {
+    let params = new HttpParams();
+    if (this.minVerbosity !== "-") {
+      params = params.set("minVerbosity", this.minVerbosity);
+    }
+    if (this.maxVerbosity !== "-") {
+      params = params.set("maxVerbosity", this.maxVerbosity);
+    }
+    this.logs$ = this.http.get(backend.address + '/debug/logs', {params: params}).pipe(
       map(resp => decoders.logEntries.decode(resp)),
       map(decodedLogEntries => {
         console.log(decodedLogEntries);
@@ -31,9 +44,6 @@ export class DebugLogsComponent implements OnInit {
         return [];
       }),
     )
-  }
-
-  ngOnInit(): void {
   }
 
 }

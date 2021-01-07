@@ -43,6 +43,7 @@ import { NameTakenValidatorDirective } from './name-taken-validator';
 import { DebugLogsComponent } from './debug-logs/debug-logs.component';
 import { AdminComponent } from './admin/admin.component';
 import { AreYouSureDialogComponent } from './are-you-sure-dialog/are-you-sure-dialog.component';
+import { MatSelectModule } from '@angular/material/select';
 
 @NgModule({
   declarations: [
@@ -89,6 +90,7 @@ import { AreYouSureDialogComponent } from './are-you-sure-dialog/are-you-sure-di
     MatCardModule,
     MatDialogModule,
     FormsModule,
+    MatSelectModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

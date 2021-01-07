@@ -1,3 +1,25 @@
 table {
   width: 100%;
 }
+
+.verbosity-3 {
+  background-color: whitesmoke;
+}
+
+.verbosity-2 {
+  background-color: lemonchiffon;
+}
+
+.verbosity-1 {
+  background-color: rosybrown;
+}
+
+td.mat-cell {
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}
+
+.mat-column-uid {
+  max-width: 3em;
+  overflow-x: hidden;
+}
