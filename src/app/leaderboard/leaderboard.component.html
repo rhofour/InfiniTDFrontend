@@ -13,21 +13,21 @@
     <ng-container matColumnDef="accumulatedGold">
       <th mat-header-cell *matHeaderCellDef> Accumulated Gold </th>
       <td mat-cell *matCellDef="let user">
-        {{user.accumulatedGold | number:'0.0-1'}}
+        {{ user.accumulatedGold | goldNumber }}
       </td>
     </ng-container>
 
     <ng-container matColumnDef="goldPerMinute">
       <th mat-header-cell *matHeaderCellDef> Gold / Min </th>
       <td mat-cell *matCellDef="let user">
-        {{user.goldPerMinute | number:'0.0-1'}}
+        {{ user.goldPerMinute | goldNumber }}
       </td>
     </ng-container>
 
     <ng-container matColumnDef="battleStatus">
       <th mat-header-cell *matHeaderCellDef> Battle Status </th>
       <td mat-cell *matCellDef="let user">
-        {{user.inBattle ? 'In Battle' : ''}}
+        {{ user.inBattle ? 'In Battle' : '' }}
       </td>
     </ng-container>
 

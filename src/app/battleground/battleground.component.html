@@ -11,7 +11,8 @@
         &nbsp;(LIVE)
       </span>
       <span class="spacer"></span>
-      {{user.gold}} gold ({{user.goldPerMinute}} / min)
+      {{ user.gold | goldNumber }} gold
+      ({{ user.goldPerMinute | goldNumber }} / min)
     </mat-toolbar>
     <ng-container *ngIf="gameConfig$ | async as gameConfig">
       <mat-tab-group fxFlex="1 1 100%">

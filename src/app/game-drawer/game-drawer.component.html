@@ -20,14 +20,15 @@
             [disabled]="user.gold < selection.buildTower.cost || selection.gridTower !== undefined || (selection.grid | wouldBlockPath: gameConfig : towersState) || user.inBattle"
             appClickShortcut shortcutKey="b"
             mat-stroked-button>
-        (B)uild ({{selection.buildTower.cost}} gold)
+        (B)uild ({{ selection.buildTower.cost | goldNumber }} gold)
       </button>
       <button *ngIf="selection.gridTower && selection.grid"
             (click)="sell(lUser, selection.grid)"
             [disabled]="user.inBattle"
             appClickShortcut shortcutKey="s"
             mat-stroked-button>
-        (S)ell ({{Math.floor(selection.gridTower.cost * gameConfig.misc.sellMultiplier)}} gold)
+        (S)ell
+        ({{Math.floor(selection.gridTower.cost * gameConfig.misc.sellMultiplier) | goldNumber }} gold)
       </button>
     </ng-container>
   </div>
@@ -124,7 +125,7 @@
     </mat-list>
     <div *ngIf="getWaveStats() as waveStats" style="width: 0; min-width: 100%">
       Wave contains {{waveStats.totalMonsters}} monsters with a total bounty of
-      {{waveStats.totalBounty}} gold.
+      {{ waveStats.totalBounty | goldNumber }} gold.
     </div>
     <ng-container *ngIf="backend.getLoggedInUser() | async as lUser">
       <ng-container *ngIf="lUser.matches(user)">
