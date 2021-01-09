@@ -53,8 +53,7 @@
   <div *ngIf="backend.getLoggedInUser() | async as lUser">
     <ng-container *ngIf="lUser.matches(user)">
       <button (click)="addToWave(lUser, displayedMonster)"
-            appClickShortcut shortcutKey="a"
-            mat-stroked-button>
+            [disabled]="user.inBattle" appClickShortcut shortcutKey="a" mat-stroked-button>
         (A)dd to wave
       </button>
     </ng-container>
