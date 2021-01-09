@@ -3,7 +3,7 @@ import Konva from 'konva';
 
 import { CellPos } from '../types';
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
-import { GameConfig, TileConfig, ConfigImageMap } from '../game-config';
+import { GameConfig } from '../game-config';
 import { SelectionService, GridSelection } from '../selection.service';
 import { TowersBgState, TowerBgState } from '../battleground-state';
 import { makePathMap, PathMap } from '../path';
@@ -16,7 +16,6 @@ import { makePathMap, PathMap } from '../path';
 export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent implements OnInit, OnChanges {
   private numRows = 0;
   private numCols = 0;
-  private tilesConfig!: ConfigImageMap<TileConfig>;
   private pathTiles: Int8Array = new Int8Array(0);
   @Input() towersState: TowersBgState | undefined;
   @Input() gameConfig!: GameConfig;
@@ -35,7 +34,6 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
     this.numRows = this.gameConfig.playfield.numRows;
     this.numCols = this.gameConfig.playfield.numCols;
     this.pathTiles = new Int8Array(this.numRows * this.numCols);
-    this.tilesConfig = this.gameConfig.tiles;
     this.updatePath();
 
     // Allow the layer to listen for clicks since it will always have tiles
@@ -109,15 +107,15 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
         } else {
           tileId = this.gameConfig.playfield.backgroundId;
         }
-        const tile = this.tilesConfig.get(tileId);
+        const tileRawImg = this.gameConfig.images.tiles.get(tileId);
 
-        if (tile) {
+        if (tileRawImg) {
           let tileImg = new Konva.Image({
               x: col * this.cellSize_,
               y: row * this.cellSize_,
               width: this.cellSize_,
               height: this.cellSize_,
-              image: tile.img,
+              image: tileRawImg,
           });
           tileImg.on('click tap', (evt) => {
             this.selectionService.updateSelection(new GridSelection(row, col));

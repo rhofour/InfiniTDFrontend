@@ -68,7 +68,7 @@ export class UiLayerRendererComponent extends BaseLayerRendererComponent impleme
         rangeEffectOpacity = 0.5;
 
         // Render the selected tower as transparent.
-        const towerImgData = this.gameConfig.towers.get(maybeSelectedTower.id)?.img;
+        const towerImgData = this.gameConfig.images.towers.get(maybeSelectedTower.id);
         if (towerImgData && this.selection.grid) {
           let towerImg = new Konva.Image({
               x: this.selection.grid.col * this.cellSize_,

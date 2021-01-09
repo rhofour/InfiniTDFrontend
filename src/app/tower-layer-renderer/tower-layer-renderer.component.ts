@@ -2,7 +2,7 @@ import { Component, OnInit, OnChanges, Input, SimpleChanges, ChangeDetectionStra
 import Konva from 'konva';
 
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
-import { GameConfig, TowerConfig, ConfigImageMap } from '../game-config';
+import { GameConfig, TowerConfig } from '../game-config';
 import { TowersBgState, TowerBgState } from '../battleground-state';
 
 @Component({
@@ -13,7 +13,6 @@ import { TowersBgState, TowerBgState } from '../battleground-state';
 export class TowerLayerRendererComponent extends BaseLayerRendererComponent implements OnInit, OnChanges {
   private numRows = 0;
   private numCols = 0;
-  private towersConfig!: ConfigImageMap<TowerConfig>;
   @Input() state: TowersBgState | undefined;
   @Input() gameConfig!: GameConfig;
 
@@ -28,7 +27,6 @@ export class TowerLayerRendererComponent extends BaseLayerRendererComponent impl
 
     this.numRows = this.gameConfig.playfield.numRows;
     this.numCols = this.gameConfig.playfield.numCols;
-    this.towersConfig = this.gameConfig.towers;
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -52,7 +50,7 @@ export class TowerLayerRendererComponent extends BaseLayerRendererComponent impl
       }
       for (let col = 0; col < this.numCols; col++) {
         const towerId = this.state.towers[row][col]?.id;
-        const towerImg = towerId === undefined ? undefined : this.towersConfig.get(towerId)?.img;
+        const towerImg = towerId === undefined ? undefined : this.gameConfig.images.towers.get(towerId);
         if (towerImg) {
           let box = new Konva.Image({
               x: col * this.cellSize_,

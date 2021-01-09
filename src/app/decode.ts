@@ -2,7 +2,7 @@ import { JsonDecoder, err, ok } from 'ts.data.json';
 
 import { CellPos, CellPosData } from './types';
 import { User, UsersContainer } from './user';
-import { TileConfig, PlayfieldConfig, MonsterConfig, TowerConfig, ProjectileConfig, GameConfigData, MiscConfigData, BonusType, BonusCondition, BattleBonus } from './game-config';
+import { TileConfig, PlayfieldConfig, MonsterConfig, TowerConfig, GameConfigData, MiscConfigData, BonusType, BonusCondition, BattleBonus } from './game-config';
 import { TowerBgState, TowersBgState, BattlegroundState } from './battleground-state';
 import { ObjectType, EventType, MoveEvent, DeleteEvent, DamageEvent, BattleEvent, BattleStatus, BattleMetadata, BattleResults, Battle } from './battle-state';
 import * as backend from './backend';
@@ -83,17 +83,10 @@ export const towerConfig = JsonDecoder.object<TowerConfig>(
     range: JsonDecoder.number,
     damage: JsonDecoder.number,
     projectileSpeed: JsonDecoder.number,
-    projectileId: JsonDecoder.number,
+    projectileSize: JsonDecoder.number,
+    projectileUrl: JsonDecoder.string.map<string>(addBackendToUrl),
   },
   'TowerConfig');
-
-export const projectileConfig = JsonDecoder.object<ProjectileConfig>(
-  {
-    id: JsonDecoder.number,
-    url: JsonDecoder.string.map<string>(addBackendToUrl),
-    size: JsonDecoder.number,
-  },
-  'ProjectileConfig');
 
 export const bonusType = JsonDecoder.enumeration<BonusType>(BonusType, 'BonusType');
 
@@ -124,7 +117,6 @@ export const gameConfigData = JsonDecoder.object<GameConfigData>(
     playfield: playfieldConfig,
     monsters: JsonDecoder.array<MonsterConfig>(monsterConfig, 'MonsterConfig[]'),
     towers: JsonDecoder.array<TowerConfig>(towerConfig, 'TowerConfig[]'),
-    projectiles: JsonDecoder.array<ProjectileConfig>(projectileConfig, 'ProjectileConfig[]'),
     misc: miscConfigData,
   },
   'GameConfigData');

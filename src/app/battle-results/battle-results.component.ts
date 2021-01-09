@@ -3,7 +3,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatCardModule } from '@angular/material/card';
 
 import { BattleResults } from '../battle-state';
-import { GameConfig, ConfigImageMap, MonsterConfig, BattleBonus, BonusType } from '../game-config';
+import { GameConfig, MonsterConfig, BattleBonus, BonusType } from '../game-config';
 
 interface MonsterDefeated {
   monster: MonsterConfig

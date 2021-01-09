@@ -3,11 +3,16 @@ import Konva from 'konva';
 
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
 import { BattleState, ObjectType, ObjectState } from '../battle-state';
-import { GameConfig, ConfigAndImage, TowerConfig, ConfigImageMap, MonsterConfig, ProjectileConfig } from '../game-config';
+import { GameConfig, TowerConfig, MonsterConfig } from '../game-config';
 
 export interface LocalObjState {
   group: Konva.Group;
   updated: boolean;
+}
+
+export interface RenderConfig {
+  size: number;
+  img: HTMLImageElement;
 }
 
 @Component({
@@ -57,23 +62,35 @@ export class BattleLayerRendererComponent extends BaseLayerRendererComponent imp
     this.layer.destroyChildren();
   }
 
-  getConfig(objState: ObjectState): ConfigAndImage<MonsterConfig | ProjectileConfig> {
+  getRenderConfig(objState: ObjectState): RenderConfig  {
     switch (objState.objType) {
       case ObjectType.MONSTER: {
         const monsterConfig = this.gameConfig.monsters.get(objState.configId);
         if (monsterConfig === undefined) {
-          throw Error(`Could not find monster: ${objState.configId}`);
+          throw Error(`Could not find monster ${objState.configId}.`);
         }
-        return monsterConfig;
-        break;
+        const monsterImg = this.gameConfig.images.monsters.get(objState.configId);
+        if (monsterImg === undefined) {
+          throw Error(`Could not find image for monster ${objState.configId}.`);
+        }
+        return {
+          size: monsterConfig.size,
+          img: monsterImg,
+        };
       }
       case ObjectType.PROJECTILE: {
-        const projectileConfig = this.gameConfig.projectiles.get(objState.configId);
-        if (projectileConfig === undefined) {
-          throw Error(`Could not find projectile: ${objState.configId}`);
+        const towerConfig = this.gameConfig.towers.get(objState.configId);
+        if (towerConfig === undefined) {
+          throw Error(`Could not find tower ${objState.configId}.`);
         }
-        return projectileConfig;
-        break;
+        const projectileImg = this.gameConfig.images.projectiles.get(objState.configId);
+        if (projectileImg === undefined) {
+          throw Error(`Could not find image for projectile associated with tower ${objState.configId}.`);
+        }
+        return {
+          size: towerConfig.projectileSize,
+          img: projectileImg,
+        };
       }
       default:
         const _exhaustiveCheck: never = objState.objType;
@@ -98,7 +115,7 @@ export class BattleLayerRendererComponent extends BaseLayerRendererComponent imp
       let localObjState = this.objectStates.get(objState.id);
 
       // Determine the size of the objects
-      const config = this.getConfig(objState);
+      const config = this.getRenderConfig(objState);
       const size = config.size / tileSize;
       if (size === undefined || size <= 0.0 || size > 1.0) {
         console.warn(`Got invalid size: ${size}`);

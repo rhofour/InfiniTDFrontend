@@ -36,13 +36,8 @@ export interface TowerConfig {
   range: number,
   damage: number,
   projectileSpeed: number,
-  projectileId: number,
-}
-
-export interface ProjectileConfig {
-  id: number,
-  url: string,
-  size: number,
+  projectileUrl: string,
+  projectileSize: number,
 }
 
 export enum BonusType {
@@ -89,62 +84,82 @@ export interface GameConfigData {
   playfield: PlayfieldConfig,
   tiles: TileConfig[],
   towers: TowerConfig[],
-  projectiles: ProjectileConfig[],
   monsters: MonsterConfig[],
   misc: MiscConfigData,
 }
 
-export type ConfigAndImage<T> = T & { img: HTMLImageElement };
-
-export type ConfigImageMap<T> = Map<number, ConfigAndImage<T>>;
-
-function configArrayToMap<T extends {id: number, url: string}>(arr: T[]): Promise<ConfigImageMap<T>> {
+function configArrayToMap<T extends {id: number}>(arr: T[]): Map<number, T> {
   let map = new Map();
-  let promises: Promise<void>[] = [];
   for (let elem of arr) {
-    let configImagePair = {
-      ...elem,
-      img: new Image(),
-    }
-    let loadPromise: Promise<void> = new Promise((resolve, reject) => {
-      configImagePair.img.onload = () => resolve();
-    });
-    configImagePair.img.src = elem.url;
-    promises.push(loadPromise);
     if (map.has(elem.id)) {
       console.warn(`Received a duplicate of id ${elem.id}:`);
       console.log(elem);
     } else {
-      map.set(elem.id, configImagePair);
+      map.set(elem.id, elem);
     }
   }
-  return Promise.all(promises).then(() => map);
+  return map;
+}
+
+export interface ConfigImageMaps {
+  tiles: Map<number, HTMLImageElement>;
+  towers: Map<number, HTMLImageElement>;
+  projectiles: Map<number, HTMLImageElement>;
+  monsters: Map<number, HTMLImageElement>;
+}
+
+function mapToImageMap<T extends {[P in K]: string}, K extends keyof T>(
+    map: Map<number, T>, urlKey: K): Promise<Map<number, HTMLImageElement>> {
+  let imageMap = new Map();
+  let promises: Promise<void>[] = [];
+  for (let [id, elem] of map) {
+    let img = new Image();
+    const loadPromise: Promise<void> = new Promise((resolve, reject) => {
+      img.onload = () => resolve();
+    });
+    img.src = elem[urlKey];
+    promises.push(loadPromise);
+    imageMap.set(id, img);
+  }
+  return Promise.all(promises).then(() => imageMap);
 }
 
 export class GameConfig {
   readonly playfield: PlayfieldConfig;
-  readonly tiles: ConfigImageMap<TileConfig>;
-  readonly towers: ConfigImageMap<TowerConfig>;
-  readonly projectiles: ConfigImageMap<ProjectileConfig>;
-  readonly monsters: ConfigImageMap<MonsterConfig>;
+  readonly tiles: Map<number, TileConfig>;
+  readonly towers: Map<number, TowerConfig>;
+  readonly monsters: Map<number, MonsterConfig>;
   readonly misc: MiscConfig;
+  readonly images: ConfigImageMaps;
 
   static fromConfig(configData: GameConfigData): Promise<GameConfig> {
+    const tilesMap = configArrayToMap(configData.tiles);
+    const towersMap = configArrayToMap(configData.towers);
+    const monstersMap = configArrayToMap(configData.monsters);
     return Promise.all([
-      configArrayToMap(configData.tiles), configArrayToMap(configData.towers),
-      configArrayToMap(configData.projectiles), configArrayToMap(configData.monsters)
-    ]).then(([tiles, towers, projectiles, monsters]) => {
-        return new GameConfig(configData.playfield, tiles, towers, projectiles, monsters, new MiscConfig(configData.misc));
+      mapToImageMap(tilesMap, "url"),
+      mapToImageMap(towersMap, "url"),
+      mapToImageMap(towersMap, "projectileUrl"),
+      mapToImageMap(monstersMap, "url"),
+    ]).then(([tileImgs, towerImgs, projectileImgs, monsterImgs]) => {
+        return new GameConfig(
+          configData.playfield, tilesMap, towersMap, monstersMap, new MiscConfig(configData.misc),
+          {
+            tiles: tileImgs,
+            towers: towerImgs,
+            projectiles: projectileImgs,
+            monsters: monsterImgs,
+          });
       });
   }
 
-  constructor(playfield: PlayfieldConfig, tiles: ConfigImageMap<TileConfig>, towers: ConfigImageMap<TowerConfig>,
-     projectiles: ConfigImageMap<ProjectileConfig>, monsters: ConfigImageMap<MonsterConfig>, misc: MiscConfig) {
+  constructor(playfield: PlayfieldConfig, tiles: Map<number, TileConfig>, towers: Map<number, TowerConfig>,
+     monsters: Map<number, MonsterConfig>, misc: MiscConfig, images: ConfigImageMaps) {
     this.playfield = playfield;
     this.tiles = tiles;
     this.towers = towers;
-    this.projectiles = projectiles;
     this.monsters = monsters;
     this.misc = misc;
+    this.images = images;
   }
 }
