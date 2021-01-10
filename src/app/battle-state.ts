@@ -71,6 +71,7 @@ export interface ObjectState {
   pos: CellPos
   health?: number
   maxHealth?: number
+  rotation?: number
 }
 
 export class BattleState {
@@ -188,11 +189,14 @@ export class BattleState {
               break;
             }
             case ObjectType.PROJECTILE: {
+              const rotation = Math.PI / 2 + Math.atan2(
+                event.destPos.row - event.startPos.row, event.destPos.col - event.startPos.col);
               const newObj: ObjectState = {
                 objType: event.objType,
                 configId: event.configId,
                 id: event.id,
                 pos: pos,
+                rotation: rotation,
               };
               objects.push(newObj);
               break;

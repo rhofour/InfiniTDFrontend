@@ -85,6 +85,8 @@ export const towerConfig = JsonDecoder.object<TowerConfig>(
     projectileSpeed: JsonDecoder.number,
     projectileSize: JsonDecoder.number,
     projectileUrl: JsonDecoder.string.map<string>(addBackendToUrl),
+    projectileRotate: JsonDecoder.optional(JsonDecoder.boolean)
+      .map<boolean>((x: boolean | undefined) => x ?? false),
   },
   'TowerConfig');
 

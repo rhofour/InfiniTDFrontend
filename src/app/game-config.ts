@@ -38,6 +38,7 @@ export interface TowerConfig {
   projectileSpeed: number,
   projectileUrl: string,
   projectileSize: number,
+  projectileRotate: boolean,
 }
 
 export enum BonusType {

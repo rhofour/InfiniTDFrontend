@@ -13,6 +13,7 @@ export interface LocalObjState {
 export interface RenderConfig {
   size: number;
   img: HTMLImageElement;
+  rotate: boolean;
 }
 
 @Component({
@@ -29,7 +30,10 @@ export class BattleLayerRendererComponent extends BaseLayerRendererComponent imp
   @Input() state!: BattleState;
   animationRequestId: number | undefined = undefined;
 
-  constructor() { super(); }
+  constructor() {
+    super();
+    Konva.angleDeg = false;  // Use radians for rotation.
+  }
 
   ngOnInit(): void {
     super.ngOnInit();
@@ -76,6 +80,7 @@ export class BattleLayerRendererComponent extends BaseLayerRendererComponent imp
         return {
           size: monsterConfig.size,
           img: monsterImg,
+          rotate: false,
         };
       }
       case ObjectType.PROJECTILE: {
@@ -90,6 +95,7 @@ export class BattleLayerRendererComponent extends BaseLayerRendererComponent imp
         return {
           size: towerConfig.projectileSize,
           img: projectileImg,
+          rotate: towerConfig.projectileRotate,
         };
       }
       default:
@@ -152,12 +158,19 @@ export class BattleLayerRendererComponent extends BaseLayerRendererComponent imp
           scaleY: this.cellSize_ / tileSize,
         });
 
+        const width = tileSize * size;
+        const offset = width / 2;
         let newImg = new Konva.Image({
-          x: (((1 - size) / 2)) * tileSize,
-          y: (((1 - size) / 2)) * tileSize,
-          width: tileSize * size,
-          height: tileSize * size,
+          // The object is fixed inside the group, but has to account for its own size to stay centered.
+          x: ((1 - size) / 2) * tileSize + offset,
+          y: ((1 - size) / 2) * tileSize + offset,
+          width: width,
+          height: width,
+          // Offset moves the center of rotation to the center of the object.
+          offsetX: offset,
+          offsetY: offset,
           image: rawImg,
+          rotation: config.rotate ? (objState.rotation ?? 0) : 0,
         });
         newGroup.add(newImg);
 
