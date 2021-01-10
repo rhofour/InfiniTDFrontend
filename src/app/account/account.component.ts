@@ -36,6 +36,11 @@ export class AccountComponent implements OnInit {
       .catch(err => { this.loginError(err); });
   }
 
+  githubLogin() {
+    this.afAuth.signInWithPopup(new firebase.auth.GithubAuthProvider())
+      .catch(err => { this.loginError(err); });
+  }
+
   setName(loggedInUser: LoggedInUser) {
     const name = this.desiredName.value;
     if (this.desiredName.invalid) {
