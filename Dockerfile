@@ -14,5 +14,6 @@ FROM nginx
 COPY ./nginx.conf /etc/nginx/nginx.conf
 ARG nginx_port=80
 RUN sed -i "s/listen 80/listen ${nginx_port}/" /etc/nginx/nginx.conf
-
+ARG nginx_ssl_port=443
+RUN sed -i "s/listen 443/listen ${nginx_ssl_port}/" /etc/nginx/nginx.conf
 COPY --from=build /usr/angular-workdir/dist/InfiniTD /usr/share/nginx/html

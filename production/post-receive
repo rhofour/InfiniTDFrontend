@@ -13,7 +13,7 @@
 
 deployDir="../deploy-infinitd-frontend"
 gitDir=`pwd`
-buildConfig="--build-arg nginx_port=8085" #could be empty
+buildConfig="--build-arg nginx_port=8085 --build-arg nginx_ssl_port=8086" #could be empty
 systemdUnit="infinitd-frontend.service"
 
 ## --- End Config
@@ -50,6 +50,10 @@ do
         if [ $? -ne 0 ]; then
             echo "Podman : Build failed, aborting"
         fi
+
+        echo "update service file"
+        cp $deployDir/production/$systemdUnit ~/.config/systemd/user/$systemdUnit
+        systemctl --user daemon-reload
 
         echo "restart $systemdUnit"
         systemctl --user restart $systemdUnit
