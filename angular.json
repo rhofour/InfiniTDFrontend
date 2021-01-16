@@ -69,7 +69,10 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "InfiniTD:build"
+            "browserTarget": "InfiniTD:build",
+            "sslKey": "localhost.key",
+            "sslCert": "localhost.crt",
+            "ssl": true
           },
           "configurations": {
             "production": {
