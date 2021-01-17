@@ -21,6 +21,7 @@ interface TopLink {
 })
 export class TopBarComponent {
   public path$: Observable<string> = EMPTY;
+  encodeURIComponent = encodeURIComponent;
 
   constructor(
     public location: Location,

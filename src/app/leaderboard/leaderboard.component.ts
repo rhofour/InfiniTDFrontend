@@ -16,6 +16,7 @@ const REFRESH_MS = 5000; // Refresh every 5s
 })
 export class LeaderboardComponent {
   displayedColumns = [ 'rank', 'name', 'accumulatedGold', 'goldPerMinute', 'battleStatus' ];
+  encodeURIComponent = encodeURIComponent;
 
   constructor(
     private backend: BackendService

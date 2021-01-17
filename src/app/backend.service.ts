@@ -106,7 +106,7 @@ export class BackendService {
   }
 
   getUser(name: string): Promise<User | undefined> {
-    return this.http.get(backend.address + '/user/' + name).toPromise()
+    return this.http.get(backend.address + '/user/' + encodeURIComponent(name)).toPromise()
       .then(resp => decoders.user.decodePromise(resp), (resp => {
         if (resp.status == 404) {
           console.log('User ' + name + ' not found.');
@@ -143,7 +143,7 @@ export class BackendService {
     interface IsTakenResponse {
       isTaken: boolean,
     };
-    return this.http.get(backend.address + '/user/' + name).toPromise().then(
+    return this.http.get(backend.address + '/user/' + encodeURIComponent(name)).toPromise().then(
       resp => true,
       (err: HttpErrorResponse) => {
         if (err.status === 404) {
@@ -158,7 +158,7 @@ export class BackendService {
   register(loggedInUser: LoggedInUser, name: string): Promise<string | null> {
     return this.authenticatedHttpWithResponse(
       loggedInUser.fbUser,
-      backend.address + '/register/' + name, 'post').then((resp: HttpResponse<Object>) => {
+      backend.address + '/register/' + encodeURIComponent(name), 'post').then((resp: HttpResponse<Object>) => {
         if (resp.status == 201) {
           console.log('Registration successful.');
           this.updateCurrentUser();
@@ -183,7 +183,7 @@ export class BackendService {
     if (name === undefined) {
       return Promise.reject(new Error("Cannot build for user who is not registered."));
     }
-    const url = `${backend.address}/build/${name}/${gridSel.row}/${gridSel.col}`;
+    const url = `${backend.address}/build/${encodeURIComponent(name)}/${gridSel.row}/${gridSel.col}`;
     return this.authenticatedHttpWithResponse(
       loggedInUser.fbUser, url, 'post', `{"towerId": ${towerId}}`);
   }
@@ -193,7 +193,7 @@ export class BackendService {
     if (name === undefined) {
       return Promise.reject(new Error("Cannot sell for user who is not registered."));
     }
-    const url = `${backend.address}/sell/${name}/${gridSel.row}/${gridSel.col}`;
+    const url = `${backend.address}/sell/${encodeURIComponent(name)}/${gridSel.row}/${gridSel.col}`;
     return this.authenticatedHttpWithResponse(
       loggedInUser.fbUser, url, 'delete');
   }
@@ -203,7 +203,7 @@ export class BackendService {
     if (name === undefined) {
       return Promise.reject(new Error("Cannot add to wave for user who is not registered."));
     }
-    const url = `${backend.address}/wave/${name}`;
+    const url = `${backend.address}/wave/${encodeURIComponent(name)}`;
     return this.authenticatedHttpWithResponse(
       loggedInUser.fbUser, url, 'post', `{"monsterId": ${monsterId}}`);
   }
@@ -213,7 +213,7 @@ export class BackendService {
     if (name === undefined) {
       return Promise.reject(new Error("Cannot clear wave for user who is not registered."));
     }
-    const url = `${backend.address}/wave/${name}`;
+    const url = `${backend.address}/wave/${encodeURIComponent(name)}`;
     return this.authenticatedHttpWithResponse(loggedInUser.fbUser, url, 'delete');
   }
 
@@ -222,7 +222,7 @@ export class BackendService {
     if (name === undefined) {
       return Promise.reject(new Error("Cannot start battle for user who is not registered."));
     }
-    const url = `${backend.address}/controlBattle/${name}`;
+    const url = `${backend.address}/controlBattle/${encodeURIComponent(name)}`;
     return this.authenticatedHttpWithResponse(loggedInUser.fbUser, url, 'post');
   }
 
@@ -231,7 +231,7 @@ export class BackendService {
     if (name === undefined) {
       return Promise.reject(new Error("Cannot stop battle for user who is not registered."));
     }
-    const url = `${backend.address}/controlBattle/${name}`;
+    const url = `${backend.address}/controlBattle/${encodeURIComponent(name)}`;
     return this.authenticatedHttpWithResponse(loggedInUser.fbUser, url, 'delete');
   }
 
@@ -244,7 +244,11 @@ export class BackendService {
   }
 
   deleteAccount(loggedInUser: LoggedInUser): Promise<Object> {
-    const url = `${backend.address}/deleteAccount/${loggedInUser.user?.name}`;
+    const name = loggedInUser?.user?.name;
+    if (name === undefined) {
+      return Promise.reject(new Error("Cannot delete an unregistered account."));
+    }
+    const url = `${backend.address}/deleteAccount/${encodeURIComponent(name)}`;
     return this.authenticatedHttpWithResponse(loggedInUser.fbUser, url, 'delete');
   }
 }

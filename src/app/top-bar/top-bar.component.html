@@ -13,8 +13,8 @@
     About
   </a>
   <a mat-tab-link *ngIf="backend.getRegisteredUser() | async as user"
-    [routerLink]="'/battleground/' + user.name"
-    [active]="'/battleground/' + user.name == path">
+    [routerLink]="'/battleground/' + encodeURIComponent(user.name)"
+    [active]="'/battleground/' + encodeURIComponent(user.name) == path">
     My Battleground
   </a>
   <a mat-tab-link *ngIf="(backend.getRegisteredUser() | async)?.admin"

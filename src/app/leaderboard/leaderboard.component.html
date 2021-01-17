@@ -34,7 +34,7 @@
     <tr mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></tr>
     <tr mat-row *matRowDef="let row; columns: displayedColumns;"
       [ngClass]="(row.loggedIn) ? 'this-user-row' : 'other-user-row'"
-      routerLink="/battleground/{{row.name}}">
+      routerLink="/battleground/{{encodeURIComponent(row.name)}}">
     </tr>
   </table>
 
