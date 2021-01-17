@@ -6,10 +6,12 @@ import { AccountComponent } from './account/account.component';
 import { BenchmarkComponent } from './benchmark/benchmark.component';
 import { DebugLogsComponent } from './debug-logs/debug-logs.component';
 import { AdminComponent } from './admin/admin.component';
+import { AboutComponent } from './about/about.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/leaderboard', pathMatch: 'full' },
   { path: 'leaderboard', component: LeaderboardComponent },
+  { path: 'about', component: AboutComponent },
   { path: 'account', component: AccountComponent },
   { path: 'battleground/:username', component: BattlegroundComponent },
   { path: 'benchmark', component: BenchmarkComponent },

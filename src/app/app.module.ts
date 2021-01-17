@@ -45,6 +45,7 @@ import { AdminComponent } from './admin/admin.component';
 import { AreYouSureDialogComponent } from './are-you-sure-dialog/are-you-sure-dialog.component';
 import { MatSelectModule } from '@angular/material/select';
 import { GoldNumberPipe } from './gold-number.pipe';
+import { AboutComponent } from './about/about.component';
 
 @NgModule({
   declarations: [
@@ -68,6 +69,7 @@ import { GoldNumberPipe } from './gold-number.pipe';
     AdminComponent,
     AreYouSureDialogComponent,
     GoldNumberPipe,
+    AboutComponent,
   ],
   imports: [
     BrowserModule,
