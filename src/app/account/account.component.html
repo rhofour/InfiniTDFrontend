@@ -8,7 +8,7 @@
     <mat-form-field>
       <mat-label>Username</mat-label>
       <input matInput id="desiredName" name="desiredName" [formControl]="desiredName"
-        nameTakenValidator minlength="2" required>
+        nameTakenValidator minlength="2" maxlength="15" required>
       <mat-error *ngIf="desiredName?.errors?.required">
         A username is required
       </mat-error>
