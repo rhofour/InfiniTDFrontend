@@ -1,8 +1,8 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { MatDialog } from '@angular/material/dialog';
 
-import { AreYouSureDialogComponent, AreYouSureData } from '../are-you-sure-dialog/are-you-sure-dialog.component';
+import { AreYouSureDialogComponent } from '../are-you-sure-dialog/are-you-sure-dialog.component';
 import { BackendService } from '../backend.service';
 import { LoggedInUser } from '../logged-in-user';
 

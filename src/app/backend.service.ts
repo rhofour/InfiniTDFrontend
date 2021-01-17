@@ -242,4 +242,9 @@ export class BackendService {
     const url = `${backend.address}/admin/resetGame`;
     return this.authenticatedHttpWithResponse(loggedInUser.fbUser, url, 'post');
   }
+
+  deleteAccount(loggedInUser: LoggedInUser): Promise<Object> {
+    const url = `${backend.address}/deleteAccount/${loggedInUser.user?.name}`;
+    return this.authenticatedHttpWithResponse(loggedInUser.fbUser, url, 'delete');
+  }
 }

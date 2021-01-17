@@ -5,9 +5,12 @@ import 'firebase/auth';
 import { FormControl, Validators } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 import { MatInputModule } from '@angular/material/input';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatDialog } from '@angular/material/dialog';
 
 import { BackendService } from '../backend.service';
 import { LoggedInUser } from '../logged-in-user';
+import { AreYouSureDialogComponent } from '../are-you-sure-dialog/are-you-sure-dialog.component';
 
 @Component({
   selector: 'app-account',
@@ -24,6 +27,8 @@ export class AccountComponent implements OnInit {
     public afAuth: AngularFireAuth,
     public backend: BackendService,
     private cdRef: ChangeDetectorRef,
+    private _snackBar: MatSnackBar,
+    private _dialog: MatDialog,
   ) { }
 
   loginError(err: firebase.auth.Error) {
@@ -68,6 +73,26 @@ export class AccountComponent implements OnInit {
   logout() {
     console.log('Signing out.');
     this.afAuth.signOut();
+  }
+
+  deleteAccount(lUser: LoggedInUser) {
+    const dialogRef = this._dialog.open(AreYouSureDialogComponent, {
+      data: {
+        msg: "This will wipe all account data for this user.",
+        fn: (() => this.backend.deleteAccount(lUser)),
+      }
+    });
+    dialogRef.afterClosed().subscribe((result: Promise<Object>) => {
+      result.then(
+        _ => {
+          this._snackBar.open("Account successfully deleted.", "Dismiss");
+        },
+        err => {
+          console.warn("Error deleting account.");
+          this._snackBar.open(`Error: ${err.message}`, "Dismiss")
+        },
+      );
+    });
   }
 
   ngOnInit(): void { }
