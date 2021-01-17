@@ -18,6 +18,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -46,6 +47,7 @@ import { AreYouSureDialogComponent } from './are-you-sure-dialog/are-you-sure-di
 import { MatSelectModule } from '@angular/material/select';
 import { GoldNumberPipe } from './gold-number.pipe';
 import { AboutComponent } from './about/about.component';
+import { PrivacyComponent } from './privacy/privacy.component';
 
 @NgModule({
   declarations: [
@@ -70,6 +72,7 @@ import { AboutComponent } from './about/about.component';
     AreYouSureDialogComponent,
     GoldNumberPipe,
     AboutComponent,
+    PrivacyComponent,
   ],
   imports: [
     BrowserModule,
@@ -95,6 +98,7 @@ import { AboutComponent } from './about/about.component';
     MatDialogModule,
     FormsModule,
     MatSelectModule,
+    MatCheckboxModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

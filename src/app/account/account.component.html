@@ -19,9 +19,17 @@
         {{ desiredName.value }} is already taken.
       </mat-error>
     </mat-form-field>
-    <p><button mat-stroked-button (click)="setName(lUser)" [disabled]="desiredName.invalid || desiredName.pristine">
-      Set Name
-    </button></p>
+    <p>
+      <mat-checkbox [(ngModel)]="privacyPolicyAcknowledged">
+        I acknowledge the <a href="/privacy">privacy policy</a>.
+      </mat-checkbox>
+    </p>
+    <p>
+      <button mat-stroked-button (click)="register(lUser)"
+          [disabled]="desiredName.invalid || desiredName.pristine || !privacyPolicyAcknowledged">
+        Register
+      </button>
+    </p>
     <div class="alert alert-danger" *ngIf="registrationErrorMsg">
       Error: {{ registrationErrorMsg }}
     </div>

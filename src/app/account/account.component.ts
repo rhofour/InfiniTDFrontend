@@ -7,6 +7,7 @@ import { BehaviorSubject } from 'rxjs';
 import { MatInputModule } from '@angular/material/input';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
+import {MatCheckboxModule} from '@angular/material/checkbox';
 
 import { BackendService } from '../backend.service';
 import { LoggedInUser } from '../logged-in-user';
@@ -21,6 +22,7 @@ import { AreYouSureDialogComponent } from '../are-you-sure-dialog/are-you-sure-d
 export class AccountComponent implements OnInit {
   public loginErrorMsg = '';
   public registrationErrorMsg = '';
+  public privacyPolicyAcknowledged = false;
   desiredName = new FormControl('');
 
   constructor(
@@ -51,7 +53,7 @@ export class AccountComponent implements OnInit {
       .catch(err => { this.loginError(err); });
   }
 
-  setName(loggedInUser: LoggedInUser) {
+  register(loggedInUser: LoggedInUser) {
     const name = this.desiredName.value;
     if (this.desiredName.invalid) {
       console.log('Attemping to set name with invalid value: ' + name);
