@@ -10,3 +10,6 @@ Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app w
 
 ## Production docs
 There is some documentation about the production setup available in [production/PROD_SETUP.md](production/PROD_SETUP.md).
+
+## License
+The InfiniTD Backend is distributed under the [MIT license](https://choosealicense.com/licenses/mit).
