@@ -48,6 +48,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { GoldNumberPipe } from './gold-number.pipe';
 import { AboutComponent } from './about/about.component';
 import { PrivacyComponent } from './privacy/privacy.component';
+import { SettingsComponent } from './settings/settings.component';
 
 @NgModule({
   declarations: [
@@ -73,6 +74,7 @@ import { PrivacyComponent } from './privacy/privacy.component';
     GoldNumberPipe,
     AboutComponent,
     PrivacyComponent,
+    SettingsComponent,
   ],
   imports: [
     BrowserModule,

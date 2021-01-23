@@ -1,0 +1,16 @@
+<mat-card mat-elevation-z4>
+    <mat-card-header>
+        <mat-card-title>Appearance</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+        <mat-form-field appearance="fill">
+            <mat-label>Color scheme</mat-label>
+            <select matNativeControl (change)="selectColorScheme($event)">
+                <option *ngFor="let option of colorSchemeOptions"
+                    [value]="option.value"
+                    [selected]="selectedColorScheme === option.value">{{ option.viewValue }}
+                </option>
+            </select>
+        </mat-form-field>
+    </mat-card-content>
+</mat-card>

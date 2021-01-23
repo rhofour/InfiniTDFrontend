@@ -8,6 +8,7 @@ import { DebugLogsComponent } from './debug-logs/debug-logs.component';
 import { AdminComponent } from './admin/admin.component';
 import { AboutComponent } from './about/about.component';
 import { PrivacyComponent } from './privacy/privacy.component';
+import { SettingsComponent } from './settings/settings.component';
 
 const routes: Routes = [
   { path: '', redirectTo: '/leaderboard', pathMatch: 'full' },
@@ -19,6 +20,7 @@ const routes: Routes = [
   { path: 'benchmark', component: BenchmarkComponent },
   { path: 'debug/logs', component: DebugLogsComponent },
   { path: 'admin', component: AdminComponent },
+  { path: 'settings', component: SettingsComponent },
 ];
 
 @NgModule({

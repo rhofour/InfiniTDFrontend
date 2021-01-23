@@ -1,4 +1,5 @@
 import { Component, ChangeDetectionStrategy } from '@angular/core';
+import { ColorSchemeService } from './color-scheme.service';
 
 @Component({
   selector: 'app-root',
@@ -8,4 +9,8 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 })
 export class AppComponent {
   title = 'InfiniTD';
+
+  constructor(private colorScheme: ColorSchemeService) {
+    this.colorScheme.load();
+  }
 }

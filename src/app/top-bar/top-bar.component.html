@@ -31,4 +31,10 @@
     </span>
     <ng-template #noUser>Login</ng-template>
   </a>
+  <a mat-tab-link
+    [routerLink]="'/settings'"
+    [active]="'/settings' == path"
+    [ngStyle]="{'min-width': 'fit-content', 'padding': '0 10px'}">
+    ⚙
+  </a>
 </nav>
