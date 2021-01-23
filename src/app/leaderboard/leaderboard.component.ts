@@ -28,13 +28,15 @@ export class LeaderboardComponent {
         mergeMap(_ => this.backend.getUsers())
       ))
     );
-
+  
   public readonly usersRowData$: Observable<(User & {loggedIn: boolean})[]> =
-    combineLatest(this.polledUsers$, this.backend.getLoggedInUser()).pipe(
+    combineLatest([this.polledUsers$, this.backend.getLoggedInUser()]).pipe(
       map(([users, loggedInUser]: [User[], LoggedInUser | undefined]) =>
-        users.map((user: User) =>
-          Object.assign({}, user, { loggedIn: loggedInUser !== undefined && loggedInUser.matches(user) })
-        )
+        users
+          .filter(user => user.goldPerMinute > 0)
+          .map((user: User) =>
+            Object.assign({}, user, { loggedIn: loggedInUser !== undefined && loggedInUser.matches(user) })
+          )
       )
     );
 }
