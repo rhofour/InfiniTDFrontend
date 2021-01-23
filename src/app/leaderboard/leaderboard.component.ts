@@ -11,7 +11,7 @@ const REFRESH_MS = 5000; // Refresh every 5s
 @Component({
   selector: 'app-leaderboard',
   templateUrl: './leaderboard.component.html',
-  styleUrls: ['./leaderboard.component.css'],
+  styleUrls: ['./leaderboard.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LeaderboardComponent {

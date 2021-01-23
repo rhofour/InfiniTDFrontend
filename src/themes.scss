@@ -1,5 +1,7 @@
 // Imports for Angular Material Theming
 @import '~@angular/material/theming';
+@import 'component-themes';
+
 @include mat-core();
 
 // Light theme
@@ -14,20 +16,10 @@ $dark-warn:    mat-palette($mat-deep-orange);
 $dark-theme:   mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
 
 @include angular-material-theme($light-theme);
+@include component-themes($light-theme);
 
 .infinitd-dark-theme {
   // Only change the colors otherwise styles get messed up.
   @include angular-material-color($dark-theme);
-}
-
-html, body { height: 100%; }
-body {
-  margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
-}
-
-.spacer { flex: 1 1 auto; }
-
-.mat-tab-body-wrapper{
-  flex-grow: 1;
+  @include component-themes($dark-theme);
 }
