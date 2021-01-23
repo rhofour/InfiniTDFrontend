@@ -60,11 +60,15 @@ export class ColorSchemeService {
     }
 
     update(scheme: 'default' | 'light' | 'dark') {
+        const oldScheme = this.colorScheme;
         if (this.colorScheme === scheme) {
           return;
         }
         this._setColorScheme(scheme);
-        if (scheme == 'light') {
+        if (this.colorScheme === oldScheme) {
+          return;
+        }
+        if (this.colorScheme == 'light') {
           // Remove dark theme class
           this.renderer.removeClass(document.body, ColorSchemeService.DARK_THEME_CLASS);
         } else {
