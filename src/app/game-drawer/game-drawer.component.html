@@ -69,22 +69,22 @@
     <ng-container *ngIf="lUser.matches(user); else otherUser">
       <button *ngIf="!user.inBattle" (click)="startBattle(lUser)"
           [disabled]="user.wave.length === 0"
-          appClickShortcut shortcutKey=" "
+          appClickShortcut shortcutKey="e"
           mat-stroked-button>
-        Start battle
+        Start battl(e)
       </button>
       <button *ngIf="user.inBattle" (click)="stopBattle(lUser)"
-          appClickShortcut shortcutKey=" "
+          appClickShortcut shortcutKey="e"
           mat-stroked-button>
-        Stop battle
+        Stop battl(e)
       </button>
     </ng-container>
   </ng-container>
   <ng-template #otherUser>
     <button (click)="showBattle(user.name, user.name)"
-        appClickShortcut shortcutKey=" "
+        appClickShortcut shortcutKey="e"
         mat-stroked-button>
-      Show battle
+      Show battl(e)
     </button>
   </ng-template>
   <button (click)="showResults(battleState.results)"
