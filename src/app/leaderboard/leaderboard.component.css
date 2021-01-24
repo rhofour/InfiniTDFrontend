@@ -1,0 +1,22 @@
+tr.other-user-row:hover {
+  background: var(--primary-color-lighter);
+  color: var(--primary-color-lighter-contrast);
+}
+
+tr.this-user-row {
+  background: var(--accent-color-lighter);
+  color: var(--accent-color-lighter-contrast);
+}
+
+tr.this-user-row:hover {
+  background: var(--primary-color-lighter);
+  color: var(--primary-color-lighter-contrast);
+}
+
+.mat-cell {
+  color: inherit;
+}
+
+table {
+  width: 100%;
+}

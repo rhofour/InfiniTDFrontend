@@ -1,8 +1,23 @@
 // Imports for Angular Material Theming
 @import '~@angular/material/theming';
-@import 'component-themes';
 
 @include mat-core();
+
+@mixin themeToCustomProperties($theme) {
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $background: map-get($theme, background);
+
+  :root {
+    --primary-color: #{mat-color($primary)};
+    --primary-color-lighter: #{mat-color($primary, lighter)};
+    --primary-color-lighter-contrast: #{mat-color($primary, lighter-contrast)};
+
+    --accent-color: #{mat-color($accent)};
+    --accent-color-lighter: #{mat-color($accent, lighter)};
+    --accent-color-lighter-contrast: #{mat-color($accent, lighter-contrast)};
+  }
+}
 
 // Light theme
 $light-primary: mat-palette($mat-indigo);
@@ -16,10 +31,10 @@ $dark-warn:    mat-palette($mat-deep-orange);
 $dark-theme:   mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
 
 @include angular-material-theme($light-theme);
-@include component-themes($light-theme);
+@include themeToCustomProperties($light-theme);
 
 .infinitd-dark-theme {
   // Only change the colors otherwise styles get messed up.
   @include angular-material-color($dark-theme);
-  @include component-themes($dark-theme);
+  @include themeToCustomProperties($dark-theme);
 }

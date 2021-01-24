@@ -1,5 +1,0 @@
-@import './app/leaderboard/leaderboard.component';
-
-@mixin component-themes($theme) {
-  @include leaderboard-theme($theme);
-}
