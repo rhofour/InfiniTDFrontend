@@ -1,4 +1,5 @@
-import {Injectable, Renderer2, RendererFactory2} from '@angular/core';
+import { Injectable, Renderer2, RendererFactory2 } from '@angular/core';
+import { OverlayContainer } from '@angular/cdk/overlay';
 
 // Started from: https://gist.github.com/SvenBudak/62d117f813b67a54fb0067db3de829f0#file-color-scheme-service-ts
 @Injectable({
@@ -11,7 +12,10 @@ export class ColorSchemeService {
     public overwritten: boolean = false;
     static readonly DARK_THEME_CLASS = 'infinitd-dark-theme';
 
-    constructor(rendererFactory: RendererFactory2) {
+    constructor(
+      rendererFactory: RendererFactory2,
+      private overlayContainer: OverlayContainer,
+    ) {
         // Create new renderer from renderFactory, to make it possible to use renderer2 in a service
         this.renderer = rendererFactory.createRenderer(null, null);
     }
@@ -56,6 +60,7 @@ export class ColorSchemeService {
         this._getColorScheme();
         if (this.colorScheme === 'dark') {
           this.renderer.addClass(document.body, ColorSchemeService.DARK_THEME_CLASS);
+          this.overlayContainer.getContainerElement().classList.add(ColorSchemeService.DARK_THEME_CLASS);
         }
     }
 
@@ -71,9 +76,11 @@ export class ColorSchemeService {
         if (this.colorScheme == 'light') {
           // Remove dark theme class
           this.renderer.removeClass(document.body, ColorSchemeService.DARK_THEME_CLASS);
+          this.overlayContainer.getContainerElement().classList.remove(ColorSchemeService.DARK_THEME_CLASS);
         } else {
           // Add the dark theme class
           this.renderer.addClass(document.body, ColorSchemeService.DARK_THEME_CLASS);
+          this.overlayContainer.getContainerElement().classList.add(ColorSchemeService.DARK_THEME_CLASS);
         }
     }
 
