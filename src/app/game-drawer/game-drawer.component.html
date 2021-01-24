@@ -53,7 +53,7 @@
   <div *ngIf="backend.getLoggedInUser() | async as lUser">
     <ng-container *ngIf="lUser.matches(user)">
       <button (click)="addToWave(lUser, displayedMonster)"
-            [disabled]="user.inBattle" appClickShortcut shortcutKey="a" mat-stroked-button>
+            [disabled]="false && user.inBattle" appClickShortcut shortcutKey="a" mat-stroked-button>
         (A)dd to wave
       </button>
     </ng-container>
@@ -87,6 +87,12 @@
       Show battle
     </button>
   </ng-template>
+  <button (click)="showResults(battleState.results)"
+    [disabled]="battleState.results === undefined"
+    appClickShortcut shortcutKey="r"
+    mat-stroked-button>
+    View (R)esults
+  </button>
 </mat-expansion-panel>
 
 <ng-container *ngIf="backend.getLoggedInUser() | async as lUser">

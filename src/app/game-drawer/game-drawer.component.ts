@@ -2,6 +2,7 @@ import { Component, OnInit, ViewChild, Input, ChangeDetectorRef, ChangeDetection
 import { MatList, MatSelectionList, MatSelectionListChange } from '@angular/material/list';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatDialog } from '@angular/material/dialog';
 
 import { SelectionService, Selection, NewBuildSelection, GridSelection, NewMonsterSelection } from '../selection.service';
 import { GameConfig, TowerConfig, MonsterConfig } from '../game-config';
@@ -12,6 +13,8 @@ import { LoggedInUser } from '../logged-in-user';
 import { WouldBlockPathPipe } from '../would-block-path.pipe';
 import { DebugService } from '../debug.service';
 import { RecordedBattleStateService } from '../recorded-battle-state.service';
+import { BattleResults, BattleState } from '../battle-state';
+import { BattleResultsComponent } from '../battle-results/battle-results.component';
 
 function hasOwnProperty<X extends {}, Y extends PropertyKey>
   (obj: X, prop: Y): obj is X & Record<Y, unknown> {
@@ -37,6 +40,7 @@ export class GameDrawerComponent {
   public inBattle: boolean = false;
   @Input() gameConfig!: GameConfig;
   @Input() towersState: TowersBgState = { towers: [] };
+  @Input() battleState!: BattleState;
   @ViewChild('buildList') buildList?: MatSelectionList;
   @ViewChild('monsterList') monsterList?: MatSelectionList;
   // user is the user we're displaying.
@@ -47,6 +51,7 @@ export class GameDrawerComponent {
     private cdRef: ChangeDetectorRef,
     private selectionService: SelectionService,
     private snackBar: MatSnackBar,
+    private dialog: MatDialog,
     public backend: BackendService,
     public debug: DebugService,
     private recordedBattleState: RecordedBattleStateService,
@@ -184,5 +189,14 @@ export class GameDrawerComponent {
 
   stopShownBattle() {
     this.recordedBattleState.stopBattle();
+  }
+
+  showResults(results: BattleResults | undefined) {
+    if (results === undefined) {
+      console.warn("showResults called with undefined battle results.");
+      return;
+    }
+    this.dialog.closeAll();
+    BattleResultsComponent.openDialog(this.dialog, this.gameConfig, results);
   }
 }

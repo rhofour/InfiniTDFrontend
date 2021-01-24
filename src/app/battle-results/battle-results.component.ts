@@ -1,6 +1,7 @@
-import { Component, OnInit, ChangeDetectionStrategy, Input } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy, Input, Inject } from '@angular/core';
 import { MatListModule } from '@angular/material/list';
 import { MatCardModule } from '@angular/material/card';
+import { MatDialog, MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 import { BattleResults } from '../battle-state';
 import { GameConfig, MonsterConfig, BattleBonus, BonusType } from '../game-config';
@@ -18,13 +19,18 @@ interface MonsterDefeated {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BattleResultsComponent implements OnInit {
-  @Input() gameConfig!: GameConfig;
-  @Input() battleResults!: BattleResults;
+  public gameConfig: GameConfig;
+  public battleResults: BattleResults;
   Math = Math;
   monstersColumns = [ 'name', 'numDefeated', 'numSent', 'reward' ];
   awardsColumns = [ 'name', 'modifier', 'subtotal' ];
 
-  constructor() { }
+  constructor(
+    @Inject(MAT_DIALOG_DATA) public data: {gameConfig: GameConfig, battleResults: BattleResults},
+  ) {
+    this.gameConfig = data.gameConfig;
+    this.battleResults = data.battleResults;
+   }
 
   ngOnInit(): void {
     if (this.gameConfig === undefined) {
@@ -105,5 +111,13 @@ export class BattleResultsComponent implements OnInit {
 
   get totalSent(): number {
     return this.monstersDefeated.reduce( (acc, x) => acc + x.numSent, 0 );
+  }
+
+  static openDialog(dialog: MatDialog, gameConfig: GameConfig, battleResults: BattleResults) {
+    dialog.open(BattleResultsComponent, {
+      maxWidth: "95%",
+      maxHeight: "95%",
+      data: { gameConfig: gameConfig, battleResults: battleResults },
+    });
   }
 }

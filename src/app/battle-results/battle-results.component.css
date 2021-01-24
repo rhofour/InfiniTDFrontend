@@ -6,6 +6,6 @@ tr.mat-footer-row {
   font-weight: bold;
 }
 
-.mat-card-content {
-  padding-left: 14px;
+.mat-card {
+  margin: 8px;
 }

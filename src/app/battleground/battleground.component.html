@@ -15,24 +15,17 @@
       ({{ user.goldPerMinute | goldNumber }} / min)
     </mat-toolbar>
     <ng-container *ngIf="gameConfig$ | async as gameConfig">
-      <mat-tab-group fxFlex="1 1 100%">
-        <mat-tab label="Battleground">
-          <mat-drawer-container *ngIf="battlegroundState$ | async as bgState" fxFlex="1 1 100%" autosize>
-            <mat-drawer opened mode="side" position="end" fxFlex="1 1 100%">
-              <app-game-drawer [user]="user" [gameConfig]="gameConfig" [towersState]="bgState.towers">
-              </app-game-drawer>
-            </mat-drawer>
-            <mat-drawer-content fxFlex="1 1 100%" [ngStyle]="{'height': 'auto'}">
-              <app-renderer [gameConfig]="gameConfig" [state]="bgState" [battleState]="battleState" fxFlex="1 1 100%">
-              </app-renderer>
-            </mat-drawer-content>
-          </mat-drawer-container>
-        </mat-tab>
-        <mat-tab label="Results" *ngIf="battleState.results as results">
-          <app-battle-results [gameConfig]="gameConfig" [battleResults]="results">
-          </app-battle-results>
-        </mat-tab>
-      </mat-tab-group>
+      <mat-drawer-container *ngIf="battlegroundState$ | async as bgState" fxFlex="1 1 100%" autosize>
+        <mat-drawer opened mode="side" position="end" fxFlex="1 1 100%">
+          <app-game-drawer [user]="user" [gameConfig]="gameConfig" [towersState]="bgState.towers"
+            [battleState]="battleState">
+          </app-game-drawer>
+        </mat-drawer>
+        <mat-drawer-content fxFlex="1 1 100%" [ngStyle]="{'height': 'auto'}">
+          <app-renderer [gameConfig]="gameConfig" [state]="bgState" [battleState]="battleState" fxFlex="1 1 100%">
+          </app-renderer>
+        </mat-drawer-content>
+      </mat-drawer-container>
     </ng-container>
   </ng-container>
 </div>
