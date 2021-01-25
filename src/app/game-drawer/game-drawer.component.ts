@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, Input, ChangeDetectorRef, ChangeDetectionStrategy, Pipe, PipeTransform } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, ChangeDetectorRef, ChangeDetectionStrategy, Pipe, PipeTransform, OnChanges, SimpleChanges } from '@angular/core';
 import { MatList, MatSelectionList, MatSelectionListChange } from '@angular/material/list';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatExpansionModule } from '@angular/material/expansion';
@@ -32,7 +32,7 @@ interface WaveStats {
   styleUrls: ['./game-drawer.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GameDrawerComponent {
+export class GameDrawerComponent implements OnChanges {
   public selection: Selection = new Selection();
   // Only one of these should be set at once.
   public displayedTower?: TowerConfig;
@@ -66,6 +66,18 @@ export class GameDrawerComponent {
   ngOnInit(): void {
     if (this.user === undefined) {
       throw Error("Input user is undefined.");
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes.battleState !== undefined) {
+      const prevBattle: BattleState = changes.battleState.previousValue;
+      const newBattle: BattleState = changes.battleState.currentValue;
+
+      if (prevBattle?.results === undefined && newBattle?.results !== undefined &&
+         prevBattle?.live === true) {
+        this.showResults(newBattle.results);
+      }
     }
   }
 
@@ -173,6 +185,7 @@ export class GameDrawerComponent {
   }
 
   startBattle(loggedInUser: LoggedInUser) {
+    this.dialog.closeAll();
     this.backend.startBattle(loggedInUser).catch((err) => {
       this.handleBackendError("Error starting battle:", err);
     });
@@ -185,6 +198,7 @@ export class GameDrawerComponent {
   }
 
   showBattle(attackerName: string, defenderName: string) {
+    this.dialog.closeAll();
     this.recordedBattleState.requestBattleState(attackerName, defenderName);
   }
 
