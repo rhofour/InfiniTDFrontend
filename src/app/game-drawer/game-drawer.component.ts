@@ -159,8 +159,9 @@ export class GameDrawerComponent {
     });
   }
 
-  addToWave(loggedInUser: LoggedInUser, monster: MonsterConfig) {
-    this.backend.addToWave(loggedInUser, monster.id).catch((err) => {
+  addToWave(loggedInUser: LoggedInUser, user: User, newMonster: MonsterConfig) {
+    const wave = [...user.wave, newMonster.id];
+    this.backend.setWave(loggedInUser, wave).catch((err) => {
       this.handleBackendError("Error adding to wave:", err);
     });
   }

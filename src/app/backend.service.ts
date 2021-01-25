@@ -198,14 +198,15 @@ export class BackendService {
       loggedInUser.fbUser, url, 'delete');
   }
 
-  addToWave(loggedInUser: LoggedInUser, monsterId: number): Promise<Object> {
+  setWave(loggedInUser: LoggedInUser, monsters: number[]): Promise<Object> {
     const name = loggedInUser?.user?.name;
     if (name === undefined) {
       return Promise.reject(new Error("Cannot add to wave for user who is not registered."));
     }
     const url = `${backend.address}/wave/${encodeURIComponent(name)}`;
+    const data = { monsters: monsters };
     return this.authenticatedHttpWithResponse(
-      loggedInUser.fbUser, url, 'post', `{"monsterId": ${monsterId}}`);
+      loggedInUser.fbUser, url, 'post', data);
   }
 
   clearWave(loggedInUser: LoggedInUser): Promise<Object> {
