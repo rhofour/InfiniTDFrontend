@@ -26,9 +26,9 @@
   <a mat-tab-link
     [routerLink]="'/account'"
     [active]="'/account' == path">
-    <span *ngIf="backend.getRegisteredUser() | async as user; else noUser">
+    <ng-container *ngIf="backend.getRegisteredUser() | async as user; else noUser">
       {{ user.name }}
-    </span>
+    </ng-container>
     <ng-template #noUser>Login</ng-template>
   </a>
   <a mat-tab-link

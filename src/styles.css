@@ -9,3 +9,7 @@ body {
 .mat-tab-body-wrapper{
   flex-grow: 1;
 }
+
+a:not(.mat-tab-link)  {
+  color: var( --primary-color )
+}
