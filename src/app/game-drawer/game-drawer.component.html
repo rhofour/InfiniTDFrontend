@@ -124,6 +124,7 @@
       <ng-container *ngIf="lUser.matches(user); else spectateWave">
         <mat-selection-list class="monster-list"
           cdkDropList [cdkDropListData]="lUser"
+          [cdkDropListDisabled]="user.inBattle"
           (cdkDropListDropped)="monsterItemDropped($event)">
           <mat-list-item class="monster-list-item-dragable" *ngFor="let monster of wave" cdkDrag>
             <img matListAvatar [src]="monster[1].url">
