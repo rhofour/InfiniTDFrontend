@@ -126,9 +126,15 @@
           cdkDropList [cdkDropListData]="lUser"
           [cdkDropListDisabled]="user.inBattle"
           (cdkDropListDropped)="monsterItemDropped($event)">
-          <mat-list-item class="monster-list-item-dragable" *ngFor="let monster of wave" cdkDrag>
+          <mat-list-item class="monster-list-item-dragable"
+            [disabled]="user.inBattle"
+            *ngFor="let monster of wave; let idx = index" cdkDrag>
             <img matListAvatar [src]="monster[1].url">
-            {{monster[0]}} x {{monster[1].name}}
+            <input type="number" value="{{monster[0]}}" min=0 max=500
+              (change)="monsterCountUpdate(lUser, idx, $event)"
+              [disabled]="user.inBattle"
+              matInput style="max-width:3em;">
+            × {{monster[1].name}}
           </mat-list-item>
         </mat-selection-list>
       </ng-container>
@@ -136,7 +142,7 @@
         <mat-list class="monster-list">
           <mat-list-item *ngFor="let monster of wave">
             <img matListAvatar [src]="monster[1].url">
-            {{monster[0]}} x {{monster[1].name}}
+            {{monster[0]}} × {{monster[1].name}}
           </mat-list-item>
         </mat-list>
       </ng-template>

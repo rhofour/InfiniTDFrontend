@@ -245,4 +245,13 @@ export class GameDrawerComponent implements OnChanges {
       this.handleBackendError("Error updating wave:", err);
     });
   }
+
+  monsterCountUpdate(lUser: LoggedInUser, idx: number, event: Event) {
+    const target: HTMLInputElement = event.target as HTMLInputElement;
+    this.wave[idx][0] = target.valueAsNumber;
+    const newWave = this.listToWave(this.wave);
+    this.backend.setWave(lUser, newWave).catch((err) => {
+      this.handleBackendError("Error updating wave:", err);
+    });
+  }
 }

@@ -12,7 +12,11 @@
   font-weight: bold;
 }
 
-.monster-list-item-dragable {
+.mat-list-base {
+  padding-top: 0;
+}
+
+.monster-list-item-dragable:not(:disabled) {
   cursor: move;
 }
 
