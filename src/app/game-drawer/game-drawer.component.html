@@ -135,6 +135,12 @@
               [disabled]="user.inBattle"
               matInput style="max-width:3em;">
             × {{monster[1].name}}
+            <span class="spacer"></span>
+            <button mat-button matSuffix mat-icon-button aria-label="Clear"
+              [disabled]="user.inBattle"
+              (click)="monsterClear(lUser, idx)">
+              <mat-icon inline="true">close</mat-icon>
+            </button>
           </mat-list-item>
         </mat-selection-list>
       </ng-container>

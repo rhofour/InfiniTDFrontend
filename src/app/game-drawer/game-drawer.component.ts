@@ -242,7 +242,7 @@ export class GameDrawerComponent implements OnChanges {
     moveItemInArray(this.wave, event.previousIndex, event.currentIndex);
     const newWave = this.listToWave(this.wave);
     this.backend.setWave(event.container.data, newWave).catch((err) => {
-      this.handleBackendError("Error updating wave:", err);
+      this.handleBackendError("Error updating wave ordering:", err);
     });
   }
 
@@ -252,6 +252,14 @@ export class GameDrawerComponent implements OnChanges {
     const newWave = this.listToWave(this.wave);
     this.backend.setWave(lUser, newWave).catch((err) => {
       this.handleBackendError("Error updating wave:", err);
+    });
+  }
+
+  monsterClear(lUser: LoggedInUser, idx: number) {
+    this.wave.splice(idx, 1);
+    const newWave = this.listToWave(this.wave);
+    this.backend.setWave(lUser, newWave).catch((err) => {
+      this.handleBackendError("Error deleting from wave:", err);
     });
   }
 }

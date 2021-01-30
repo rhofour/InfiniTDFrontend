@@ -20,6 +20,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { MatIconModule } from '@angular/material/icon';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -103,6 +104,7 @@ import { SettingsComponent } from './settings/settings.component';
     MatSelectModule,
     MatCheckboxModule,
     DragDropModule,
+    MatIconModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
