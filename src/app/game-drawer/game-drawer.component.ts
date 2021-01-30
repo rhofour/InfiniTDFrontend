@@ -236,6 +236,9 @@ export class GameDrawerComponent implements OnChanges {
   }
 
   monsterItemDropped(event: CdkDragDrop<LoggedInUser>) {
+    if (event.previousIndex === event.currentIndex) {
+      return;
+    }
     moveItemInArray(this.wave, event.previousIndex, event.currentIndex);
     const newWave = this.listToWave(this.wave);
     this.backend.setWave(event.container.data, newWave).catch((err) => {
