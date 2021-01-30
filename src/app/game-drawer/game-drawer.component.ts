@@ -3,6 +3,7 @@ import { MatList, MatSelectionList, MatSelectionListChange } from '@angular/mate
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDialog } from '@angular/material/dialog';
+import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
 import { SelectionService, Selection, NewBuildSelection, GridSelection, NewMonsterSelection } from '../selection.service';
 import { GameConfig, TowerConfig, MonsterConfig } from '../game-config';
@@ -26,6 +27,8 @@ interface WaveStats {
   totalBounty: number,
 }
 
+type WaveList = [number, MonsterConfig][];
+
 @Component({
   selector: 'app-game-drawer',
   templateUrl: './game-drawer.component.html',
@@ -46,6 +49,7 @@ export class GameDrawerComponent implements OnChanges {
   // user is the user we're displaying.
   @Input() user!: User;
   Math = Math;
+  wave: [number, MonsterConfig][] = [];
 
   constructor(
     private cdRef: ChangeDetectorRef,
@@ -67,6 +71,7 @@ export class GameDrawerComponent implements OnChanges {
     if (this.user === undefined) {
       throw Error("Input user is undefined.");
     }
+    this.wave = this.waveToList(this.user.wave);
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -78,6 +83,10 @@ export class GameDrawerComponent implements OnChanges {
          prevBattle?.live === true) {
         this.showResults(newBattle.results);
       }
+    }
+
+    if (changes.user !== undefined) {
+      this.wave = this.waveToList(this.user.wave);
     }
   }
 
@@ -100,11 +109,11 @@ export class GameDrawerComponent implements OnChanges {
     }
   }
 
-  getWave(): [number, MonsterConfig][] {
+  waveToList(wave: number[]): WaveList {
     let monsters: [number, MonsterConfig][] = [];
     let lastMonsterConfig = undefined;
     let previousMonsters = 0;
-    for (let monsterId of this.user.wave) {
+    for (let monsterId of wave) {
       let monster = this.gameConfig.monsters.get(monsterId);
       if (monster !== undefined) {
         if (lastMonsterConfig?.id === monsterId) {
@@ -124,6 +133,17 @@ export class GameDrawerComponent implements OnChanges {
       monsters.push([previousMonsters, lastMonsterConfig]);
     }
     return monsters;
+  }
+
+  listToWave(waveList: WaveList): number[] {
+    const size: number = waveList.reduce((acc, x) => acc + x[0], 0);
+    let wave: number[] = new Array(size);
+    let offset = 0;
+    for (let listElem of waveList) {
+      wave.fill(listElem[1].id, offset, offset + listElem[0]);
+      offset += listElem[0];
+    }
+    return wave;
   }
 
   getWaveStats(): WaveStats {
@@ -213,5 +233,13 @@ export class GameDrawerComponent implements OnChanges {
     }
     this.dialog.closeAll();
     BattleResultsComponent.openDialog(this.dialog, this.gameConfig, results);
+  }
+
+  monsterItemDropped(event: CdkDragDrop<LoggedInUser>) {
+    moveItemInArray(this.wave, event.previousIndex, event.currentIndex);
+    const newWave = this.listToWave(this.wave);
+    this.backend.setWave(event.container.data, newWave).catch((err) => {
+      this.handleBackendError("Error updating wave:", err);
+    });
   }
 }

@@ -13,3 +13,27 @@ body {
 a:not(.mat-tab-link)  {
   color: var( --primary-color )
 }
+
+/* To make mat-list-item-content look right outside of a list.
+   Needed to allow drag and drop with lists.
+*/
+.cdk-drag-preview .mat-list-item-content{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 0 16px;
+  position: relative;
+  height: inherit;
+}
+
+/* To make mat-list-avatar look right outside of a list.
+   Needed to allow drag and drop with lists.
+*/
+.cdk-drag-preview .mat-list-avatar {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}

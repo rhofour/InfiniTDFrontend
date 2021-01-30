@@ -19,6 +19,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { DragDropModule } from '@angular/cdk/drag-drop';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -101,6 +102,7 @@ import { SettingsComponent } from './settings/settings.component';
     FormsModule,
     MatSelectModule,
     MatCheckboxModule,
+    DragDropModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

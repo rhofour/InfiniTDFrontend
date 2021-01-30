@@ -117,22 +117,32 @@
   <mat-expansion-panel-header>
     <mat-panel-title> Wave </mat-panel-title>
   </mat-expansion-panel-header>
+
   Current wave:
-  <ng-container *ngIf="user.wave.length > 0; else emptyWave">
-    <mat-list>
-      <mat-list-item *ngFor="let monster of getWave()">
-        <img matListAvatar [src]="monster[1].url">
-        <span >{{monster[0]}} x {{monster[1].name}}</span>
-        <ng-template #invalidMonsterId>
-          Unknown monster
-        </ng-template>
-      </mat-list-item>
-    </mat-list>
-    <div *ngIf="getWaveStats() as waveStats" style="width: 0; min-width: 100%">
-      Wave contains {{waveStats.totalMonsters}} monsters with a total bounty of
-      {{ waveStats.totalBounty | goldNumber }} gold.
-    </div>
-    <ng-container *ngIf="backend.getLoggedInUser() | async as lUser">
+  <ng-container *ngIf="backend.getLoggedInUser() | async as lUser">
+    <ng-container *ngIf="user.wave.length > 0; else emptyWave">
+      <ng-container *ngIf="lUser.matches(user); else spectateWave">
+        <mat-selection-list class="monster-list"
+          cdkDropList [cdkDropListData]="lUser"
+          (cdkDropListDropped)="monsterItemDropped($event)">
+          <mat-list-item class="monster-list-item-dragable" *ngFor="let monster of wave" cdkDrag>
+            <img matListAvatar [src]="monster[1].url">
+            {{monster[0]}} x {{monster[1].name}}
+          </mat-list-item>
+        </mat-selection-list>
+      </ng-container>
+      <ng-template #spectateWave>
+        <mat-list class="monster-list">
+          <mat-list-item *ngFor="let monster of wave">
+            <img matListAvatar [src]="monster[1].url">
+            {{monster[0]}} x {{monster[1].name}}
+          </mat-list-item>
+        </mat-list>
+      </ng-template>
+      <div *ngIf="getWaveStats() as waveStats" style="width: 0; min-width: 100%">
+        Wave contains {{waveStats.totalMonsters}} monsters with a total bounty of
+        {{ waveStats.totalBounty | goldNumber }} gold.
+      </div>
       <ng-container *ngIf="lUser.matches(user)">
         <button [disabled]="user.inBattle" (click)="clearWave(lUser)"
           mat-stroked-button>
