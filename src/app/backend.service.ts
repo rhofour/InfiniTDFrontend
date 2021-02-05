@@ -183,9 +183,14 @@ export class BackendService {
     if (name === undefined) {
       return Promise.reject(new Error("Cannot build for user who is not registered."));
     }
-    const url = `${backend.address}/build/${encodeURIComponent(name)}/${gridSel.row}/${gridSel.col}`;
+    const url = `${backend.address}/build/${encodeURIComponent(name)}`;
+    const postData = {
+      "towerIds": [towerId],
+      "rows": [gridSel.row],
+      "cols": [gridSel.col],
+    }
     return this.authenticatedHttpWithResponse(
-      loggedInUser.fbUser, url, 'post', `{"towerId": ${towerId}}`);
+      loggedInUser.fbUser, url, 'post', postData);
   }
 
   sell(loggedInUser: LoggedInUser, gridSel: GridSelection): Promise<Object> {
