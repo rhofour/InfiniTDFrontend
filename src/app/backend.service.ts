@@ -198,9 +198,10 @@ export class BackendService {
     if (name === undefined) {
       return Promise.reject(new Error("Cannot sell for user who is not registered."));
     }
-    const url = `${backend.address}/sell/${encodeURIComponent(name)}/${gridSel.row}/${gridSel.col}`;
+    const url = `${backend.address}/sell/${encodeURIComponent(name)}`;
+    const postData = { "rows": [gridSel.row], "cols": [gridSel.col] }
     return this.authenticatedHttpWithResponse(
-      loggedInUser.fbUser, url, 'delete');
+      loggedInUser.fbUser, url, 'post', postData);
   }
 
   setWave(loggedInUser: LoggedInUser, monsters: number[]): Promise<Object> {
