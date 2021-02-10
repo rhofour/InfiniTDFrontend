@@ -11,8 +11,8 @@ import { User, UsersContainer } from './user';
 import { GameConfig, GameConfigData } from './game-config';
 import * as decoders from './decode';
 import { LoggedInUser } from './logged-in-user';
-import { GridSelection } from './selection.service';
 import * as backend from './backend';
+import { CellPosData } from './types';
 
 @Injectable({
   providedIn: 'root'
@@ -178,28 +178,40 @@ export class BackendService {
       .then((resp) => decoders.gameConfigData.decodePromise(resp));
   }
 
-  build(loggedInUser: LoggedInUser, towerId: number, gridSel: GridSelection): Promise<Object> {
+  build(loggedInUser: LoggedInUser, towerId: number, towerPositions: CellPosData[]): Promise<Object> {
     const name = loggedInUser?.user?.name;
     if (name === undefined) {
       return Promise.reject(new Error("Cannot build for user who is not registered."));
     }
     const url = `${backend.address}/build/${encodeURIComponent(name)}`;
+    let rows: number[] = [];
+    let cols: number[] = [];
+    for (let tower of towerPositions) {
+      rows.push(tower.row);
+      cols.push(tower.col);
+    }
     const postData = {
       "towerIds": [towerId],
-      "rows": [gridSel.row],
-      "cols": [gridSel.col],
+      "rows": rows,
+      "cols": cols,
     }
     return this.authenticatedHttpWithResponse(
       loggedInUser.fbUser, url, 'post', postData);
   }
 
-  sell(loggedInUser: LoggedInUser, gridSel: GridSelection): Promise<Object> {
+  sell(loggedInUser: LoggedInUser, towerPositions: CellPosData[]): Promise<Object> {
     const name = loggedInUser?.user?.name;
     if (name === undefined) {
       return Promise.reject(new Error("Cannot sell for user who is not registered."));
     }
     const url = `${backend.address}/sell/${encodeURIComponent(name)}`;
-    const postData = { "rows": [gridSel.row], "cols": [gridSel.col] }
+    let rows: number[] = [];
+    let cols: number[] = [];
+    for (let tower of towerPositions) {
+      rows.push(tower.row);
+      cols.push(tower.col);
+    }
+    const postData = { "rows": rows, "cols": cols };
     return this.authenticatedHttpWithResponse(
       loggedInUser.fbUser, url, 'post', postData);
   }

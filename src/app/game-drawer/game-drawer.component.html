@@ -15,20 +15,20 @@
   </div>
   <div *ngIf="backend.getLoggedInUser() | async as lUser">
     <ng-container *ngIf="lUser.matches(user)">
-      <button *ngIf="selection.buildTower && selection.grid"
-            (click)="build(lUser, selection.buildTower, selection.grid)"
-            [disabled]="user.gold < selection.buildTower.cost || selection.gridTower !== undefined || (selection.grid | wouldBlockPath: gameConfig : towersState) || user.inBattle"
+      <button *ngIf="buildCost && displayedTower && battlegroundSelection && !battlegroundSelection.empty()"
+            (click)="build(lUser, displayedTower)"
+            [disabled]="user.inBattle || user.gold < buildCost || battlegroundSelection === undefined || battlegroundSelection.empty() || (battlegroundSelection | wouldBlockPath: gameConfig : towersState)"
             appClickShortcut shortcutKey="b"
             mat-stroked-button>
-        (B)uild ({{ selection.buildTower.cost | goldNumber }} gold)
+        (B)uild ({{ buildCost | goldNumber }} gold)
       </button>
-      <button *ngIf="selection.gridTower && selection.grid"
-            (click)="sell(lUser, selection.grid)"
+      <button *ngIf="sellAmount"
+            (click)="sell(lUser)"
             [disabled]="user.inBattle"
             appClickShortcut shortcutKey="s"
             mat-stroked-button>
         (S)ell
-        ({{Math.floor(selection.gridTower.cost * gameConfig.misc.sellMultiplier) | goldNumber }} gold)
+        ({{ sellAmount | goldNumber }} gold)
       </button>
     </ng-container>
   </div>

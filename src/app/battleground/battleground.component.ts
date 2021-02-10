@@ -37,7 +37,8 @@ export class BattlegroundComponent implements OnInit {
     private bgStateService: BattlegroundStateService,
     private selectionService: SelectionService,
     private gameConfigService: GameConfigService,
-    private router: Router
+    private router: Router,
+    public selection: SelectionService,
   ) {
     this.gameConfig$ = gameConfigService.getConfig();
     this.router.routeReuseStrategy.shouldReuseRoute = () => false;

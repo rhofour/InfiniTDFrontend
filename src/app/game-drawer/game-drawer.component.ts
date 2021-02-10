@@ -5,7 +5,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDialog } from '@angular/material/dialog';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 
-import { SelectionService, Selection, NewBuildSelection, GridSelection, NewMonsterSelection } from '../selection.service';
+import { SelectionService } from '../selection.service';
 import { GameConfig, TowerConfig, MonsterConfig } from '../game-config';
 import { TowersBgState, TowerBgState } from '../battleground-state';
 import { User } from '../user';
@@ -16,6 +16,8 @@ import { DebugService } from '../debug.service';
 import { RecordedBattleStateService } from '../recorded-battle-state.service';
 import { BattleResults, BattleState } from '../battle-state';
 import { BattleResultsComponent } from '../battle-results/battle-results.component';
+import { BattlegroundSelectionView } from '../battleground-selection';
+import { CellPosData } from '../types';
 
 function hasOwnProperty<X extends {}, Y extends PropertyKey>
   (obj: X, prop: Y): obj is X & Record<Y, unknown> {
@@ -36,20 +38,23 @@ type WaveList = [number, MonsterConfig][];
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GameDrawerComponent implements OnChanges {
-  public selection: Selection = new Selection();
   // Only one of these should be set at once.
-  public displayedTower?: TowerConfig;
-  public displayedMonster?: MonsterConfig;
   public inBattle: boolean = false;
   @Input() gameConfig!: GameConfig;
   @Input() towersState: TowersBgState = { towers: [] };
   @Input() battleState!: BattleState;
+  @Input() displayedTower?: TowerConfig;
+  @Input() displayedMonster?: MonsterConfig;
+  @Input() battlegroundSelection!: BattlegroundSelectionView;
   @ViewChild('buildList') buildList?: MatSelectionList;
   @ViewChild('monsterList') monsterList?: MatSelectionList;
   // user is the user we're displaying.
   @Input() user!: User;
   Math = Math;
+  // State that must be updated when the inputs change.
   wave: [number, MonsterConfig][] = [];
+  sellAmount?: number;
+  buildCost?: number;
 
   constructor(
     private cdRef: ChangeDetectorRef,
@@ -59,13 +64,7 @@ export class GameDrawerComponent implements OnChanges {
     public backend: BackendService,
     public debug: DebugService,
     private recordedBattleState: RecordedBattleStateService,
-  ) {
-    selectionService.getSelection().subscribe((newSelection) => {
-      this.selection = newSelection;
-      this.updateFromSelection(this.selection);
-      this.cdRef.markForCheck();
-    });
-  }
+  ) { }
 
   ngOnInit(): void {
     if (this.user === undefined) {
@@ -87,25 +86,6 @@ export class GameDrawerComponent implements OnChanges {
 
     if (changes.user !== undefined) {
       this.wave = this.waveToList(this.user.wave);
-    }
-  }
-
-  updateFromSelection(selection: Selection) {
-    this.displayedTower = undefined;
-    this.displayedMonster = undefined;
-    if (selection.buildTower) {
-      this.displayedTower = selection.buildTower;
-    } else if (this.buildList !== undefined) {
-      this.buildList.deselectAll();
-    }
-    if (selection.gridTower) {
-      this.displayedTower = selection.gridTower;
-    }
-
-    if (selection.monster) {
-      this.displayedMonster = selection.monster;
-    } else if (this.monsterList !== undefined) {
-      this.monsterList.deselectAll();
     }
   }
 
@@ -162,11 +142,11 @@ export class GameDrawerComponent implements OnChanges {
   }
 
   buildSelectionChange(event: MatSelectionListChange) {
-    this.selectionService.updateSelection(new NewBuildSelection(event.option.value));
+    this.selectionService.updateBuildTowerSelection(event.option.value);
   }
 
   monsterSelectionChange(event: MatSelectionListChange) {
-    this.selectionService.updateSelection(new NewMonsterSelection(event.option.value));
+    this.selectionService.updateAddMonsterSelection(event.option.value);
   }
 
   handleBackendError(actionErrDesc: string, err: Object) {
@@ -179,13 +159,15 @@ export class GameDrawerComponent implements OnChanges {
     }
   }
 
-  build(loggedInUser: LoggedInUser, tower: TowerConfig, gridSel: GridSelection) {
+  build(loggedInUser: LoggedInUser, tower: TowerConfig) {
+    let gridSel = this.battlegroundSelection.towerPositions(this.towersState);
     this.backend.build(loggedInUser, tower.id, gridSel).catch((err) => {
       this.handleBackendError("Building error:", err);
     });
   }
 
-  sell(loggedInUser: LoggedInUser, gridSel: GridSelection) {
+  sell(loggedInUser: LoggedInUser) {
+    let gridSel = this.battlegroundSelection.towerPositions(this.towersState);
     this.backend.sell(loggedInUser, gridSel).catch((err) => {
       this.handleBackendError("Selling error:", err);
     });

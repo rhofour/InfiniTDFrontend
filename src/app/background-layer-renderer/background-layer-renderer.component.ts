@@ -4,7 +4,7 @@ import Konva from 'konva';
 import { CellPos } from '../types';
 import { BaseLayerRendererComponent } from '../base-layer-renderer/base-layer-renderer.component';
 import { GameConfig } from '../game-config';
-import { SelectionService, GridSelection } from '../selection.service';
+import { SelectionService } from '../selection.service';
 import { TowersBgState, TowerBgState } from '../battleground-state';
 import { makePathMap, PathMap } from '../path';
 
@@ -118,7 +118,7 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
               image: tileRawImg,
           });
           tileImg.on('click tap', (evt) => {
-            this.selectionService.updateSelection(new GridSelection(row, col));
+            this.selectionService.toggleBattlegroundSelection(false, row, col);
             evt.cancelBubble = true;
           });
           this.layer.add(tileImg);

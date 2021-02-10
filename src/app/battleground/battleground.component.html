@@ -18,11 +18,15 @@
       <mat-drawer-container *ngIf="battlegroundState$ | async as bgState" fxFlex="1 1 100%" autosize>
         <mat-drawer opened mode="side" position="end" fxFlex="1 1 100%">
           <app-game-drawer [user]="user" [gameConfig]="gameConfig" [towersState]="bgState.towers"
+            [displayedTower]="(selection.getDisplayedTower() | async) || undefined"
+            [displayedMonster]="(selection.getDisplayedMonster() | async) || undefined"
             [battleState]="battleState">
           </app-game-drawer>
         </mat-drawer>
         <mat-drawer-content fxFlex="1 1 100%" [ngStyle]="{'height': 'auto'}">
-          <app-renderer [gameConfig]="gameConfig" [state]="bgState" [battleState]="battleState" fxFlex="1 1 100%">
+          <app-renderer *ngIf="bgState"
+            [gameConfig]="gameConfig" [state]="bgState" [battleState]="battleState"
+            fxFlex="1 1 100%">
           </app-renderer>
         </mat-drawer-content>
       </mat-drawer-container>

@@ -4,6 +4,7 @@ import Konva from 'konva';
 import { GameConfig } from '../game-config';
 import { BattlegroundState } from '../battleground-state';
 import { BattleState } from '../battle-state';
+import { SelectionService } from '../selection.service';
 
 @Component({
   selector: 'app-renderer',
@@ -14,18 +15,22 @@ import { BattleState } from '../battle-state';
 export class RendererComponent implements OnInit, AfterViewInit {
   public cellSize: number = 0;
   public stage!: Konva.Stage;
-  @Input() state: BattlegroundState | undefined;
+  @Input() state!: BattlegroundState;
   @Input() battleState!: BattleState;
   @Input() gameConfig!: GameConfig;
 
   constructor(
     private hostElem: ElementRef,
     private cdRef: ChangeDetectorRef,
+    public selection: SelectionService,
   ) { }
 
   ngOnInit(): void {
     if (this.gameConfig === undefined) {
       throw Error("Input gameConfig is undefined.");
+    }
+    if (this.state === undefined) {
+      throw Error("Input state is undefined.");
     }
     this.setupKonva();
   }
