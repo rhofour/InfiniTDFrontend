@@ -92,6 +92,18 @@ export class GameDrawerComponent implements OnChanges {
     if (changes.towersState !== undefined || changes.buildTower !== undefined || changes.battlegroundSelection !== undefined) {
       this.calcBuildAndSellAmounts();
     }
+
+    if (changes.buildTower !== undefined && this.buildList !== undefined) {
+      for (let listOption of this.buildList.options) {
+        listOption.selected = (listOption.value === this.buildTower?.id);
+      }
+    }
+
+    if (changes.displayedMonster !== undefined && this.monsterList !== undefined) {
+      for (let listOption of this.monsterList.options) {
+        listOption.selected = (listOption.value === this.displayedMonster?.id);
+      }
+    }
   }
 
   calcBuildAndSellAmounts() {
