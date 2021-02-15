@@ -13,10 +13,10 @@ import { GameConfig, TowerConfig } from '../game-config';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UiLayerRendererComponent extends BaseLayerRendererComponent implements OnInit, OnChanges {
-  private ringAnim: Konva.Animation | undefined = undefined;
+  private ringAnims: (Konva.Animation | undefined)[][] = [];
   @Input() gameConfig!: GameConfig;
   @Input() bgState!: BattlegroundState;
-  @Input() battlegroundSelection!: BattlegroundSelectionView;
+  @Input() battlegroundSelection?: BattlegroundSelectionView;
   @Input() buildTower?: TowerConfig;
 
   constructor() { super(); }
@@ -30,6 +30,9 @@ export class UiLayerRendererComponent extends BaseLayerRendererComponent impleme
     if (this.bgState === undefined) {
       throw Error("Input bgState is undefined.");
     }
+
+    this.ringAnims = new Array(this.gameConfig.playfield.numRows);
+    this.ringAnims = this.ringAnims.fill([]).map(_ => new Array(this.gameConfig.playfield.numCols).fill(undefined));
 
     this.render();
   }
@@ -122,10 +125,8 @@ export class UiLayerRendererComponent extends BaseLayerRendererComponent impleme
           rings.push(ring);
           this.layer.add(ring);
         }
-        if (this.ringAnim) {
-          this.ringAnim.stop();
-        }
-        this.ringAnim = new Konva.Animation(frame => {
+        this.ringAnims[row][col]?.stop()
+        this.ringAnims[row][col] = new Konva.Animation(frame => {
           if (frame === undefined) {
             return;
           }
@@ -139,7 +140,7 @@ export class UiLayerRendererComponent extends BaseLayerRendererComponent impleme
             }
           }
         }, this.layer);
-        this.ringAnim.start();
+        this.ringAnims[row][col]?.start()
       }
     }
   }
@@ -158,7 +159,6 @@ export class UiLayerRendererComponent extends BaseLayerRendererComponent impleme
         }
       }
     }
-    this.renderSelection
 
     this.layer.batchDraw();
   }

@@ -44,8 +44,9 @@ export class GameDrawerComponent implements OnChanges {
   @Input() towersState: TowersBgState = { towers: [] };
   @Input() battleState!: BattleState;
   @Input() displayedTower?: TowerConfig;
+  @Input() buildTower?: TowerConfig;
   @Input() displayedMonster?: MonsterConfig;
-  @Input() battlegroundSelection!: BattlegroundSelectionView;
+  @Input() battlegroundSelection?: BattlegroundSelectionView;
   @ViewChild('buildList') buildList?: MatSelectionList;
   @ViewChild('monsterList') monsterList?: MatSelectionList;
   // user is the user we're displaying.
@@ -87,6 +88,48 @@ export class GameDrawerComponent implements OnChanges {
     if (changes.user !== undefined) {
       this.wave = this.waveToList(this.user.wave);
     }
+
+    if (changes.towersState !== undefined || changes.buildTower !== undefined || changes.battlegroundSelection !== undefined) {
+      this.calcBuildAndSellAmounts();
+    }
+  }
+
+  calcBuildAndSellAmounts() {
+    if (this.battlegroundSelection === undefined) {
+      return;
+    }
+
+    const selectedTowers = this.battlegroundSelection.selectedTowers(this.towersState);
+    // Update sell amount.
+    if (selectedTowers.length === 0) {
+      this.sellAmount = undefined;
+    } else {
+      this.sellAmount = 0
+      for (const towerSelection of selectedTowers) {
+        const towerConfig = this.gameConfig.towers.get(towerSelection.configId);
+        if (towerConfig === undefined) {
+          console.warn(`Could not find tower config for ID ${towerSelection.configId}.`);
+          this.sellAmount = undefined;
+          break;
+        }
+        this.sellAmount += this.gameConfig.misc.sellMultiplier * towerSelection.quantity * towerConfig.cost;
+      }
+    }
+
+    // Update build cost.
+    const buildTowerConfig = this.buildTower;
+    if (buildTowerConfig) {
+      const emptySelections = this.battlegroundSelection.emptyPositions(this.towersState);
+      if (emptySelections.length > 0) {
+        this.buildCost = emptySelections.length * buildTowerConfig.cost;
+      } else {
+        this.buildCost = undefined;
+      }
+    } else {
+      this.buildCost = undefined;
+    }
+
+    this.cdRef.markForCheck();
   }
 
   waveToList(wave: number[]): WaveList {
@@ -142,11 +185,23 @@ export class GameDrawerComponent implements OnChanges {
   }
 
   buildSelectionChange(event: MatSelectionListChange) {
-    this.selectionService.updateBuildTowerSelection(event.option.value);
+    for (const option of event.options) {
+      // Find the first selected option.
+      if (option.selected) {
+        this.selectionService.updateBuildTowerSelection(option.value);
+        return;
+      }
+    }
   }
 
   monsterSelectionChange(event: MatSelectionListChange) {
-    this.selectionService.updateAddMonsterSelection(event.option.value);
+    for (const option of event.options) {
+      // Find the first selected option.
+      if (option.selected) {
+        this.selectionService.updateAddMonsterSelection(option.value);
+        return;
+      }
+    }
   }
 
   handleBackendError(actionErrDesc: string, err: Object) {
@@ -160,13 +215,22 @@ export class GameDrawerComponent implements OnChanges {
   }
 
   build(loggedInUser: LoggedInUser, tower: TowerConfig) {
-    let gridSel = this.battlegroundSelection.towerPositions(this.towersState);
+    if (this.battlegroundSelection === undefined) {
+      return;
+    }
+    const gridSel = this.battlegroundSelection.emptyPositions(this.towersState);
+    if (gridSel.length === 0) {
+      return;
+    }
     this.backend.build(loggedInUser, tower.id, gridSel).catch((err) => {
       this.handleBackendError("Building error:", err);
     });
   }
 
   sell(loggedInUser: LoggedInUser) {
+    if (this.battlegroundSelection === undefined) {
+      return;
+    }
     let gridSel = this.battlegroundSelection.towerPositions(this.towersState);
     this.backend.sell(loggedInUser, gridSel).catch((err) => {
       this.handleBackendError("Selling error:", err);

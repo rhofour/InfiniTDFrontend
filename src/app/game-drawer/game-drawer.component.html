@@ -15,14 +15,14 @@
   </div>
   <div *ngIf="backend.getLoggedInUser() | async as lUser">
     <ng-container *ngIf="lUser.matches(user)">
-      <button *ngIf="buildCost && displayedTower && battlegroundSelection && !battlegroundSelection.empty()"
+      <button *ngIf="buildCost !== undefined"
             (click)="build(lUser, displayedTower)"
             [disabled]="user.inBattle || user.gold < buildCost || battlegroundSelection === undefined || battlegroundSelection.empty() || (battlegroundSelection | wouldBlockPath: gameConfig : towersState)"
             appClickShortcut shortcutKey="b"
             mat-stroked-button>
         (B)uild ({{ buildCost | goldNumber }} gold)
       </button>
-      <button *ngIf="sellAmount"
+      <button *ngIf="sellAmount !== undefined"
             (click)="sell(lUser)"
             [disabled]="user.inBattle"
             appClickShortcut shortcutKey="s"

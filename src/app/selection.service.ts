@@ -14,7 +14,6 @@ export class SelectionService implements OnDestroy {
   private battlegroundState?: BattlegroundState;
   private gameConfig!: GameConfig;
   // Selection state
-  private buildTowerSelection?: TowerConfig;
   private addMonsterSelection?: MonsterConfig;
   private battlegroundSelection?: BattlegroundSelection;
   // BehaviorSubjects
@@ -36,7 +35,7 @@ export class SelectionService implements OnDestroy {
         this.gameConfig = gameConfig;
         this.reset();
       }
-    )
+    );
   }
 
   setUsername(username: string) {
@@ -45,17 +44,21 @@ export class SelectionService implements OnDestroy {
     this.bgStateSub =
       this.bgStateService.getBattlegroundState(username).subscribe(
         (bgState: BattlegroundState) => {
+          this.battlegroundState = bgState;
           this.updateDisplayedTower();
         });
   }
 
   reset() {
-    this.buildTowerSelection = undefined;
     this.addMonsterSelection = undefined;
     if (this.gameConfig) {
       this.battlegroundSelection = BattlegroundSelection.makeEmpty(
         this.gameConfig.playfield.numRows, this.gameConfig.playfield.numCols);
     }
+    this.displayedTower$.next(undefined);
+    this.buildTower$.next(undefined);
+    this.displayedMonster$.next(undefined);
+    this.battleground$.next(undefined);
   }
 
   getDisplayedTower(): Observable<TowerConfig | undefined> {
@@ -74,16 +77,52 @@ export class SelectionService implements OnDestroy {
     return this.battleground$.asObservable();
   }
 
-  private updateDisplayedTower() {
-    // TODO: update displayedTower based on battlegroundSelection and buildTowerSelection
+  private calcDisplayedTower(): TowerConfig | undefined {
+    if (this.battlegroundState === undefined) {
+      return undefined;
+    }
+    // Start with battleground selection. If there's more than one type of tower selected
+    // unset displayedTower.
+    const selectedTowers = this.battlegroundSelection?.selectedTowers(this.battlegroundState.towers);
+    if (selectedTowers === undefined || selectedTowers.length === 0) {
+      // If no towers are selected revert to buildTower$ (which may be undefined).
+      return this.buildTower$.getValue();
+    }
+    else if (selectedTowers?.length > 1) {
+      return undefined;
+    }
+    // Return the only tower type in the battleground selection.
+    const selectedTowerType = selectedTowers[0].configId;
+    return this.gameConfig.towers.get(selectedTowerType);
   }
 
-  updateBuildTowerSelection(newBuildTowerSelection?: TowerConfig) {
-    if (this.buildTowerSelection === newBuildTowerSelection) {
+  private updateDisplayedTower() {
+    const newDisplayedTower: TowerConfig | undefined = this.calcDisplayedTower();
+    this.displayedTower$.next(newDisplayedTower);
+    if (newDisplayedTower !== this.buildTower$.getValue()) {
+      // Unset buildTower$ if it doesn't match the displayed tower.
+      this.buildTower$.next(undefined);
+    }
+  }
+
+  updateBuildTowerSelection(newBuildTowerSelectionId?: number) {
+    if (this.buildTower$.getValue()?.id === newBuildTowerSelectionId) {
       return;
     }
-    this.buildTowerSelection = newBuildTowerSelection;
-    // TODO: restrict battlegroundState to only open squares
+    const newBuildTowerSelection = newBuildTowerSelectionId === undefined ?
+     undefined : this.gameConfig.towers.get(newBuildTowerSelectionId);
+    this.buildTower$.next(newBuildTowerSelection);
+    if (newBuildTowerSelection && this.battlegroundState) {
+      // Reset battleground selection if it includes a different type of tower.
+      if (this.battlegroundSelection) {
+        const selectedTowers = this.battlegroundSelection.selectedTowers(this.battlegroundState.towers);
+        if (selectedTowers.length > 1 ||
+            (selectedTowers.length == 1 && selectedTowers[0].configId !== newBuildTowerSelectionId)) {
+          this.battlegroundSelection.reset();
+          this.battleground$.next(this.battlegroundSelection.getView());
+        }
+      }
+    }
     this.updateDisplayedTower();
   }
 
@@ -99,6 +138,8 @@ export class SelectionService implements OnDestroy {
       return;
     }
     this.battlegroundSelection.toggle(additional, row, col);
+    this.battleground$.next(this.battlegroundSelection.getView());
+    this.updateDisplayedTower();
   }
 
   // Passthrough to battlegroundSelection

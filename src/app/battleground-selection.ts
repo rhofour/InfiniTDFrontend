@@ -22,6 +22,10 @@ export class BattlegroundSelectionView {
         return this.bgSelection.towerPositions(towersState);
     }
 
+    emptyPositions(towersState: TowersBgState): CellPosData[] {
+        return this.bgSelection.emptyPositions(towersState);
+    }
+
     numSelected(): number {
         return this.bgSelection.numSelected;
     }
@@ -49,7 +53,7 @@ export class BattlegroundSelection {
 
     toggle(additional: boolean, row: number, col: number) {
         const idx = (row * this.numCols) + col;
-        if (this.selections[idx]) {
+        if (this.selections[idx] !== 0) {
             if (additional) {
                 this._numSelected -= 1;
                 this.selections[idx] = 0;
@@ -113,7 +117,7 @@ export class BattlegroundSelection {
             const row = Math.floor(i / this.numCols);
             const col = i % this.numCols;
             const towerId = towersState.towers[row][col]?.id;
-            if (towerId) {
+            if (towerId !== undefined) {
                 const oldQuantity = towerQuantities.get(towerId) ?? 0;
                 towerQuantities.set(towerId, oldQuantity + 1);
             }
@@ -134,7 +138,23 @@ export class BattlegroundSelection {
             const row = Math.floor(i / this.numCols);
             const col = i % this.numCols;
             const towerId = towersState.towers[row][col]?.id;
-            if (towerId) {
+            if (towerId !== undefined) {
+                output.push({ row: row, col: col });
+            }
+        }
+        return output;
+    }
+
+    emptyPositions(towersState: TowersBgState): CellPosData[] {
+        let output: CellPosData[] = [];
+        for (let i = 0; i < this.selections.length; i++) {
+            if (this.selections[i] === 0) {
+                continue;
+            }
+            const row = Math.floor(i / this.numCols);
+            const col = i % this.numCols;
+            const towerId = towersState.towers[row][col]?.id;
+            if (towerId === undefined) {
                 output.push({ row: row, col: col });
             }
         }
@@ -142,7 +162,7 @@ export class BattlegroundSelection {
     }
 
     empty(): boolean {
-        return this.numSelected > 0;
+        return this.numSelected === 0;
     }
 
     getView(): BattlegroundSelectionView {

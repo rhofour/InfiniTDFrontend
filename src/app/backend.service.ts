@@ -186,12 +186,13 @@ export class BackendService {
     const url = `${backend.address}/build/${encodeURIComponent(name)}`;
     let rows: number[] = [];
     let cols: number[] = [];
-    for (let tower of towerPositions) {
+    for (const tower of towerPositions) {
       rows.push(tower.row);
       cols.push(tower.col);
     }
+    const towerIds = new Array(towerPositions.length).fill(towerId);
     const postData = {
-      "towerIds": [towerId],
+      "towerIds": towerIds,
       "rows": rows,
       "cols": cols,
     }

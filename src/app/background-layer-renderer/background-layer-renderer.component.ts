@@ -118,8 +118,9 @@ export class BackgroundLayerRendererComponent extends BaseLayerRendererComponent
               image: tileRawImg,
           });
           tileImg.on('click tap', (evt) => {
-            this.selectionService.toggleBattlegroundSelection(false, row, col);
             evt.cancelBubble = true;
+            const shiftKey = evt.evt.shiftKey;
+            this.selectionService.toggleBattlegroundSelection(shiftKey, row, col);
           });
           this.layer.add(tileImg);
         }
