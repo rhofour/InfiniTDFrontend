@@ -99,7 +99,8 @@ export class SelectionService implements OnDestroy {
   private updateDisplayedTower() {
     const newDisplayedTower: TowerConfig | undefined = this.calcDisplayedTower();
     this.displayedTower$.next(newDisplayedTower);
-    if (newDisplayedTower !== this.buildTower$.getValue()) {
+    const buildTower = this.buildTower$.getValue();
+    if (newDisplayedTower !== buildTower && buildTower !== undefined) {
       // Unset buildTower$ if it doesn't match the displayed tower.
       this.buildTower$.next(undefined);
     }
@@ -112,9 +113,9 @@ export class SelectionService implements OnDestroy {
     const newBuildTowerSelection = newBuildTowerSelectionId === undefined ?
      undefined : this.gameConfig.towers.get(newBuildTowerSelectionId);
     this.buildTower$.next(newBuildTowerSelection);
-    if (newBuildTowerSelection && this.battlegroundState) {
+    if (newBuildTowerSelection !== undefined) {
       // Reset battleground selection if it includes a different type of tower.
-      if (this.battlegroundSelection) {
+      if (this.battlegroundState !== undefined && this.battlegroundSelection !== undefined) {
         const selectedTowers = this.battlegroundSelection.selectedTowers(this.battlegroundState.towers);
         if (selectedTowers.length > 1 ||
             (selectedTowers.length == 1 && selectedTowers[0].configId !== newBuildTowerSelectionId)) {
@@ -122,15 +123,32 @@ export class SelectionService implements OnDestroy {
           this.battleground$.next(this.battlegroundSelection.getView());
         }
       }
+      // Reset displayed monster.
+      if (this.displayedMonster$.getValue() !== undefined) {
+        this.displayedMonster$.next(undefined);
+      }
     }
     this.updateDisplayedTower();
   }
 
-  updateAddMonsterSelection(newAddMonsterSelection?: MonsterConfig) {
-    if (this.addMonsterSelection == newAddMonsterSelection) {
+  updateAddMonsterSelection(newAddMonsterSelectionId?: number) {
+    if (newAddMonsterSelectionId === undefined) {
+      if (this.displayedMonster$.getValue() !== undefined) {
+        this.displayedMonster$.next(undefined);
+      }
       return;
     }
-    this.addMonsterSelection = newAddMonsterSelection;
+    const newAddMonsterConfig = this.gameConfig.monsters.get(newAddMonsterSelectionId);
+    if (this.addMonsterSelection === newAddMonsterConfig) {
+      return;
+    }
+    this.addMonsterSelection = newAddMonsterConfig;
+    this.displayedMonster$.next(this.addMonsterSelection);
+    if (this.addMonsterSelection !== undefined) {
+      // Unset any current build tower.
+      this.buildTower$.next(undefined);
+      this.updateDisplayedTower();
+    }
   }
 
   toggleBattlegroundSelection(additional: boolean, row: number, col: number) {
