@@ -128,7 +128,7 @@
           (cdkDropListDropped)="monsterItemDropped($event)">
           <mat-list-item class="monster-list-item-dragable"
             [disabled]="user.inBattle"
-            *ngFor="let monster of wave; let idx = index" cdkDrag>
+            *ngFor="let monster of wave; let idx = index; trackBy: trackByIndex" cdkDrag>
             <img matListAvatar [src]="monster[1].url">
             <input type="number" value="{{monster[0]}}" min=0 max=500
               (change)="monsterCountUpdate(lUser, idx, $event)"

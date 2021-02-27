@@ -170,6 +170,11 @@ export class GameDrawerComponent implements OnChanges {
     return monsters;
   }
 
+  trackByIndex(index:number, el:any): number {
+    return index;
+  }
+
+
   listToWave(waveList: WaveList): number[] {
     const size: number = waveList.reduce((acc, x) => acc + x[0], 0);
     let wave: number[] = new Array(size);
