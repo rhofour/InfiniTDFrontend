@@ -1,4 +1,4 @@
-<div *ngIf="displayedTower">
+<div class="displayedDiv" *ngIf="displayedTower !== undefined">
   <h1>{{displayedTower.name}}</h1>
   <div fxLayout=row>
     <div>
@@ -35,7 +35,7 @@
   <mat-divider></mat-divider>
 </div>
 
-<div *ngIf="displayedMonster !== undefined">
+<div class="displayedDiv" *ngIf="displayedMonster !== undefined">
   <h1>{{displayedMonster.name}}</h1>
   <div fxLayout=row>
     <div>
@@ -50,148 +50,150 @@
       {{displayedMonster.bounty}} <br />
     </div>
   </div>
-  <div *ngIf="backend.getLoggedInUser() | async as lUser">
-    <ng-container *ngIf="lUser.matches(user)">
-      <button (click)="addToWave(lUser, user, displayedMonster)"
-            [disabled]="false && user.inBattle" appClickShortcut shortcutKey="a" mat-stroked-button>
-        (A)dd to wave
-      </button>
-    </ng-container>
-  </div>
-  <mat-divider></mat-divider>
 </div>
 
-<mat-expansion-panel>
-  <mat-expansion-panel-header>
-    <mat-panel-title> Battle </mat-panel-title>
-  </mat-expansion-panel-header>
-  <ng-container *ngIf="backend.getLoggedInUser() | async as lUser; else otherUser">
-    <ng-container *ngIf="lUser.matches(user); else otherUser">
-      <button *ngIf="!user.inBattle" (click)="startBattle(lUser)"
-          [disabled]="user.wave.length === 0"
-          appClickShortcut shortcutKey="e"
-          mat-stroked-button>
-        Start battl(e)
-      </button>
-      <button *ngIf="user.inBattle" (click)="stopBattle(lUser)"
-          appClickShortcut shortcutKey="e"
-          mat-stroked-button>
-        Stop battl(e)
-      </button>
-    </ng-container>
-  </ng-container>
-  <ng-template #otherUser>
-    <button (click)="showBattle(user.name, user.name)"
-        appClickShortcut shortcutKey="e"
-        mat-stroked-button>
-      Show battl(e)
-    </button>
-  </ng-template>
-  <button (click)="showResults(battleState.results)"
-    [disabled]="battleState.results === undefined"
-    appClickShortcut shortcutKey="r"
-    mat-stroked-button>
-    View (R)esults
-  </button>
-</mat-expansion-panel>
-
-<ng-container *ngIf="backend.getLoggedInUser() | async as lUser">
-  <mat-expansion-panel *ngIf="lUser.matches(user)">
+<mat-accordion>
+  <mat-expansion-panel>
     <mat-expansion-panel-header>
-      <mat-panel-title> Build </mat-panel-title>
+      <mat-panel-title> Battle </mat-panel-title>
     </mat-expansion-panel-header>
-
-    <mat-selection-list id="buildList" #buildList [multiple]="false"
-        (selectionChange)="buildSelectionChange($event)">
-      <mat-list-option *ngFor="let tower of gameConfig.towers | keyvalue"
-      [value]="tower.key">
-        <img matListAvatar [src]="tower.value.url">
-        <span>{{tower.value.name}}</span>
-        <span style="font-weight: lighter">Cost: {{tower.value.cost}}</span>
-      </mat-list-option>
-    </mat-selection-list>
-  </mat-expansion-panel>
-</ng-container>
-
-<mat-expansion-panel>
-  <mat-expansion-panel-header>
-    <mat-panel-title> Wave </mat-panel-title>
-  </mat-expansion-panel-header>
-
-  Current wave:
-  <ng-container *ngIf="backend.getLoggedInUser() | async as lUser">
-    <ng-container *ngIf="user.wave.length > 0; else emptyWave">
-      <ng-container *ngIf="lUser.matches(user); else spectateWave">
-        <mat-selection-list class="monster-list"
-          cdkDropList [cdkDropListData]="lUser"
-          [cdkDropListDisabled]="user.inBattle"
-          (cdkDropListDropped)="monsterItemDropped($event)">
-          <mat-list-item class="monster-list-item-dragable"
-            [disabled]="user.inBattle"
-            *ngFor="let monster of wave; let idx = index; trackBy: trackByIndex" cdkDrag>
-            <img matListAvatar [src]="monster[1].url">
-            <input type="number" value="{{monster[0]}}" min=0 max=500
-              (change)="monsterCountUpdate(lUser, idx, $event)"
-              [disabled]="user.inBattle"
-              matInput style="max-width:3em;">
-            × {{monster[1].name}}
-            <span class="spacer"></span>
-            <button mat-button matSuffix mat-icon-button aria-label="Clear"
-              [disabled]="user.inBattle"
-              (click)="monsterClear(lUser, idx)">
-              <mat-icon inline="true">close</mat-icon>
-            </button>
-          </mat-list-item>
-        </mat-selection-list>
-      </ng-container>
-      <ng-template #spectateWave>
-        <mat-list class="monster-list">
-          <mat-list-item *ngFor="let monster of wave">
-            <img matListAvatar [src]="monster[1].url">
-            {{monster[0]}} × {{monster[1].name}}
-          </mat-list-item>
-        </mat-list>
-      </ng-template>
-      <div *ngIf="getWaveStats() as waveStats" style="width: 0; min-width: 100%">
-        Wave contains {{waveStats.totalMonsters}} monsters with a total bounty of
-        {{ waveStats.totalBounty | goldNumber }} gold.
-      </div>
-      <ng-container *ngIf="lUser.matches(user)">
-        <button [disabled]="user.inBattle" (click)="clearWave(lUser)"
-          mat-stroked-button>
-          Clear wave
+    <ng-container *ngIf="backend.getLoggedInUser() | async as lUser; else otherUser">
+      <ng-container *ngIf="lUser.matches(user); else otherUser">
+        <button *ngIf="!user.inBattle" (click)="startBattle(lUser)"
+            [disabled]="user.wave.length === 0"
+            appClickShortcut shortcutKey="e"
+            mat-stroked-button>
+          Start battl(e)
+        </button>
+        <button *ngIf="user.inBattle" (click)="stopBattle(lUser)"
+            appClickShortcut shortcutKey="e"
+            mat-stroked-button>
+          Stop battl(e)
         </button>
       </ng-container>
     </ng-container>
-  </ng-container>
-  <ng-template #emptyWave>
-    Empty
-  </ng-template>
+    <ng-template #otherUser>
+      <button (click)="showBattle(user.name, user.name)"
+          appClickShortcut shortcutKey="e"
+          mat-stroked-button>
+        Show battl(e)
+      </button>
+    </ng-template>
+    <button (click)="showResults(battleState.results)"
+      [disabled]="battleState.results === undefined"
+      appClickShortcut shortcutKey="r"
+      mat-stroked-button>
+      View (R)esults
+    </button>
+  </mat-expansion-panel>
+
   <ng-container *ngIf="backend.getLoggedInUser() | async as lUser">
-    <ng-container *ngIf="lUser.matches(user)">
-      <mat-divider></mat-divider>
-      Add monster:
-      <mat-selection-list id="monsterList" #monsterList [multiple]="false"
-          (selectionChange)="monsterSelectionChange($event)">
-        <mat-list-option *ngFor="let monster of gameConfig.monsters | keyvalue"
-          [value]="monster.key">
-            <img matListAvatar [src]="monster.value.url">
-            <span >{{monster.value.name}}</span>
+    <mat-expansion-panel *ngIf="lUser.matches(user)">
+      <mat-expansion-panel-header>
+        <mat-panel-title> Build </mat-panel-title>
+      </mat-expansion-panel-header>
+
+      <mat-selection-list id="buildList" #buildList [multiple]="false"
+          (selectionChange)="buildSelectionChange($event)">
+        <mat-list-option *ngFor="let tower of gameConfig.towers | keyvalue"
+        [value]="tower.key">
+          <img matListAvatar [src]="tower.value.url">
+          <span>{{tower.value.name}}</span>
+          <span style="font-weight: lighter">Cost: {{tower.value.cost}}</span>
         </mat-list-option>
       </mat-selection-list>
-    </ng-container>
+    </mat-expansion-panel>
   </ng-container>
-</mat-expansion-panel>
 
-<ng-container *ngIf="debug.getMessages() | async as messages">
-  <mat-expansion-panel *ngIf="messages.size > 0">
+  <mat-expansion-panel>
     <mat-expansion-panel-header>
-      <mat-panel-title> Debug </mat-panel-title>
+      <mat-panel-title> Wave </mat-panel-title>
     </mat-expansion-panel-header>
-    <mat-list>
-      <mat-list-item *ngFor="let msg of messages">
-        {{ msg }}
-      </mat-list-item>
-    </mat-list>
+
+    Current wave:
+    <ng-container *ngIf="backend.getLoggedInUser() | async as lUser">
+      <ng-container *ngIf="user.wave.length > 0; else emptyWave">
+        <ng-container *ngIf="lUser.matches(user); else spectateWave">
+          <mat-selection-list class="monster-list"
+            cdkDropList [cdkDropListData]="lUser"
+            [cdkDropListDisabled]="user.inBattle"
+            (cdkDropListDropped)="monsterItemDropped($event)">
+            <mat-list-item class="monster-list-item-dragable"
+              [disabled]="user.inBattle"
+              *ngFor="let monster of wave; let idx = index; trackBy: trackByIndex" cdkDrag>
+              <img matListAvatar [src]="monster[1].url">
+              <input type="number" value="{{monster[0]}}" min=0 max=500
+                (change)="monsterCountUpdate(lUser, idx, $event)"
+                [disabled]="user.inBattle"
+                matInput style="max-width:3em;">
+              × {{monster[1].name}}
+              <span class="spacer"></span>
+              <button mat-button matSuffix mat-icon-button aria-label="Clear"
+                [disabled]="user.inBattle"
+                (click)="monsterClear(lUser, idx)">
+                <mat-icon inline="true">close</mat-icon>
+              </button>
+            </mat-list-item>
+          </mat-selection-list>
+        </ng-container>
+        <ng-template #spectateWave>
+          <mat-list class="monster-list">
+            <mat-list-item *ngFor="let monster of wave">
+              <img matListAvatar [src]="monster[1].url">
+              {{monster[0]}} × {{monster[1].name}}
+            </mat-list-item>
+          </mat-list>
+        </ng-template>
+        <div *ngIf="getWaveStats() as waveStats" style="width: 0; min-width: 100%">
+          Wave contains {{waveStats.totalMonsters}} monsters with a total bounty of
+          {{ waveStats.totalBounty | goldNumber }} gold.
+        </div>
+        <ng-container *ngIf="lUser.matches(user)">
+          <button [disabled]="user.inBattle" (click)="clearWave(lUser)"
+            mat-stroked-button>
+            Clear wave
+          </button>
+        </ng-container>
+      </ng-container>
+    </ng-container>
+    <ng-template #emptyWave>
+      Empty
+    </ng-template>
+    <ng-container *ngIf="backend.getLoggedInUser() | async as lUser">
+      <ng-container *ngIf="lUser.matches(user)">
+        <mat-divider></mat-divider>
+        Add monster:
+        <mat-selection-list #addMonsterList [multiple]="false"
+            (selectionChange)="monsterSelectionChange($event)">
+          <mat-list-option *ngFor="let monster of gameConfig.monsters | keyvalue"
+            [value]="monster.key">
+              <img matListAvatar [src]="monster.value.url">
+              <div class="add-monster-body">
+                <span style="flex: 0 0 auto;">{{monster.value.name}}</span>
+                <span class="spacer"></span>
+                <button mat-button matSuffix mat-icon-button
+                  style="flex: 0 0 auto;"
+                  [disabled]="user.inBattle"
+                  (click)="addToWave(lUser, user, monster.value); $event.stopPropagation()">
+                  <mat-icon inline="true">add</mat-icon>
+                </button>
+              </div>
+          </mat-list-option>
+        </mat-selection-list>
+      </ng-container>
+    </ng-container>
   </mat-expansion-panel>
-</ng-container>
+
+  <ng-container *ngIf="debug.getMessages() | async as messages">
+    <mat-expansion-panel *ngIf="messages.size > 0">
+      <mat-expansion-panel-header>
+        <mat-panel-title> Debug </mat-panel-title>
+      </mat-expansion-panel-header>
+      <mat-list>
+        <mat-list-item *ngFor="let msg of messages">
+          {{ msg }}
+        </mat-list-item>
+      </mat-list>
+    </mat-expansion-panel>
+  </ng-container>
+</mat-accordion>

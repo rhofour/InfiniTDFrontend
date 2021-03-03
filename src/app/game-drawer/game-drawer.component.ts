@@ -48,7 +48,7 @@ export class GameDrawerComponent implements OnChanges {
   @Input() displayedMonster?: MonsterConfig;
   @Input() battlegroundSelection?: BattlegroundSelectionView;
   @ViewChild('buildList') buildList?: MatSelectionList;
-  @ViewChild('monsterList') monsterList?: MatSelectionList;
+  @ViewChild('addMonsterList') addMonsterList?: MatSelectionList;
   // user is the user we're displaying.
   @Input() user!: User;
   Math = Math;
@@ -99,8 +99,8 @@ export class GameDrawerComponent implements OnChanges {
       }
     }
 
-    if (changes.displayedMonster !== undefined && this.monsterList !== undefined) {
-      for (let listOption of this.monsterList.options) {
+    if (changes.displayedMonster !== undefined && this.addMonsterList !== undefined) {
+      for (let listOption of this.addMonsterList.options) {
         listOption.selected = (listOption.value === this.displayedMonster?.id);
       }
     }
