@@ -37,3 +37,7 @@ a:not(.mat-tab-link)  {
   border-radius: 50%;
   object-fit: cover;
 }
+
+div.mat-expansion-panel-body {
+  padding: 0 12px 16px;
+}

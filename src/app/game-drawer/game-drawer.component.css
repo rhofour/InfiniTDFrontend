@@ -60,3 +60,16 @@
   flex-direction: row;
   align-items: center;
 }
+
+.monster-num-selector {
+  max-width: 3em;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
+}
+
+.wave-stats {
+  padding: 0.5em;
+  /* Prevent this from extending the width of the drawer. */
+  width: 0;
+  min-width: 100%;
+}

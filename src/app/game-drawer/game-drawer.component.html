@@ -110,7 +110,6 @@
       <mat-panel-title> Wave </mat-panel-title>
     </mat-expansion-panel-header>
 
-    Current wave:
     <ng-container *ngIf="backend.getLoggedInUser() | async as lUser">
       <ng-container *ngIf="user.wave.length > 0; else emptyWave">
         <ng-container *ngIf="lUser.matches(user); else spectateWave">
@@ -122,10 +121,10 @@
               [disabled]="user.inBattle"
               *ngFor="let monster of wave; let idx = index; trackBy: trackByIndex" cdkDrag>
               <img matListAvatar [src]="monster[1].url">
-              <input type="number" value="{{monster[0]}}" min=0 max=500
+              <input matInput class="monster-num-selector"
+                type="number" value="{{monster[0]}}" min=0 max=500
                 (change)="monsterCountUpdate(lUser, idx, $event)"
-                [disabled]="user.inBattle"
-                matInput style="max-width:3em;">
+                [disabled]="user.inBattle">
               × {{monster[1].name}}
               <span class="spacer"></span>
               <button mat-button matSuffix mat-icon-button aria-label="Clear"
@@ -135,6 +134,29 @@
               </button>
             </mat-list-item>
           </mat-selection-list>
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Add monsters</mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <mat-selection-list #addMonsterList [multiple]="false"
+                (selectionChange)="monsterSelectionChange($event)">
+              <mat-list-option *ngFor="let monster of gameConfig.monsters | keyvalue"
+                [value]="monster.key">
+                  <img matListAvatar [src]="monster.value.url">
+                  <div class="add-monster-body">
+                    <span style="flex: 0 0 auto;">{{monster.value.name}}</span>
+                    <span class="spacer"></span>
+                    <button mat-button matSuffix mat-icon-button
+                      style="flex: 0 0 auto;"
+                      [disabled]="user.inBattle"
+                      (click)="addToWave(lUser, user, monster.value); $event.stopPropagation()">
+                      <mat-icon inline="true">add</mat-icon>
+                    </button>
+                  </div>
+              </mat-list-option>
+            </mat-selection-list>
+          </mat-expansion-panel>
         </ng-container>
         <ng-template #spectateWave>
           <mat-list class="monster-list">
@@ -144,7 +166,7 @@
             </mat-list-item>
           </mat-list>
         </ng-template>
-        <div *ngIf="getWaveStats() as waveStats" style="width: 0; min-width: 100%">
+        <div *ngIf="getWaveStats() as waveStats" class="wave-stats" style="width: 0; min-width: 100%">
           Wave contains {{waveStats.totalMonsters}} monsters with a total bounty of
           {{ waveStats.totalBounty | goldNumber }} gold.
         </div>
@@ -159,29 +181,6 @@
     <ng-template #emptyWave>
       Empty
     </ng-template>
-    <ng-container *ngIf="backend.getLoggedInUser() | async as lUser">
-      <ng-container *ngIf="lUser.matches(user)">
-        <mat-divider></mat-divider>
-        Add monster:
-        <mat-selection-list #addMonsterList [multiple]="false"
-            (selectionChange)="monsterSelectionChange($event)">
-          <mat-list-option *ngFor="let monster of gameConfig.monsters | keyvalue"
-            [value]="monster.key">
-              <img matListAvatar [src]="monster.value.url">
-              <div class="add-monster-body">
-                <span style="flex: 0 0 auto;">{{monster.value.name}}</span>
-                <span class="spacer"></span>
-                <button mat-button matSuffix mat-icon-button
-                  style="flex: 0 0 auto;"
-                  [disabled]="user.inBattle"
-                  (click)="addToWave(lUser, user, monster.value); $event.stopPropagation()">
-                  <mat-icon inline="true">add</mat-icon>
-                </button>
-              </div>
-          </mat-list-option>
-        </mat-selection-list>
-      </ng-container>
-    </ng-container>
   </mat-expansion-panel>
 
   <ng-container *ngIf="debug.getMessages() | async as messages">
