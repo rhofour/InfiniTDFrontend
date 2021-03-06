@@ -10,7 +10,7 @@ import { GameConfig, TowerConfig, MonsterConfig } from '../game-config';
 import { TowersBgState, TowerBgState } from '../battleground-state';
 import { User } from '../user';
 import { BackendService } from '../backend.service';
-import { LoggedInUser } from '../logged-in-user';
+import { OuterUser } from '../outer-user';
 import { WouldBlockPathPipe } from '../would-block-path.pipe';
 import { DebugService } from '../debug.service';
 import { RecordedBattleStateService } from '../recorded-battle-state.service';
@@ -231,7 +231,7 @@ export class GameDrawerComponent implements OnChanges {
     }
   }
 
-  build(loggedInUser: LoggedInUser, tower: TowerConfig) {
+  build(loggedInUser: OuterUser, tower: TowerConfig) {
     if (this.battlegroundSelection === undefined) {
       return;
     }
@@ -244,7 +244,7 @@ export class GameDrawerComponent implements OnChanges {
     });
   }
 
-  sell(loggedInUser: LoggedInUser) {
+  sell(loggedInUser: OuterUser) {
     if (this.battlegroundSelection === undefined) {
       return;
     }
@@ -254,27 +254,27 @@ export class GameDrawerComponent implements OnChanges {
     });
   }
 
-  addToWave(loggedInUser: LoggedInUser, user: User, newMonster: MonsterConfig) {
+  addToWave(loggedInUser: OuterUser, user: User, newMonster: MonsterConfig) {
     const wave = [...user.wave, newMonster.id];
     this.backend.setWave(loggedInUser, wave).catch((err) => {
       this.handleBackendError("Error adding to wave:", err);
     });
   }
 
-  clearWave(loggedInUser: LoggedInUser) {
+  clearWave(loggedInUser: OuterUser) {
     this.backend.clearWave(loggedInUser).catch((err) => {
       this.handleBackendError("Error clearing wave:", err);
     });
   }
 
-  startBattle(loggedInUser: LoggedInUser) {
+  startBattle(loggedInUser: OuterUser) {
     this.dialog.closeAll();
     this.backend.startBattle(loggedInUser).catch((err) => {
       this.handleBackendError("Error starting battle:", err);
     });
   }
 
-  stopBattle(loggedInUser: LoggedInUser) {
+  stopBattle(loggedInUser: OuterUser) {
     this.backend.stopBattle(loggedInUser).catch((err) => {
       this.handleBackendError("Error stopping battle:", err);
     });
@@ -300,7 +300,7 @@ export class GameDrawerComponent implements OnChanges {
     BattleResultsComponent.openDialog(this.dialog, this.gameConfig, results);
   }
 
-  monsterItemDropped(event: CdkDragDrop<LoggedInUser>) {
+  monsterItemDropped(event: CdkDragDrop<OuterUser>) {
     if (event.previousIndex === event.currentIndex) {
       return;
     }
@@ -311,7 +311,7 @@ export class GameDrawerComponent implements OnChanges {
     });
   }
 
-  monsterCountUpdate(lUser: LoggedInUser, idx: number, event: Event) {
+  monsterCountUpdate(lUser: OuterUser, idx: number, event: Event) {
     const target: HTMLInputElement = event.target as HTMLInputElement;
     this.wave[idx][0] = target.valueAsNumber;
     const newWave = this.listToWave(this.wave);
@@ -320,7 +320,7 @@ export class GameDrawerComponent implements OnChanges {
     });
   }
 
-  monsterClear(lUser: LoggedInUser, idx: number) {
+  monsterClear(lUser: OuterUser, idx: number) {
     this.wave.splice(idx, 1);
     const newWave = this.listToWave(this.wave);
     this.backend.setWave(lUser, newWave).catch((err) => {

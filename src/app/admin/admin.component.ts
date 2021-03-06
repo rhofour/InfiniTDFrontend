@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 
 import { AreYouSureDialogComponent } from '../are-you-sure-dialog/are-you-sure-dialog.component';
 import { BackendService } from '../backend.service';
-import { LoggedInUser } from '../logged-in-user';
+import { OuterUser } from '../outer-user';
 
 @Component({
   selector: 'app-admin',
@@ -20,12 +20,12 @@ export class AdminComponent {
     public backend: BackendService,
   ) { }
 
-  todoSnackBar(lUser: LoggedInUser) {
+  todoSnackBar(lUser: OuterUser) {
     this._snackBar.open("TODO", "Dismiss", {duration: 1500});
   }
 
   // Global actions
-  resetGameDialog(lUser: LoggedInUser) {
+  resetGameDialog(lUser: OuterUser) {
     const dialogRef = this._dialog.open(AreYouSureDialogComponent, {
       data: {
         msg: "This will wipe all game progress on the server.",

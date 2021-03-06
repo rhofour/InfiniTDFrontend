@@ -4,6 +4,7 @@ import { of } from 'rxjs';
 
 import { AccountComponent } from './account.component';
 import { BackendService } from '../backend.service';
+import { OuterUser } from '../outer-user';
 
 describe('AccountComponent', () => {
   let component: AccountComponent;
@@ -12,8 +13,8 @@ describe('AccountComponent', () => {
   let backendServiceSpy: jasmine.SpyObj<BackendService>;
 
   beforeEach(waitForAsync(() => {
-    backendServiceSpy = jasmine.createSpyObj('BackendService', ['getLoggedInUser']);
-    const getLoggedInUserSpy = backendServiceSpy.getLoggedInUser.and.returnValue(of(undefined));
+    backendServiceSpy = jasmine.createSpyObj('BackendService', ['getOuterUser']);
+    const getOuterUserSpy = backendServiceSpy.getOuterUser.and.returnValue(of(new OuterUser()));
 
     TestBed.configureTestingModule({
       declarations: [ AccountComponent ],

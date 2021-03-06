@@ -1,45 +1,49 @@
-<div *ngIf="backend.getLoggedInUser() | async as lUser; else showLogin">
-  <div *ngIf="lUser.user; else showRegister">
-    <h1>Hello {{ lUser.user.name }}!</h1>
-    <br />
-  </div>
-  <ng-template #showRegister>
-    Please choose a display name:
-    <mat-form-field>
-      <mat-label>Username</mat-label>
-      <input matInput id="desiredName" name="desiredName" [formControl]="desiredName"
-        nameTakenValidator minlength="2" maxlength="15" required>
-      <mat-error *ngIf="desiredName?.errors?.required">
-        A username is required
-      </mat-error>
-      <mat-error *ngIf="desiredName?.errors?.minlength">
-        Your display name must be at least 2 characters long.
-      </mat-error>
-      <mat-error *ngIf="desiredName?.errors?.nameTaken">
-        {{ desiredName.value }} is already taken.
-      </mat-error>
-    </mat-form-field>
-    <p>
-      <mat-checkbox [(ngModel)]="privacyPolicyAcknowledged">
-        I acknowledge the <a href="/privacy">privacy policy</a>.
-      </mat-checkbox>
-    </p>
-    <p>
-      <button mat-stroked-button (click)="register(lUser)"
-          [disabled]="desiredName.invalid || desiredName.pristine || !privacyPolicyAcknowledged">
-        Register
-      </button>
-    </p>
-    <div class="alert alert-danger" *ngIf="registrationErrorMsg">
-      Error: {{ registrationErrorMsg }}
-    </div>
+<ng-container *ngIf="backend.getOuterUser() | async as oUser">
+  <ng-container *ngIf="oUser.loggedIn(); else showLogin">
+    <ng-container *ngIf="oUser.user; else showRegister">
+      <h1>Hello {{ oUser.user.name }}!</h1>
+      <br />
+    </ng-container>
+    <ng-template #showRegister>
+      Please choose a display name:
+      <mat-form-field>
+        <mat-label>Username</mat-label>
+        <input matInput id="desiredName" name="desiredName" [formControl]="desiredName"
+          nameTakenValidator minlength="2" maxlength="15" required>
+        <mat-error *ngIf="desiredName?.errors?.required">
+          A username is required
+        </mat-error>
+        <mat-error *ngIf="desiredName?.errors?.minlength">
+          Your display name must be at least 2 characters long.
+        </mat-error>
+        <mat-error *ngIf="desiredName?.errors?.nameTaken">
+          {{ desiredName.value }} is already taken.
+        </mat-error>
+      </mat-form-field>
+      <p>
+        <mat-checkbox [(ngModel)]="privacyPolicyAcknowledged">
+          I acknowledge the <a href="/privacy">privacy policy</a>.
+        </mat-checkbox>
+      </p>
+      <p>
+        <button mat-stroked-button (click)="register(oUser)"
+            [disabled]="desiredName.invalid || desiredName.pristine || !privacyPolicyAcknowledged">
+          Register
+        </button>
+      </p>
+      <div class="alert alert-danger" *ngIf="registrationErrorMsg">
+        Error: {{ registrationErrorMsg }}
+      </div>
+    </ng-template>
+
+    <button mat-stroked-button (click)="logout()">Logout</button>
+    <button mat-stroked-button (click)="deleteAccount(oUser)">Delete Account</button>
+  </ng-container>
+
+  <ng-template #showLogin>
+    <p>Please login.</p>
+    <button mat-stroked-button (click)="googleLogin()">Login with Google</button>
+    <button mat-stroked-button (click)="facebookLogin()">Login with Facebook</button>
+    <button mat-stroked-button (click)="githubLogin()">Login with Github</button>
   </ng-template>
-  <button mat-stroked-button (click)="logout()">Logout</button>
-  <button mat-stroked-button (click)="deleteAccount(lUser)">Delete Account</button>
-</div>
-<ng-template #showLogin>
-  <p>Please login.</p>
-  <button mat-stroked-button (click)="googleLogin()">Login with Google</button>
-  <button mat-stroked-button (click)="facebookLogin()">Login with Facebook</button>
-  <button mat-stroked-button (click)="githubLogin()">Login with Github</button>
-</ng-template>
+</ng-container>

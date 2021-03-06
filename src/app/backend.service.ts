@@ -10,7 +10,7 @@ import { switchMap, map, catchError, filter, distinctUntilChanged, tap } from 'r
 import { User, UsersContainer } from './user';
 import { GameConfig, GameConfigData } from './game-config';
 import * as decoders from './decode';
-import { LoggedInUser } from './logged-in-user';
+import { OuterUser } from './outer-user';
 import * as backend from './backend';
 import { CellPosData } from './types';
 
@@ -18,7 +18,7 @@ import { CellPosData } from './types';
   providedIn: 'root'
 })
 export class BackendService {
-  loggedInUser$: BehaviorSubject<LoggedInUser | undefined> = new BehaviorSubject<LoggedInUser | undefined>(undefined);
+  outerUser$: BehaviorSubject<OuterUser> = new BehaviorSubject<OuterUser>(new OuterUser());
 
   constructor(
     private http: HttpClient,
@@ -33,12 +33,12 @@ export class BackendService {
     this.afAuth.currentUser.then((fbUser) => this.updateUser(fbUser));
   }
 
-  getLoggedInUser(): Observable<LoggedInUser|undefined> {
-    return this.loggedInUser$.asObservable();
+  getOuterUser(): Observable<OuterUser> {
+    return this.outerUser$.asObservable();
   }
 
-  getRegisteredUser(): Observable<User|undefined> {
-    return this.loggedInUser$.pipe(map(x => x?.user));
+  getRegisteredUser(): Observable<User | undefined> {
+    return this.outerUser$.pipe(map(x => x?.user));
   }
 
   private authenticatedHttp(fbUser: firebase.User, url: string, method = 'get'): Promise<Object> {
@@ -62,14 +62,14 @@ export class BackendService {
   updateUser(fbUser: firebase.User | null) {
     this.ngZone.run(() => {
       if (fbUser === null) {
-        this.loggedInUser$.next(undefined);
+        this.outerUser$.next(new OuterUser());
         return;
       }
       // Send request to get info to build a User.
       this.authenticatedHttp(fbUser, backend.address + '/thisUser').then((user) => {
         let decoded = decoders.user.decode(user);
         if (decoded.isOk()) {
-          this.loggedInUser$.next(new LoggedInUser(fbUser, decoded.value));
+          this.outerUser$.next(new OuterUser(fbUser, decoded.value));
         } else {
           throw new Error(`Error decoding User: ${decoded.error}`);
         }
@@ -77,7 +77,7 @@ export class BackendService {
         if (err.status === 404) {
           // We have a Firebase user, but no associated user in our backend.
           // Likely the user hasn't registered yet.
-          this.loggedInUser$.next(new LoggedInUser(fbUser));
+          this.outerUser$.next(new OuterUser(fbUser));
         } else {
           console.warn(err);
           console.warn("Received unexpected error from /thisUser.");
@@ -155,9 +155,12 @@ export class BackendService {
     );
   }
 
-  register(loggedInUser: LoggedInUser, name: string): Promise<string | null> {
+  register(outerUser: OuterUser, name: string): Promise<string | null> {
+    if (outerUser.fbUser === undefined) {
+      throw Error("Cannot register a user who isn't logged in.");
+    }
     return this.authenticatedHttpWithResponse(
-      loggedInUser.fbUser,
+      outerUser.fbUser,
       backend.address + '/register/' + encodeURIComponent(name), 'post').then((resp: HttpResponse<Object>) => {
         if (resp.status == 201) {
           console.log('Registration successful.');
@@ -178,9 +181,9 @@ export class BackendService {
       .then((resp) => decoders.gameConfigData.decodePromise(resp));
   }
 
-  build(loggedInUser: LoggedInUser, towerId: number, towerPositions: CellPosData[]): Promise<Object> {
-    const name = loggedInUser?.user?.name;
-    if (name === undefined) {
+  build(outerUser: OuterUser, towerId: number, towerPositions: CellPosData[]): Promise<Object> {
+    const name = outerUser?.user?.name;
+    if (name === undefined || outerUser.fbUser === undefined) {
       return Promise.reject(new Error("Cannot build for user who is not registered."));
     }
     const url = `${backend.address}/build/${encodeURIComponent(name)}`;
@@ -197,12 +200,12 @@ export class BackendService {
       "cols": cols,
     }
     return this.authenticatedHttpWithResponse(
-      loggedInUser.fbUser, url, 'post', postData);
+      outerUser.fbUser, url, 'post', postData);
   }
 
-  sell(loggedInUser: LoggedInUser, towerPositions: CellPosData[]): Promise<Object> {
-    const name = loggedInUser?.user?.name;
-    if (name === undefined) {
+  sell(outerUser: OuterUser, towerPositions: CellPosData[]): Promise<Object> {
+    const name = outerUser?.user?.name;
+    if (name === undefined || outerUser.fbUser === undefined) {
       return Promise.reject(new Error("Cannot sell for user who is not registered."));
     }
     const url = `${backend.address}/sell/${encodeURIComponent(name)}`;
@@ -214,61 +217,64 @@ export class BackendService {
     }
     const postData = { "rows": rows, "cols": cols };
     return this.authenticatedHttpWithResponse(
-      loggedInUser.fbUser, url, 'post', postData);
+      outerUser.fbUser, url, 'post', postData);
   }
 
-  setWave(loggedInUser: LoggedInUser, monsters: number[]): Promise<Object> {
-    const name = loggedInUser?.user?.name;
-    if (name === undefined) {
+  setWave(outerUser: OuterUser, monsters: number[]): Promise<Object> {
+    const name = outerUser?.user?.name;
+    if (name === undefined || outerUser.fbUser === undefined) {
       return Promise.reject(new Error("Cannot add to wave for user who is not registered."));
     }
     const url = `${backend.address}/wave/${encodeURIComponent(name)}`;
     const data = { monsters: monsters };
     return this.authenticatedHttpWithResponse(
-      loggedInUser.fbUser, url, 'post', data);
+      outerUser.fbUser, url, 'post', data);
   }
 
-  clearWave(loggedInUser: LoggedInUser): Promise<Object> {
-    const name = loggedInUser?.user?.name;
-    if (name === undefined) {
+  clearWave(outerUser: OuterUser): Promise<Object> {
+    const name = outerUser?.user?.name;
+    if (name === undefined || outerUser.fbUser === undefined) {
       return Promise.reject(new Error("Cannot clear wave for user who is not registered."));
     }
     const url = `${backend.address}/wave/${encodeURIComponent(name)}`;
-    return this.authenticatedHttpWithResponse(loggedInUser.fbUser, url, 'delete');
+    return this.authenticatedHttpWithResponse(outerUser.fbUser, url, 'delete');
   }
 
-  startBattle(loggedInUser: LoggedInUser): Promise<Object> {
-    const name = loggedInUser?.user?.name;
-    if (name === undefined) {
+  startBattle(outerUser: OuterUser): Promise<Object> {
+    const name = outerUser?.user?.name;
+    if (name === undefined || outerUser.fbUser === undefined) {
       return Promise.reject(new Error("Cannot start battle for user who is not registered."));
     }
     const url = `${backend.address}/controlBattle/${encodeURIComponent(name)}`;
-    return this.authenticatedHttpWithResponse(loggedInUser.fbUser, url, 'post');
+    return this.authenticatedHttpWithResponse(outerUser.fbUser, url, 'post');
   }
 
-  stopBattle(loggedInUser: LoggedInUser): Promise<Object> {
-    const name = loggedInUser?.user?.name;
-    if (name === undefined) {
+  stopBattle(outerUser: OuterUser): Promise<Object> {
+    const name = outerUser?.user?.name;
+    if (name === undefined || outerUser.fbUser === undefined) {
       return Promise.reject(new Error("Cannot stop battle for user who is not registered."));
     }
     const url = `${backend.address}/controlBattle/${encodeURIComponent(name)}`;
-    return this.authenticatedHttpWithResponse(loggedInUser.fbUser, url, 'delete');
+    return this.authenticatedHttpWithResponse(outerUser.fbUser, url, 'delete');
   }
 
-  resetGameData(loggedInUser: LoggedInUser): Promise<Object> {
-    if (loggedInUser?.user?.admin !== true) {
-      return Promise.reject(new Error("Reset game request comes from a non-admin user."));
+  resetGameData(outerUser: OuterUser): Promise<Object> {
+    if (outerUser.fbUser === undefined) {
+      return Promise.reject(new Error("Reset game request came from a not logged in user."));
+    }
+    if (outerUser?.user?.admin !== true) {
+      return Promise.reject(new Error("Reset game request came from a non-admin user."));
     }
     const url = `${backend.address}/admin/resetGame`;
-    return this.authenticatedHttpWithResponse(loggedInUser.fbUser, url, 'post');
+    return this.authenticatedHttpWithResponse(outerUser.fbUser, url, 'post');
   }
 
-  deleteAccount(loggedInUser: LoggedInUser): Promise<Object> {
-    const name = loggedInUser?.user?.name;
-    if (name === undefined) {
+  deleteAccount(outerUser: OuterUser): Promise<Object> {
+    const name = outerUser?.user?.name;
+    if (name === undefined || outerUser.fbUser === undefined) {
       return Promise.reject(new Error("Cannot delete an unregistered account."));
     }
     const url = `${backend.address}/deleteAccount/${encodeURIComponent(name)}`;
-    return this.authenticatedHttpWithResponse(loggedInUser.fbUser, url, 'delete');
+    return this.authenticatedHttpWithResponse(outerUser.fbUser, url, 'delete');
   }
 }

@@ -2,7 +2,7 @@ import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { Observable, EMPTY, timer, combineLatest } from 'rxjs';
 import { map, expand, mergeMap } from 'rxjs/operators';
 
-import { LoggedInUser } from '../logged-in-user';
+import { OuterUser } from '../outer-user';
 import { User } from '../user'
 import { BackendService } from '../backend.service'
 
@@ -30,8 +30,8 @@ export class LeaderboardComponent {
     );
   
   public readonly usersRowData$: Observable<(User & {loggedIn: boolean})[]> =
-    combineLatest([this.polledUsers$, this.backend.getLoggedInUser()]).pipe(
-      map(([users, loggedInUser]: [User[], LoggedInUser | undefined]) =>
+    combineLatest([this.polledUsers$, this.backend.getOuterUser()]).pipe(
+      map(([users, loggedInUser]: [User[], OuterUser | undefined]) =>
         users
           .filter(user => user.goldPerMinute > 0)
           .map((user: User) =>

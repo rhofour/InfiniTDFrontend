@@ -10,7 +10,7 @@ import { MatDialog } from '@angular/material/dialog';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 
 import { BackendService } from '../backend.service';
-import { LoggedInUser } from '../logged-in-user';
+import { OuterUser } from '../outer-user';
 import { AreYouSureDialogComponent } from '../are-you-sure-dialog/are-you-sure-dialog.component';
 
 @Component({
@@ -53,7 +53,7 @@ export class AccountComponent implements OnInit {
       .catch(err => { this.loginError(err); });
   }
 
-  register(loggedInUser: LoggedInUser) {
+  register(outerUser: OuterUser) {
     const name = this.desiredName.value;
     if (this.desiredName.invalid) {
       console.log('Attemping to set name with invalid value: ' + name);
@@ -63,7 +63,7 @@ export class AccountComponent implements OnInit {
     this.backend.isNameTaken(name).then(isTaken => {
       console.log('Is name taken: ' + isTaken);
     });
-    this.backend.register(loggedInUser, name).then(registrationError => {
+    this.backend.register(outerUser, name).then(registrationError => {
       if (registrationError) {
         this.registrationErrorMsg = registrationError;
         console.log('registrationErrorMsg is now: ' + this.registrationErrorMsg);
@@ -77,7 +77,7 @@ export class AccountComponent implements OnInit {
     this.afAuth.signOut();
   }
 
-  deleteAccount(lUser: LoggedInUser) {
+  deleteAccount(lUser: OuterUser) {
     const dialogRef = this._dialog.open(AreYouSureDialogComponent, {
       data: {
         msg: "This will wipe all account data for this user.",

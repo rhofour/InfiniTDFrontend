@@ -6,6 +6,7 @@ import { GameDrawerComponent } from './game-drawer.component';
 import { SelectionService, Selection } from '../selection.service';
 import { BackendService } from '../backend.service';
 import { mockUser } from '../mock-user';
+import { OuterUser } from '../outer-user';
 
 describe('GameDrawerComponent', () => {
   let component: GameDrawerComponent;
@@ -17,8 +18,8 @@ describe('GameDrawerComponent', () => {
   beforeEach(waitForAsync(() => {
     selectionServiceSpy = jasmine.createSpyObj('SelectionService', ['getSelection']);
     const getSelectionSpy = selectionServiceSpy.getSelection.and.returnValue(of(new Selection()));
-    backendServiceSpy = jasmine.createSpyObj('BackendService', ['getLoggedInUser']);
-    const getLoggedInUserSpy = backendServiceSpy.getLoggedInUser.and.returnValue(of(undefined));
+    backendServiceSpy = jasmine.createSpyObj('BackendService', ['getOuterUser']);
+    const getOuterUserSpy = backendServiceSpy.getOuterUser.and.returnValue(of(new OuterUser()));
 
     TestBed.configureTestingModule({
       declarations: [ GameDrawerComponent ],

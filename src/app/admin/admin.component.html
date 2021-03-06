@@ -1,4 +1,4 @@
-<div *ngIf="backend.getLoggedInUser() | async as lUser">
+<div *ngIf="backend.getOuterUser() | async as lUser">
     <mat-card mat-elevation-z4>
         <mat-card-header>
             <mat-card-title>Global Actions</mat-card-title>
