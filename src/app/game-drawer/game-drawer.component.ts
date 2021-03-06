@@ -282,7 +282,9 @@ export class GameDrawerComponent implements OnChanges {
 
   showBattle(attackerName: string, defenderName: string) {
     this.dialog.closeAll();
-    this.recordedBattleState.requestBattleState(attackerName, defenderName);
+    this.recordedBattleState.requestBattleState(attackerName, defenderName).catch((err) => {
+      this.handleBackendError("Error requesting battle:", err);
+    });
   }
 
   stopShownBattle() {

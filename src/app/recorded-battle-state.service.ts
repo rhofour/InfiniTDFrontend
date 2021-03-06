@@ -18,8 +18,8 @@ export class RecordedBattleStateService {
 
   // Changes the observable returned by getRecordedBattleState
   requestBattleState(attackerName: string, defenderName: string) {
-    console.log(`Requesting battles ${attackerName} vs ${defenderName}`);
-    this.http.get(`${backend.address}/battle/${attackerName}/${defenderName}`).toPromise()
+    console.log(`Requesting battle ${attackerName} vs ${defenderName}`);
+    return this.http.get(`${backend.address}/battle/${encodeURIComponent(attackerName)}/${encodeURIComponent(defenderName)}`).toPromise()
       .then(resp => {
         const decodedBattle = decoders.battle.decode(resp);
         if (decodedBattle.isOk()) {
@@ -30,7 +30,6 @@ export class RecordedBattleStateService {
           console.warn(`Failed to decode battle: ${decodedBattle.error}`);
         }
       });
-    return;
   }
 
   stopBattle() {
