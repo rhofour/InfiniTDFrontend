@@ -123,6 +123,7 @@
             <input matInput class="monster-num-selector"
               type="number" value="{{monster[0]}}" min=0 max=500
               (change)="monsterCountUpdate(lUser, idx, $event)"
+              (keypress)="numericOnly($event)"
               [disabled]="user.inBattle">
             × {{monster[1].name}}
             <span class="spacer"></span>

@@ -106,6 +106,15 @@ export class GameDrawerComponent implements OnChanges {
     }
   }
 
+  numericOnly(event: KeyboardEvent): boolean {
+    const charCode = event.key;
+    if (charCode == "e" || charCode == "E" || charCode == "+" || charCode == "-") {
+      return false;
+    }
+    return true;
+  }
+
+
   calcBuildAndSellAmounts() {
     if (this.battlegroundSelection === undefined) {
       return;
