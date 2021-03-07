@@ -1,9 +1,11 @@
-import { Component, OnInit, ViewChild, Input, ChangeDetectorRef, ChangeDetectionStrategy, Pipe, PipeTransform, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, OnInit, ViewChild, Input, ChangeDetectorRef, ChangeDetectionStrategy, Pipe, PipeTransform, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatList, MatSelectionList, MatSelectionListChange } from '@angular/material/list';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDialog } from '@angular/material/dialog';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { Subscription } from 'rxjs';
 
 import { SelectionService } from '../selection.service';
 import { GameConfig, TowerConfig, MonsterConfig } from '../game-config';
@@ -37,7 +39,7 @@ type WaveList = [number, MonsterConfig][];
   styleUrls: ['./game-drawer.component.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GameDrawerComponent implements OnChanges {
+export class GameDrawerComponent implements OnChanges, OnDestroy {
   // Only one of these should be set at once.
   public inBattle: boolean = false;
   @Input() gameConfig!: GameConfig;
@@ -56,6 +58,9 @@ export class GameDrawerComponent implements OnChanges {
   wave: [number, MonsterConfig][] = [];
   sellAmount?: number;
   buildCost?: number;
+  // Used to autocomplete user names.
+  users: User[] = [];
+  private subscriptions: Subscription = Subscription.EMPTY;
 
   constructor(
     private cdRef: ChangeDetectorRef,
@@ -65,7 +70,9 @@ export class GameDrawerComponent implements OnChanges {
     public backend: BackendService,
     public debug: DebugService,
     private recordedBattleState: RecordedBattleStateService,
-  ) { }
+  ) {
+    const usersSub = backend.getUsers().subscribe(newUsers => { this.users = newUsers; });
+  }
 
   ngOnInit(): void {
     if (this.user === undefined) {
@@ -104,6 +111,10 @@ export class GameDrawerComponent implements OnChanges {
         listOption.selected = (listOption.value === this.displayedMonster?.id);
       }
     }
+  }
+
+  ngOnDestroy() {
+    this.subscriptions.unsubscribe();
   }
 
   numericOnly(event: KeyboardEvent): boolean {

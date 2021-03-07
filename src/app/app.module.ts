@@ -21,6 +21,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { MatIconModule } from '@angular/material/icon';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -105,6 +106,7 @@ import { SettingsComponent } from './settings/settings.component';
     MatCheckboxModule,
     DragDropModule,
     MatIconModule,
+    MatAutocompleteModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

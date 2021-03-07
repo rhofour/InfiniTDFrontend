@@ -89,6 +89,24 @@
             View (R)esults
           </button>
         </mat-expansion-panel>
+
+        <!-- Challenge other players -->
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title> Other </mat-panel-title>
+          </mat-expansion-panel-header>
+          <mat-form-field>
+            <mat-label>Challenger name</mat-label>
+            <input matInput
+              id="battleUsername" name="battleUsername"
+              [matAutocomplete]="auto">
+            <mat-autocomplete #auto="matAutocomplete">
+              <mat-option *ngFor="let user of users" [value]="user.name">
+                {{user.name}}
+              </mat-option>
+            </mat-autocomplete>
+          </mat-form-field>
+        </mat-expansion-panel>
       </mat-accordion>
     </mat-expansion-panel>
 
