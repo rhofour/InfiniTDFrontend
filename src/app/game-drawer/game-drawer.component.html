@@ -99,9 +99,10 @@
             <mat-label>Challenger name</mat-label>
             <input matInput
               id="battleUsername" name="battleUsername"
+              [formControl]="battleUsernameControl"
               [matAutocomplete]="auto">
             <mat-autocomplete #auto="matAutocomplete">
-              <mat-option *ngFor="let user of users" [value]="user.name">
+              <mat-option *ngFor="let user of filteredUsers | async" [value]="user.name">
                 {{user.name}}
               </mat-option>
             </mat-autocomplete>

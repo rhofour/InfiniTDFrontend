@@ -5,7 +5,8 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDialog } from '@angular/material/dialog';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Subscription } from 'rxjs';
+import { EMPTY, Observable, Subscription } from 'rxjs';
+import { map, startWith } from 'rxjs/operators';
 
 import { SelectionService } from '../selection.service';
 import { GameConfig, TowerConfig, MonsterConfig } from '../game-config';
@@ -20,6 +21,7 @@ import { BattleResults, BattleState } from '../battle-state';
 import { BattleResultsComponent } from '../battle-results/battle-results.component';
 import { BattlegroundSelectionView } from '../battleground-selection';
 import { CellPosData } from '../types';
+import { FormControl } from '@angular/forms';
 
 function hasOwnProperty<X extends {}, Y extends PropertyKey>
   (obj: X, prop: Y): obj is X & Record<Y, unknown> {
@@ -59,7 +61,9 @@ export class GameDrawerComponent implements OnChanges, OnDestroy {
   sellAmount?: number;
   buildCost?: number;
   // Used to autocomplete user names.
+  battleUsernameControl = new FormControl();
   users: User[] = [];
+  filteredUsers: Observable<User[]> = EMPTY;
   private subscriptions: Subscription = Subscription.EMPTY;
 
   constructor(
@@ -79,6 +83,14 @@ export class GameDrawerComponent implements OnChanges, OnDestroy {
       throw Error("Input user is undefined.");
     }
     this.wave = this.waveToList(this.user.wave);
+    this.filteredUsers = this.battleUsernameControl.valueChanges.pipe(
+      startWith(''),
+      map((value: string) => {
+        const lcValue = value.toLowerCase();
+        return this.users.filter(
+          (user: User) => user.name.toLowerCase().startsWith(lcValue));
+      }));
+
   }
 
   ngOnChanges(changes: SimpleChanges) {
