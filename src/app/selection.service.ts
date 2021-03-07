@@ -14,6 +14,7 @@ export class SelectionService implements OnDestroy {
   private battlegroundState?: BattlegroundState;
   private gameConfig!: GameConfig;
   // Selection state
+  // TODO: remove addMonsterSelection and rename displayed{Monster/Tower}$ to displayed...Config$
   private addMonsterSelection?: MonsterConfig;
   private battlegroundSelection?: BattlegroundSelection;
   // BehaviorSubjects
@@ -104,6 +105,11 @@ export class SelectionService implements OnDestroy {
       // Unset buildTower$ if it doesn't match the displayed tower.
       this.buildTower$.next(undefined);
     }
+    if (newDisplayedTower !== undefined) {
+      // Unset any selected monster if we're displaying a tower.
+      this.addMonsterSelection = undefined;
+      this.displayedMonster$.next(undefined);
+    }
   }
 
   updateBuildTowerSelection(newBuildTowerSelectionId?: number) {
@@ -126,6 +132,7 @@ export class SelectionService implements OnDestroy {
       // Reset displayed monster.
       if (this.displayedMonster$.getValue() !== undefined) {
         this.displayedMonster$.next(undefined);
+        this.addMonsterSelection = undefined;
       }
     }
     this.updateDisplayedTower();
@@ -144,10 +151,11 @@ export class SelectionService implements OnDestroy {
     }
     this.addMonsterSelection = newAddMonsterConfig;
     this.displayedMonster$.next(this.addMonsterSelection);
+    console.log(`Updated displayed monster to ${this.addMonsterSelection?.name}`)
     if (this.addMonsterSelection !== undefined) {
-      // Unset any current build tower.
+      // Unset any current build tower and displayed tower.
       this.buildTower$.next(undefined);
-      this.updateDisplayedTower();
+      this.displayedTower$.next(undefined);
     }
   }
 
