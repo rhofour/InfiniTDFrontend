@@ -56,32 +56,40 @@
       <mat-expansion-panel-header>
         <mat-panel-title> Battle </mat-panel-title>
       </mat-expansion-panel-header>
-      <ng-container *ngIf="oUser.matches(user); else otherUser">
-        <button *ngIf="!user.inBattle" (click)="startBattle(oUser)"
-            [disabled]="user.wave.length === 0"
-            appClickShortcut shortcutKey="e"
+      <mat-accordion>
+        <mat-expansion-panel expanded="true">
+          <mat-expansion-panel-header>
+            <mat-panel-title> {{ user.name }}</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <ng-container *ngIf="oUser.matches(user); else otherUser">
+            <button *ngIf="!user.inBattle" (click)="startBattle(oUser)"
+                [disabled]="user.wave.length === 0"
+                appClickShortcut shortcutKey="e"
+                mat-stroked-button>
+              Start battl(e)
+            </button>
+            <button *ngIf="user.inBattle" (click)="stopBattle(oUser)"
+                appClickShortcut shortcutKey="e"
+                mat-stroked-button>
+              Stop battl(e)
+            </button>
+          </ng-container>
+          <ng-template #otherUser>
+            <button (click)="showBattle(user.name, user.name)"
+                appClickShortcut shortcutKey="e"
+                mat-stroked-button>
+              Show battl(e)
+            </button>
+          </ng-template>
+          <button (click)="showResults(battleState.results)"
+            [disabled]="battleState.results === undefined"
+            appClickShortcut shortcutKey="r"
             mat-stroked-button>
-          Start battl(e)
-        </button>
-        <button *ngIf="user.inBattle" (click)="stopBattle(oUser)"
-            appClickShortcut shortcutKey="e"
-            mat-stroked-button>
-          Stop battl(e)
-        </button>
-      </ng-container>
-      <ng-template #otherUser>
-        <button (click)="showBattle(user.name, user.name)"
-            appClickShortcut shortcutKey="e"
-            mat-stroked-button>
-          Show battl(e)
-        </button>
-      </ng-template>
-      <button (click)="showResults(battleState.results)"
-        [disabled]="battleState.results === undefined"
-        appClickShortcut shortcutKey="r"
-        mat-stroked-button>
-        View (R)esults
-      </button>
+            View (R)esults
+          </button>
+        </mat-expansion-panel>
+      </mat-accordion>
     </mat-expansion-panel>
 
     <mat-expansion-panel *ngIf="oUser.matches(user)">
