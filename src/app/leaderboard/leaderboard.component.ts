@@ -33,7 +33,7 @@ export class LeaderboardComponent {
     combineLatest([this.polledUsers$, this.backend.getOuterUser()]).pipe(
       map(([users, loggedInUser]: [User[], OuterUser | undefined]) =>
         users
-          .filter(user => user.goldPerMinute > 0)
+          .filter(user => user.goldPerMinuteSelf > 0)
           .map((user: User) =>
             Object.assign({}, user, { loggedIn: loggedInUser !== undefined && loggedInUser.matches(user) })
           )

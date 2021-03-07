@@ -12,7 +12,7 @@
       </span>
       <span class="spacer"></span>
       {{ user.gold | goldNumber }} gold
-      ({{ user.goldPerMinute | goldNumber }} / min)
+      ({{ user.goldPerMinuteSelf | goldNumber }} + {{ user.goldPerMinuteOthers | goldNumber }} / min)
     </mat-toolbar>
     <ng-container *ngIf="gameConfig$ | async as gameConfig">
       <mat-drawer-container *ngIf="battlegroundState$ | async as bgState" fxFlex="1 1 100%" autosize>

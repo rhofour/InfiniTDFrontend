@@ -20,7 +20,7 @@
     <ng-container matColumnDef="goldPerMinute">
       <th mat-header-cell *matHeaderCellDef> Gold / Min </th>
       <td mat-cell *matCellDef="let user">
-        {{ user.goldPerMinute | goldNumber }}
+        {{ user.goldPerMinuteSelf + user.goldPerMinuteOthers | goldNumber }}
       </td>
     </ng-container>
 
