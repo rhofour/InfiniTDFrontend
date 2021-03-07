@@ -48,6 +48,8 @@ export enum BattleStatus {
 export interface BattleMetadata {
   status: BattleStatus
   name: string
+  attackerName: string
+  defenderName: string
   time?: number
 }
 
@@ -60,6 +62,8 @@ export interface BattleResults {
 
 export interface Battle {
   name: string
+  attackerName: string
+  defenderName: string
   events: BattleEvent[]
   results: BattleResults
 }
@@ -79,7 +83,9 @@ export class BattleState {
   private numUpdates: number = 0;
 
   constructor(
-    public name: string,
+    public name: string = "",
+    public attackerName: string = "",
+    public defenderName: string = "",
     private startedTimeSecs: number | undefined = undefined,
     private events: BattleEvent[] = [],
     public live: boolean = false,
@@ -94,17 +100,19 @@ export class BattleState {
   processBattleMetadata(metadata: BattleMetadata): BattleState {
     switch (metadata.status) {
       case BattleStatus.PENDING:
-        return new BattleState(metadata.name);
+        return new BattleState(metadata.name, metadata.attackerName, metadata.defenderName);
       case BattleStatus.LIVE:
         if (metadata.time === undefined) {
           console.warn(metadata);
           throw new Error('Received live BattleMetadata with no time.');
         }
         return new BattleState(
-          metadata.name, (Date.now() / 1000) - metadata.time, this.events, true);
+          metadata.name, metadata.attackerName, metadata.defenderName,
+          (Date.now() / 1000) - metadata.time, this.events, true);
       case BattleStatus.FINISHED:
         return new BattleState(
-          metadata.name, (Date.now() / 1000), this.events, false);
+          metadata.name, metadata.attackerName, metadata.defenderName,
+          (Date.now() / 1000), this.events, false);
       default: {
         const _exhaustiveCheck: never = metadata.status;
         return _exhaustiveCheck;
@@ -114,7 +122,8 @@ export class BattleState {
 
   processResults(results: BattleResults): BattleState {
     return new BattleState(
-      this.name, this.startedTimeSecs, this.events, false, results, this.enemyHealth);
+      this.name, this.attackerName, this.defenderName,
+      this.startedTimeSecs, this.events, false, results, this.enemyHealth);
   }
 
   getState(timeSecs: number, gameConfig: GameConfig): ObjectState[] | undefined {

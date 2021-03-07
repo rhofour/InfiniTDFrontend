@@ -64,7 +64,7 @@ export class GameDrawerComponent implements OnChanges, OnDestroy {
   battleUsernameControl = new FormControl();
   users: User[] = [];
   filteredUsers: Observable<User[]> = EMPTY;
-  private subscriptions: Subscription = Subscription.EMPTY;
+  private usersSub: Subscription = Subscription.EMPTY;
 
   constructor(
     private cdRef: ChangeDetectorRef,
@@ -75,7 +75,7 @@ export class GameDrawerComponent implements OnChanges, OnDestroy {
     public debug: DebugService,
     private recordedBattleState: RecordedBattleStateService,
   ) {
-    const usersSub = backend.getUsers().subscribe(newUsers => { this.users = newUsers; });
+    this.usersSub = backend.getUsers().subscribe(newUsers => { console.log(newUsers); this.users = newUsers; });
   }
 
   ngOnInit(): void {
@@ -90,7 +90,6 @@ export class GameDrawerComponent implements OnChanges, OnDestroy {
         return this.users.filter(
           (user: User) => user.name.toLowerCase().startsWith(lcValue));
       }));
-
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -126,7 +125,7 @@ export class GameDrawerComponent implements OnChanges, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.subscriptions.unsubscribe();
+    this.usersSub.unsubscribe();
   }
 
   numericOnly(event: KeyboardEvent): boolean {

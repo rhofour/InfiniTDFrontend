@@ -107,6 +107,18 @@
               </mat-option>
             </mat-autocomplete>
           </mat-form-field>
+          <br />
+          <button (click)="showBattle(battleUsernameControl.value, user.name)"
+              shortcutKey="e"
+              [disabled]="battleUsernameControl.value === '' || battleUsernameControl.value === null"
+              mat-stroked-button>
+            Show battle
+          </button>
+          <button (click)="showResults(battleState.results)"
+            [disabled]="battleState.results === undefined || battleState.attackerName !== battleUsernameControl.value"
+            mat-stroked-button>
+            View Results
+          </button>
         </mat-expansion-panel>
       </mat-accordion>
     </mat-expansion-panel>

@@ -187,6 +187,8 @@ export const battleStatus = JsonDecoder.enumeration<BattleStatus>(BattleStatus, 
 export const battleMetadata = JsonDecoder.object<BattleMetadata>(
   {
     name: JsonDecoder.string,
+    attackerName: JsonDecoder.string,
+    defenderName: JsonDecoder.string,
     status: battleStatus,
     time: JsonDecoder.optional(JsonDecoder.number),
   },
@@ -220,6 +222,8 @@ export const battleResults = JsonDecoder.object<BattleResults>({
 
 export const battle = JsonDecoder.object<Battle>({
   name: JsonDecoder.string,
+  attackerName: JsonDecoder.string,
+  defenderName: JsonDecoder.string,
   events: JsonDecoder.array(battleEvent, 'BattleEvent[]'),
   results: battleResults,
 }, 'Battle');
