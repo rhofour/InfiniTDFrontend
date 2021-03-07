@@ -19,7 +19,16 @@ export class ClickShortcutDirective implements OnInit {
   }
 
   @HostListener('window:keyup', ['$event']) keyEvent(event: KeyboardEvent) {
-    if (event.key === this.shortcutKey && this.el.nativeElement.disabled !== true) {
+    if (this.el.nativeElement.disabled === true) return;
+    if (event.target instanceof Element) {
+      switch (event.target.tagName.toLowerCase()) {
+        case "input":
+        case "textarea":
+          return;
+      }
+    }
+
+    if (event.key === this.shortcutKey) {
       this.el.nativeElement.click();
     }
   }
