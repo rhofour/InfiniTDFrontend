@@ -16,7 +16,7 @@
     </mat-toolbar>
     <ng-container *ngIf="gameConfig$ | async as gameConfig">
       <mat-drawer-container *ngIf="battlegroundState$ | async as bgState" fxFlex="1 1 100%" autosize>
-        <mat-drawer opened mode="side" position="end" fxFlex="1 1 100%">
+        <mat-drawer opened mode="side" position="end" fxFlex="1 1 100%" disableClose>
           <app-game-drawer [user]="user" [gameConfig]="gameConfig" [towersState]="bgState.towers"
             [battlegroundSelection]="(selection.getBattleground() | async) || undefined"
             [displayedTower]="(selection.getDisplayedTower() | async) || undefined"
