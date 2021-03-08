@@ -41,3 +41,7 @@ a:not(.mat-tab-link)  {
 div.mat-expansion-panel-body {
   padding: 0 12px 16px;
 }
+
+.add-monster-option div.mat-list-text {
+  padding-right: 0px !important;
+}

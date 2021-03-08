@@ -62,32 +62,34 @@
             <mat-panel-title> {{ user.name }}</mat-panel-title>
           </mat-expansion-panel-header>
 
-          <ng-container *ngIf="oUser.matches(user); else otherUser">
-            <button *ngIf="!user.inBattle" (click)="startBattle(oUser)"
-                [disabled]="user.wave.length === 0"
-                appClickShortcut shortcutKey="e"
-                mat-stroked-button>
-              Start battl(e)
+          <div style="width: 0; min-width: 100%">
+            <ng-container *ngIf="oUser.matches(user); else otherUser">
+              <button *ngIf="!user.inBattle" (click)="startBattle(oUser)"
+                  [disabled]="user.wave.length === 0"
+                  appClickShortcut shortcutKey="e"
+                  mat-stroked-button>
+                Start battl(e)
+              </button>
+              <button *ngIf="user.inBattle" (click)="stopBattle(oUser)"
+                  appClickShortcut shortcutKey="e"
+                  mat-stroked-button>
+                Stop battl(e)
+              </button>
+            </ng-container>
+            <ng-template #otherUser>
+              <button (click)="showBattle(user.name, user.name)"
+                  appClickShortcut shortcutKey="e"
+                  mat-stroked-button>
+                Show battl(e)
+              </button>
+            </ng-template>
+            <button (click)="showResults(battleState.results)"
+              [disabled]="battleState.results === undefined"
+              appClickShortcut shortcutKey="r"
+              mat-stroked-button>
+              View (R)esults
             </button>
-            <button *ngIf="user.inBattle" (click)="stopBattle(oUser)"
-                appClickShortcut shortcutKey="e"
-                mat-stroked-button>
-              Stop battl(e)
-            </button>
-          </ng-container>
-          <ng-template #otherUser>
-            <button (click)="showBattle(user.name, user.name)"
-                appClickShortcut shortcutKey="e"
-                mat-stroked-button>
-              Show battl(e)
-            </button>
-          </ng-template>
-          <button (click)="showResults(battleState.results)"
-            [disabled]="battleState.results === undefined"
-            appClickShortcut shortcutKey="r"
-            mat-stroked-button>
-            View (R)esults
-          </button>
+          </div>
         </mat-expansion-panel>
 
         <!-- Challenge other players -->
@@ -108,21 +110,23 @@
             </mat-autocomplete>
           </mat-form-field>
           <br />
-          <button mat-stroked-button
-            [routerLink]="'/battleground/' + encodeURIComponent(battleUsernameControl.value)"
-            [disabled]="battleUsernameControl.value === '' || battleUsernameControl.value === null">
-            View
-          </button>
-          <button (click)="showBattle(battleUsernameControl.value, user.name)"
-              [disabled]="battleUsernameControl.value === '' || battleUsernameControl.value === null"
+          <div style="width: 0; min-width: 100%">
+            <button mat-stroked-button
+              [routerLink]="'/battleground/' + encodeURIComponent(battleUsernameControl.value)"
+              [disabled]="battleUsernameControl.value === '' || battleUsernameControl.value === null">
+              View
+            </button>
+            <button (click)="showBattle(battleUsernameControl.value, user.name)"
+                [disabled]="battleUsernameControl.value === '' || battleUsernameControl.value === null"
+                mat-stroked-button>
+              Show battle
+            </button>
+            <button (click)="showResults(battleState.results)"
+              [disabled]="battleState.results === undefined || battleState.attackerName !== battleUsernameControl.value"
               mat-stroked-button>
-            Show battle
-          </button>
-          <button (click)="showResults(battleState.results)"
-            [disabled]="battleState.results === undefined || battleState.attackerName !== battleUsernameControl.value"
-            mat-stroked-button>
-            View Results
-          </button>
+              View Results
+            </button>
+          </div>
         </mat-expansion-panel>
       </mat-accordion>
     </mat-expansion-panel>
@@ -179,7 +183,7 @@
           <mat-selection-list #addMonsterList [multiple]="false"
               (selectionChange)="monsterSelectionChange($event)">
             <mat-list-option *ngFor="let monster of gameConfig.monsters | keyvalue"
-              [value]="monster.key">
+              [value]="monster.key" class="add-monster-option">
                 <img matListAvatar [src]="monster.value.url">
                 <div class="add-monster-body">
                   <span style="flex: 0 0 auto;">{{monster.value.name}}</span>
