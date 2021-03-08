@@ -65,6 +65,7 @@ export class GameDrawerComponent implements OnChanges, OnDestroy {
   users: User[] = [];
   filteredUsers: Observable<User[]> = EMPTY;
   private usersSub: Subscription = Subscription.EMPTY;
+  encodeURIComponent = encodeURIComponent;
 
   constructor(
     private cdRef: ChangeDetectorRef,
@@ -75,7 +76,7 @@ export class GameDrawerComponent implements OnChanges, OnDestroy {
     public debug: DebugService,
     private recordedBattleState: RecordedBattleStateService,
   ) {
-    this.usersSub = backend.getUsers().subscribe(newUsers => { console.log(newUsers); this.users = newUsers; });
+    this.usersSub = backend.getUsers().subscribe(newUsers => { this.users = newUsers; });
   }
 
   ngOnInit(): void {

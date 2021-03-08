@@ -108,8 +108,12 @@
             </mat-autocomplete>
           </mat-form-field>
           <br />
+          <button mat-stroked-button
+            [routerLink]="'/battleground/' + encodeURIComponent(battleUsernameControl.value)"
+            [disabled]="battleUsernameControl.value === '' || battleUsernameControl.value === null">
+            View
+          </button>
           <button (click)="showBattle(battleUsernameControl.value, user.name)"
-              shortcutKey="e"
               [disabled]="battleUsernameControl.value === '' || battleUsernameControl.value === null"
               mat-stroked-button>
             Show battle
