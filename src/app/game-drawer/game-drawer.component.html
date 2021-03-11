@@ -78,6 +78,8 @@
         <mat-expansion-panel class="this-user-panel" expanded="true">
           <mat-expansion-panel-header>
             <mat-panel-title> {{ user.name }}</mat-panel-title>
+            <span #spacer></span>
+            <span style="padding-right: 1em"> {{ user.goldPerMinuteSelf | goldNumber }} / GPM </span>
           </mat-expansion-panel-header>
 
           <div style="width: 0; min-width: 100%">
