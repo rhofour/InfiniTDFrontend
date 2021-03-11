@@ -16,6 +16,8 @@
     --accent-color: #{mat-color($accent)};
     --accent-color-lighter: #{mat-color($accent, lighter)};
     --accent-color-lighter-contrast: #{mat-color($accent, lighter-contrast)};
+
+    --background-color: #{mat-color($background, card)};
   }
 }
 
