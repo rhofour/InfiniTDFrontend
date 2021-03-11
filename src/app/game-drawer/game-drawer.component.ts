@@ -7,6 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { EMPTY, Observable, Subscription } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
+import { FormControl } from '@angular/forms';
 
 import { SelectionService } from '../selection.service';
 import { GameConfig, TowerConfig, MonsterConfig } from '../game-config';
@@ -21,7 +22,8 @@ import { BattleResults, BattleState } from '../battle-state';
 import { BattleResultsComponent } from '../battle-results/battle-results.component';
 import { BattlegroundSelectionView } from '../battleground-selection';
 import { CellPosData } from '../types';
-import { FormControl } from '@angular/forms';
+import { RivalsService } from '../rivals.service';
+import { Rivals } from '../rivals';
 
 function hasOwnProperty<X extends {}, Y extends PropertyKey>
   (obj: X, prop: Y): obj is X & Record<Y, unknown> {
@@ -60,11 +62,13 @@ export class GameDrawerComponent implements OnChanges, OnDestroy {
   wave: [number, MonsterConfig][] = [];
   sellAmount?: number;
   buildCost?: number;
+  rivals: Rivals = { aheadRivals: [], behindRivals: [] };
   // Used to autocomplete user names.
   battleUsernameControl = new FormControl();
   users: User[] = [];
   filteredUsers: Observable<User[]> = EMPTY;
   private usersSub: Subscription = Subscription.EMPTY;
+  private rivalsSub: Subscription = Subscription.EMPTY;
   encodeURIComponent = encodeURIComponent;
 
   constructor(
@@ -74,6 +78,7 @@ export class GameDrawerComponent implements OnChanges, OnDestroy {
     private dialog: MatDialog,
     public backend: BackendService,
     public debug: DebugService,
+    private rivalsService: RivalsService,
     private recordedBattleState: RecordedBattleStateService,
   ) {
     this.usersSub = backend.getUsers().subscribe(newUsers => { this.users = newUsers; });
@@ -83,6 +88,8 @@ export class GameDrawerComponent implements OnChanges, OnDestroy {
     if (this.user === undefined) {
       throw Error("Input user is undefined.");
     }
+    this.rivalsSub = this.rivalsService.getRivals(this.user.name).subscribe(
+      newRivals => { this.rivals = newRivals; });
     this.wave = this.waveToList(this.user.wave);
     this.filteredUsers = this.battleUsernameControl.valueChanges.pipe(
       startWith(''),
@@ -127,6 +134,7 @@ export class GameDrawerComponent implements OnChanges, OnDestroy {
 
   ngOnDestroy() {
     this.usersSub.unsubscribe();
+    this.rivalsSub.unsubscribe();
   }
 
   numericOnly(event: KeyboardEvent): boolean {

@@ -57,6 +57,24 @@
         <mat-panel-title> Battle </mat-panel-title>
       </mat-expansion-panel-header>
       <mat-accordion>
+        <mat-expansion-panel expanded="false" *ngFor="let rivalName of rivals.aheadRivals">
+          <mat-expansion-panel-header>
+            <mat-panel-title> {{ rivalName }}</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <button mat-stroked-button [routerLink]="'/battleground/' + encodeURIComponent(rivalName)">
+            View
+          </button>
+          <button (click)="showBattle(rivalName, user.name)" mat-stroked-button>
+            Show battle
+          </button>
+          <button (click)="showResults(battleState.results)"
+            [disabled]="battleState.results === undefined || battleState.attackerName !== rivalName"
+            mat-stroked-button>
+            View Results
+          </button>
+        </mat-expansion-panel>
+
         <mat-expansion-panel expanded="true">
           <mat-expansion-panel-header>
             <mat-panel-title> {{ user.name }}</mat-panel-title>
@@ -90,6 +108,24 @@
               View (R)esults
             </button>
           </div>
+        </mat-expansion-panel>
+
+        <mat-expansion-panel expanded="false" *ngFor="let rivalName of rivals.behindRivals">
+          <mat-expansion-panel-header>
+            <mat-panel-title> {{ rivalName }}</mat-panel-title>
+          </mat-expansion-panel-header>
+
+          <button mat-stroked-button [routerLink]="'/battleground/' + encodeURIComponent(rivalName)">
+            View
+          </button>
+          <button (click)="showBattle(rivalName, user.name)" mat-stroked-button>
+            Show battle
+          </button>
+          <button (click)="showResults(battleState.results)"
+            [disabled]="battleState.results === undefined || battleState.attackerName !== rivalName"
+            mat-stroked-button>
+            View Results
+          </button>
         </mat-expansion-panel>
 
         <!-- Challenge other players -->
