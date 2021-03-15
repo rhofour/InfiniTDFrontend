@@ -25,6 +25,7 @@
     "@angular/router": "^11.2.3",
     "@types/resize-observer-browser": "^0.1.5",
     "@types/rfdc": "^1.1.0",
+    "@types/sharedworker": "0.0.29",
     "firebase": "^8.2.9",
     "immutable": "^4.0.0-rc.12",
     "konva": "^7.2.4",
