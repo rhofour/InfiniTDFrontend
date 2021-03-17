@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { SseService } from './sse.service';
+import { StreamDataService } from './stream-data.service';
 import { Rivals } from './rivals';
 import * as decoders from './decode';
 import * as backend from './backend';
@@ -11,14 +11,12 @@ import * as backend from './backend';
   providedIn: 'root'
 })
 export class RivalsService {
-  constructor(private sseService: SseService) { }
+  constructor(private stream: StreamDataService) { }
 
   getRivals(username: string): Observable<Rivals> {
-    return this.sseService
-      .getServerSentEvent(backend.address + '/rivalsStream/' + username)
-      .pipe(map(resp => {
-        const respEvent = resp as MessageEvent;
-        const data = JSON.parse(respEvent.data);
+    return this.stream.subscribe('rivals', username)
+      .pipe(map(strData => {
+        const data = JSON.parse(strData);
         let decoded = decoders.rivals.decode(data);
         if (decoded.isOk()) {
           return decoded.value;

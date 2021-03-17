@@ -2,23 +2,20 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { scan } from 'rxjs/operators';
 
-import { SseService } from './sse.service';
+import { StreamDataService } from './stream-data.service';
 import { BattleState } from './battle-state';
 import * as decoders from './decode';
-import * as backend from './backend';
 
 @Injectable({
   providedIn: 'root'
 })
 export class LiveBattleStateService {
-  constructor(private sseService: SseService) { }
+  constructor(private stream: StreamDataService) { }
 
   getLiveBattleState(username: string): Observable<BattleState> {
-    return this.sseService
-      .getServerSentEvent(backend.address + '/battleStream/' + username)
-      .pipe(scan((battleState: BattleState, resp: unknown) => {
-        const respEvent = resp as MessageEvent;
-        const event = JSON.parse(respEvent.data);
+    return this.stream.subscribe('battle', username)
+      .pipe(scan((battleState: BattleState, respStr: string) => {
+        const event = JSON.parse(respStr);
         const decodedMetadata = decoders.battleMetadata.decode(event);
         if (decodedMetadata.isOk()) {
           return battleState.processBattleMetadata(decodedMetadata.value);
