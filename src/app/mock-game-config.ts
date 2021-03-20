@@ -1,5 +1,5 @@
 import { CellPos } from './types';
-import { GameConfig, GameConfigData, PlayfieldConfig, TowerConfig, MiscConfig  } from './game-config';
+import { GameConfig, GameConfigData, PlayfieldConfig, TowerConfig, MiscConfigData, MiscConfig  } from './game-config';
 
 const playfieldConfig: PlayfieldConfig = {
   numRows: 3,
@@ -10,10 +10,12 @@ const playfieldConfig: PlayfieldConfig = {
   pathId: 0,
   pathStartId: 0,
   pathEndId: 0,
+  tileSize: 32,
 };
 
-const miscConfig: MiscConfig = {
+const miscConfigData: MiscConfigData = {
   sellMultiplier: 0.5,
+  battleBonuses: [],
 };
 
 export const mockTowerConfig0: TowerConfig = {
@@ -24,6 +26,10 @@ export const mockTowerConfig0: TowerConfig = {
   firingRate: 2,
   damage: 3,
   range: 4,
+  projectileSpeed: 1.0,
+  projectileUrl: 'fake-proj-url',
+  projectileSize: 8,
+  projectileRotate: true,
 };
 export const mockTowerConfigWithImg0 =
   {...mockTowerConfig0, img: new Image()};
@@ -35,22 +41,38 @@ export const mockTowerConfig1: TowerConfig = {
   firingRate: 5,
   damage: 6,
   range: 7,
+  projectileSpeed: 1.5,
+  projectileUrl: 'fake-proj-url',
+  projectileSize: 8,
+  projectileRotate: true,
 };
 export const mockTowerConfigWithImg1 =
   {...mockTowerConfig1, img: new Image()};
 
 let towersMap = new Map();
-towersMap.set(0, mockTowerConfigWithImg0);
-towersMap.set(1, mockTowerConfigWithImg1);
+towersMap.set(0, mockTowerConfig0);
+towersMap.set(1, mockTowerConfig1);
 
 export const mockGameConfigData: GameConfigData = {
   playfield: playfieldConfig,
   tiles: [],
   towers: [ mockTowerConfig0, mockTowerConfig1 ],
   monsters: [],
-  misc: miscConfig,
+  misc: miscConfigData,
+};
+
+const emptyImageMaps = {
+  tiles: new Map(),
+  towers: new Map(),
+  projectiles: new Map(),
+  monsters: new Map(),
 };
 
 export const mockGameConfig =
-  new GameConfig(playfieldConfig, new Map(), towersMap, new Map(), miscConfig);
-
+  new GameConfig(
+    playfieldConfig,
+    new Map(),
+    towersMap,
+    new Map(),
+    new MiscConfig(miscConfigData),
+    emptyImageMaps);

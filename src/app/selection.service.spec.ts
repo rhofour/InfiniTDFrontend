@@ -3,11 +3,12 @@ import { AngularFireAuth } from '@angular/fire/auth';
 import { HttpClientTestingModule } from "@angular/common/http/testing";
 import { of } from 'rxjs';
 
-import { SelectionService, Selection, NewBuildSelection, GridSelection } from './selection.service';
+import { SelectionService } from './selection.service';
 import { BattlegroundStateService } from './battleground-state.service';
 import { GameConfigService } from './game-config.service';
-import { mockGameConfig, mockTowerConfigWithImg0, mockTowerConfigWithImg1 } from './mock-game-config';
+import { mockGameConfig, mockTowerConfig0, mockTowerConfig1 } from './mock-game-config';
 import { mockBattlegroundState } from './mock-battleground-state';
+import { BattlegroundSelection } from './battleground-selection';
 
 describe('SelectionService', () => {
   let service: SelectionService;
@@ -39,138 +40,145 @@ describe('SelectionService', () => {
   });
 
   it('build selection from nothing works', () => {
-    const newSelection = new NewBuildSelection(0);
-    service.updateSelection(newSelection);
+    service.updateBuildTowerSelection(0);
 
-    const expectedSelection = new Selection(mockTowerConfigWithImg0, undefined, undefined, undefined);
-    service.getSelection().subscribe(
-      selection => expect(selection).toEqual(expectedSelection),
+    service.getBuildTower().subscribe(
+      selection => expect(selection).toEqual(mockTowerConfig0),
       fail
     );
   });
 
-  it('build unselection from nothing works', () => {
-    const newSelection = new NewBuildSelection(0);
-    service.updateSelection(newSelection);
-    service.updateSelection(newSelection);
+  it('build selection removes battleground selection', () => {
+    service.toggleBattlegroundSelection(false, 0, 1);
 
-    service.getSelection().subscribe(
-      selection => expect(selection).toEqual(new Selection(), 'empty selection'),
-      fail
-    );
-  });
+    // Select a tower that doesn't match the battleground selection.
+    // See: mockBattlegroundSelection
+    service.updateBuildTowerSelection(0);
 
-  it('build selection removes gridTower selection', () => {
-    const initialSelection = new GridSelection(0, 1);
-    service.updateSelection(initialSelection);
-
-    const newSelection = new NewBuildSelection(0);
-    service.updateSelection(newSelection);
-
-    const expectedSelection = new Selection(mockTowerConfigWithImg0, undefined, undefined, undefined);
-    service.getSelection().subscribe(
-      selection => expect(selection).toEqual(expectedSelection),
+    service.getBuildTower().subscribe(
+      selection => expect(selection).toEqual(mockTowerConfig0),
       fail
     );
   });
 
   it('build selection doesn\'t remove empty grid selection', () => {
-    const initialSelection = new GridSelection(2, 2);
-    service.updateSelection(initialSelection);
+    service.toggleBattlegroundSelection(false, 2, 2);
 
-    const newSelection = new NewBuildSelection(0);
-    service.updateSelection(newSelection);
+    service.updateBuildTowerSelection(0);
 
-    const expectedSelection = new Selection(mockTowerConfigWithImg0, undefined, undefined, initialSelection);
-    service.getSelection().subscribe(
-      selection => expect(selection).toEqual(expectedSelection),
+    const expectedBgSelection = new BattlegroundSelection(3, 4);
+    expectedBgSelection.toggle(false, 2, 2);
+    service.getBattleground().subscribe(
+      selection => expect(selection).toEqual(expectedBgSelection.getView()),
       fail
     );
   });
 
   it('empty grid selection from nothing works', () => {
-    const newSelection = new GridSelection(0, 0);
-    service.updateSelection(newSelection);
+    service.toggleBattlegroundSelection(false, 0, 0);
 
-    const expectedSelection = new Selection(undefined, undefined, undefined, newSelection);
-    service.getSelection().subscribe(
-      selection => expect(selection).toEqual(expectedSelection),
-      fail
-    );
-  });
-
-  it('empty grid unselection from nothing works', () => {
-    const newSelection = new GridSelection(0, 0);
-    service.updateSelection(newSelection);
-    service.updateSelection(newSelection);
-
-    service.getSelection().subscribe(
-      selection => expect(selection).toEqual(new Selection()),
+    const expectedBgSelection = new BattlegroundSelection(3, 4);
+    expectedBgSelection.toggle(false, 0, 0);
+    service.getBattleground().subscribe(
+      selection => expect(selection).toEqual(expectedBgSelection.getView()),
       fail
     );
   });
 
   it('non-empty grid selection from nothing works', () => {
-    const newSelection = new GridSelection(0, 1);
-    service.updateSelection(newSelection);
+    service.toggleBattlegroundSelection(false, 0, 1);
 
-    const expectedSelection = new Selection(undefined, undefined, mockTowerConfigWithImg0, newSelection);
-    service.getSelection().subscribe(
-      selection => expect(selection).toEqual(expectedSelection),
+    const expectedBgSelection = new BattlegroundSelection(3, 4);
+    expectedBgSelection.toggle(false, 0, 1);
+    service.getBattleground().subscribe(
+      selection => expect(selection).toEqual(expectedBgSelection.getView()),
+      fail
+    );
+    service.getBuildTower().subscribe(
+      selection => expect(selection).toBeUndefined(),
+      fail
+    );
+    service.getDisplayedTower().subscribe(
+      selection => expect(selection).toEqual(mockTowerConfig0),
       fail
     );
   });
 
   it('non-empty grid unselection from nothing works', () => {
-    const newSelection = new GridSelection(0, 1);
-    service.updateSelection(newSelection);
-    service.updateSelection(newSelection);
+    service.toggleBattlegroundSelection(false, 0, 1);
+    service.toggleBattlegroundSelection(false, 0, 1);
 
-    service.getSelection().subscribe(
-      selection => expect(selection).toEqual(new Selection()),
+    const expectedBgSelection = new BattlegroundSelection(3, 4);
+    service.getBattleground().subscribe(
+      selection => expect(selection).toEqual(expectedBgSelection.getView()),
+      fail
+    );
+    service.getBuildTower().subscribe(
+      selection => expect(selection).toBeUndefined(),
+      fail
+    );
+    service.getDisplayedTower().subscribe(
+      selection => expect(selection).toBeUndefined(),
       fail
     );
   });
 
   it('non-empty grid selection keeps matching build selection', () => {
-    const initialSelection = new NewBuildSelection(0);
-    service.updateSelection(initialSelection);
+    service.updateBuildTowerSelection(0);
+    service.toggleBattlegroundSelection(false, 0, 1);
 
-    const newSelection = new GridSelection(0, 1);
-    service.updateSelection(newSelection);
-
-    const expectedSelection = new Selection(mockTowerConfigWithImg0, undefined, mockTowerConfigWithImg0, newSelection);
-    service.getSelection().subscribe(
-      selection => expect(selection).toEqual(expectedSelection),
+    const expectedBgSelection = new BattlegroundSelection(3, 4);
+    expectedBgSelection.toggle(false, 0, 1);
+    service.getBattleground().subscribe(
+      selection => expect(selection).toEqual(expectedBgSelection.getView()),
+      fail
+    );
+    service.getBuildTower().subscribe(
+      selection => expect(selection).toEqual(mockTowerConfig0),
+      fail
+    );
+    service.getDisplayedTower().subscribe(
+      selection => expect(selection).toEqual(mockTowerConfig0),
       fail
     );
   });
 
   it('non-empty grid unselection keeps matching build selection', () => {
-    const initialSelection = new NewBuildSelection(0);
-    service.updateSelection(initialSelection);
+    service.updateBuildTowerSelection(0);
+    service.toggleBattlegroundSelection(false, 0, 1);
+    service.toggleBattlegroundSelection(false, 0, 1);
 
-    const newSelection = new GridSelection(0, 1);
-    service.updateSelection(newSelection);
-    service.updateSelection(newSelection);
-
-    const expectedSelection = new Selection(mockTowerConfigWithImg0, undefined, undefined, undefined);
-    service.getSelection().subscribe(
-      selection => expect(selection).toEqual(expectedSelection),
+    const expectedBgSelection = new BattlegroundSelection(3, 4);
+    service.getBattleground().subscribe(
+      selection => expect(selection).toEqual(expectedBgSelection.getView()),
+      fail
+    );
+    service.getBuildTower().subscribe(
+      selection => expect(selection).toEqual(mockTowerConfig0),
+      fail
+    );
+    service.getDisplayedTower().subscribe(
+      selection => expect(selection).toEqual(mockTowerConfig0),
       fail
     );
   });
 
   it('non-empty grid selection drops non-matching build selection', () => {
-    const initialSelection = new NewBuildSelection(0);
-    service.updateSelection(initialSelection);
+    service.updateBuildTowerSelection(0);
+    service.toggleBattlegroundSelection(false, 1, 1);
 
-    const newSelection = new GridSelection(1, 1);
-    service.updateSelection(newSelection);
-
-    const expectedSelection = new Selection(undefined, undefined, mockTowerConfigWithImg1, newSelection);
-    service.getSelection().subscribe(
-      selection => expect(selection).toEqual(expectedSelection),
+    const expectedBgSelection = new BattlegroundSelection(3, 4);
+    expectedBgSelection.toggle(false, 1, 1);
+    service.getBattleground().subscribe(
+      selection => expect(selection).toEqual(expectedBgSelection.getView()),
+      fail
+    );
+    service.getBuildTower().subscribe(
+      selection => expect(selection).toBeUndefined(),
+      fail
+    );
+    service.getDisplayedTower().subscribe(
+      selection => expect(selection).toEqual(mockTowerConfig1),
       fail
     );
   });

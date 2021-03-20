@@ -8,4 +8,5 @@ export const mockUser: User = {
   goldPerMinuteOthers: 1.5,
   inBattle: false,
   wave: [],
+  admin: false,
 }

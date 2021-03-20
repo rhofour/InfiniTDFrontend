@@ -1,7 +1,7 @@
 import { Injectable, OnDestroy } from '@angular/core';
-import { of, throwError, Observable, BehaviorSubject, Subscription } from 'rxjs';
+import { Observable, BehaviorSubject, Subscription } from 'rxjs';
 
-import { BattlegroundState, TowerBgState } from './battleground-state';
+import { BattlegroundState } from './battleground-state';
 import { BattlegroundStateService } from './battleground-state.service';
 import { GameConfig, TowerConfig, MonsterConfig } from './game-config';
 import { BattlegroundSelection, BattlegroundSelectionView } from './battleground-selection';
