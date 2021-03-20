@@ -7,7 +7,7 @@ import { TowerBgState, TowersBgState, BattlegroundState } from './battleground-s
 import { ObjectType, EventType, MoveEvent, DeleteEvent, DamageEvent, BattleEvent, BattleStatus, BattleMetadata, BattleResults, Battle } from './battle-state';
 import * as backend from './backend';
 import { LogEntry, LogEntryContainer } from './log-entry';
-import { Rivals } from './rivals';
+import { RivalNames } from './rivals';
 
 export const user = JsonDecoder.object<User>(
   {
@@ -242,7 +242,7 @@ export const logEntries = JsonDecoder.object<LogEntryContainer>({
   logs: JsonDecoder.array(logEntry, 'LogEntry[]'),
 }, 'LogEntryContainer');
 
-export const rivals = JsonDecoder.object<Rivals>({
-  aheadRivals: JsonDecoder.array(JsonDecoder.string, 'string[]'),
-  behindRivals: JsonDecoder.array(JsonDecoder.string, 'string[]'),
+export const rivalNames = JsonDecoder.object<RivalNames>({
+  aheadNames: JsonDecoder.array(JsonDecoder.string, 'string[]'),
+  behindNames: JsonDecoder.array(JsonDecoder.string, 'string[]'),
 }, 'Rivals');
