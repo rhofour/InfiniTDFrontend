@@ -6,12 +6,17 @@ import { StreamDataService } from './stream-data.service';
 import { Rivals, RivalData, RivalNames } from './rivals';
 import { User } from './user';
 import * as decoders from './decode';
+import { UserService } from './user.service';
 
 class RivalsServiceState {
   private userSubs: Map<string, Subscription> = new Map();
   private userObs: Map<string, Observable<User>> = new Map();
   private aheadNames: string[] = [];
   private behindNames: string[] = [];
+
+  constructor(
+    private users: UserService,
+  ) { }
 
   private static userToRival(user: User): RivalData {
     return {
@@ -25,14 +30,19 @@ class RivalsServiceState {
     const newNames: Set<string> = new Set(names.aheadNames.concat(names.behindNames));
     for (var newName of newNames) {
       if (!oldNames.has(newName)) {
-        // We need to start this subscription.
+        // We need to add this observable.
+        this.userObs.set(newName, this.users.getUser(newName));
       }
     }
     for (var oldName of oldNames) {
       if (!newNames.has(oldName)) {
-        // We need to clean up this subscription.
+        // We need to remove this observable.
+        this.userObs.delete(oldName);
       }
     }
+    this.aheadNames = names.aheadNames;
+    this.behindNames = names.behindNames;
+    console.log(`Updated. Now we have ${this.aheadNames} and ${this.behindNames}`);
     return this;
   }
   public toRivals(): Observable<Rivals> {
@@ -44,6 +54,7 @@ class RivalsServiceState {
       }
       obsInOrder.push(maybeObs);
     });
+    console.log(`toRivals called. Gathered ${obsInOrder.length} observable.`)
     return combineLatest(obsInOrder).pipe(map((users: User[]) => {
       const aheadUsers = users.slice(0, this.aheadNames.length);
       const behindUsers = users.slice(this.aheadNames.length);
@@ -59,7 +70,10 @@ class RivalsServiceState {
   providedIn: 'root'
 })
 export class RivalsService {
-  constructor(private stream: StreamDataService) { }
+  constructor(
+    private stream: StreamDataService,
+    private users: UserService,
+  ) { }
 
   getRivals(username: string): Observable<Rivals> {
     return this.stream.subscribe('rivals', username)
@@ -71,7 +85,7 @@ export class RivalsService {
         } else {
           throw new Error('Failed to decode Rivals: ' + decoded.error);
         }
-      }, new RivalsServiceState()))
+      }, new RivalsServiceState(this.users)))
       .pipe(switchMap(x => x.toRivals()));
   }
 }
