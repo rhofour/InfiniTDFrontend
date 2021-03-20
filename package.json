@@ -45,6 +45,7 @@
     "@angular-eslint/template-parser": "^2.0.0",
     "@angular/cli": "^11.2.4",
     "@angular/compiler-cli": "^11.2.5",
+    "@hirez_io/observer-spy": "^2.1.0",
     "@types/benchmark": "^1.0.33",
     "@types/jasmine": "^3.6.6",
     "@types/jasminewd2": "~2.0.3",
