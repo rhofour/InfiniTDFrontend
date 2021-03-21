@@ -66,6 +66,8 @@ describe('RivalsService', () => {
       aheadRivals: [{
         name: "bob",
         rivalGoldPerMinuteTotal: 3.5,
+        wave: [0],
+        accumulatedGold: 100,
       }],
       behindRivals: [],
     };
@@ -107,10 +109,14 @@ describe('RivalsService', () => {
       aheadRivals: [{
         name: "sue",
         rivalGoldPerMinuteTotal: 3.75,
+        wave: [0, 1],
+        accumulatedGold: 110,
       }],
       behindRivals: [{
         name: "bob",
         rivalGoldPerMinuteTotal: 3.5,
+        wave: [0],
+        accumulatedGold: 100,
       }],
     };
 
@@ -165,20 +171,28 @@ describe('RivalsService', () => {
         aheadRivals: [{
           name: "sue",
           rivalGoldPerMinuteTotal: 3.75,
+          wave: [0, 1],
+          accumulatedGold: 110,
         }],
         behindRivals: [{
           name: "bob",
           rivalGoldPerMinuteTotal: 3.5,
+          wave: [0],
+          accumulatedGold: 100,
         }],
       },
       {
         aheadRivals: [{
           name: "sue",
           rivalGoldPerMinuteTotal: 3.75,
+          wave: [0, 1],
+          accumulatedGold: 110,
         }],
         behindRivals: [{
           name: "bob",
           rivalGoldPerMinuteTotal: 4.0,
+          wave: [0, 1],
+          accumulatedGold: 100,
         }],
       },
     ];
@@ -225,6 +239,8 @@ describe('RivalsService', () => {
         aheadRivals: [{
           name: "bob",
           rivalGoldPerMinuteTotal: 3.5,
+          wave: [0],
+          accumulatedGold: 100,
         }],
         behindRivals: [],
       },
@@ -232,6 +248,8 @@ describe('RivalsService', () => {
         aheadRivals: [{
           name: "bob",
           rivalGoldPerMinuteTotal: 4.0,
+          wave: [0, 1],
+          accumulatedGold: 100,
         }],
         behindRivals: [],
       },

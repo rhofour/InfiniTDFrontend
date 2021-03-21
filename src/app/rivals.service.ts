@@ -21,6 +21,8 @@ class RivalsServiceState {
   private static userToRival(user: User): RivalData {
     return {
       name: user.name,
+      wave: user.wave,
+      accumulatedGold: user.accumulatedGold,
       rivalGoldPerMinuteTotal: user.goldPerMinuteSelf + user.goldPerMinuteOthers,
     };
   }

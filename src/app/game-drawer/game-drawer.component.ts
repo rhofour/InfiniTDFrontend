@@ -23,7 +23,7 @@ import { BattleResultsComponent } from '../battle-results/battle-results.compone
 import { BattlegroundSelectionView } from '../battleground-selection';
 import { CellPosData } from '../types';
 import { RivalsService } from '../rivals.service';
-import { Rivals } from '../rivals';
+import { RivalData, Rivals } from '../rivals';
 
 function hasOwnProperty<X extends {}, Y extends PropertyKey>
   (obj: X, prop: Y): obj is X & Record<Y, unknown> {
@@ -307,22 +307,22 @@ export class GameDrawerComponent implements OnChanges, OnDestroy {
     });
   }
 
-  startBattle(loggedInUser: OuterUser) {
+  startBattle(loggedInUser: OuterUser, attackerName: string) {
     this.dialog.closeAll();
-    this.backend.startBattle(loggedInUser).catch((err) => {
+    this.backend.startBattle(loggedInUser, attackerName).catch((err) => {
       this.handleBackendError("Error starting battle:", err);
     });
   }
 
-  stopBattle(loggedInUser: OuterUser) {
-    this.backend.stopBattle(loggedInUser).catch((err) => {
+  stopBattle(loggedInUser: OuterUser, attackerName: string) {
+    this.backend.stopBattle(loggedInUser, attackerName).catch((err) => {
       this.handleBackendError("Error stopping battle:", err);
     });
   }
 
-  showBattle(attackerName: string, defenderName: string) {
+  showBattle(defenderName: string, attackerName: string) {
     this.dialog.closeAll();
-    this.recordedBattleState.requestBattleState(attackerName, defenderName).catch((err) => {
+    this.recordedBattleState.requestBattleState(defenderName, attackerName).catch((err) => {
       this.handleBackendError("Error requesting battle:", err);
     });
   }
@@ -366,5 +366,9 @@ export class GameDrawerComponent implements OnChanges, OnDestroy {
     this.backend.setWave(lUser, newWave).catch((err) => {
       this.handleBackendError("Error deleting from wave:", err);
     });
+  }
+
+  trackRivalFn(i: number, el: RivalData | User): string {
+    return el.name;
   }
 }

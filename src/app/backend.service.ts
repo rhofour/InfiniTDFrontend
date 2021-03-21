@@ -240,22 +240,22 @@ export class BackendService {
     return this.authenticatedHttpWithResponse(outerUser.fbUser, url, 'delete');
   }
 
-  startBattle(outerUser: OuterUser): Promise<Object> {
-    const name = outerUser?.user?.name;
-    if (name === undefined || outerUser.fbUser === undefined) {
+  startBattle(defendingUser: OuterUser, attackerName: string): Promise<Object> {
+    const defenderName = defendingUser?.user?.name;
+    if (defenderName === undefined || defendingUser.fbUser === undefined) {
       return Promise.reject(new Error("Cannot start battle for user who is not registered."));
     }
-    const url = `${backend.address}/controlBattle/${encodeURIComponent(name)}`;
-    return this.authenticatedHttpWithResponse(outerUser.fbUser, url, 'post');
+    const url = `${backend.address}/controlBattle/${encodeURIComponent(defenderName)}/${encodeURIComponent(attackerName)}`;
+    return this.authenticatedHttpWithResponse(defendingUser.fbUser, url, 'post');
   }
 
-  stopBattle(outerUser: OuterUser): Promise<Object> {
-    const name = outerUser?.user?.name;
-    if (name === undefined || outerUser.fbUser === undefined) {
+  stopBattle(defender: OuterUser, attackerName: string): Promise<Object> {
+    const defenderName = defender?.user?.name;
+    if (defenderName === undefined || defender.fbUser === undefined) {
       return Promise.reject(new Error("Cannot stop battle for user who is not registered."));
     }
-    const url = `${backend.address}/controlBattle/${encodeURIComponent(name)}`;
-    return this.authenticatedHttpWithResponse(outerUser.fbUser, url, 'delete');
+    const url = `${backend.address}/controlBattle/${encodeURIComponent(defenderName)}/${encodeURIComponent(attackerName)}`;
+    return this.authenticatedHttpWithResponse(defender.fbUser, url, 'delete');
   }
 
   resetGameData(outerUser: OuterUser): Promise<Object> {

@@ -17,10 +17,10 @@ export class RecordedBattleStateService {
   ) { }
 
   // Changes the observable returned by getRecordedBattleState
-  requestBattleState(attackerName: string, defenderName: string) {
+  requestBattleState(defenderName: string, attackerName: string) {
     console.log(`Requesting battle ${attackerName} vs ${defenderName}`);
     return this.http.get(`${backend.address}/battle/${encodeURIComponent(attackerName)}/${encodeURIComponent(defenderName)}`).toPromise()
-      .then(resp => {
+      .then((resp: Object) => {
         const decodedBattle = decoders.battle.decode(resp);
         if (decodedBattle.isOk()) {
           const battle: Battle = decodedBattle.value;
