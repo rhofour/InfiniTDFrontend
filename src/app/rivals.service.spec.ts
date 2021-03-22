@@ -1,14 +1,17 @@
-import { TestBed } from '@angular/core/testing';
-import { of } from 'rxjs';
+import { TestBed, fakeAsync, tick } from '@angular/core/testing';
+import { of, concat, Observable } from 'rxjs';
+import { delay } from 'rxjs/operators';
 import { TestScheduler } from 'rxjs/testing';
-import { subscribeSpyTo } from '@hirez_io/observer-spy';
+import { subscribeSpyTo, autoUnsubscribe } from '@hirez_io/observer-spy';
 
 import { RivalNames, Rivals } from './rivals';
 import { RivalsService } from './rivals.service';
 import { StreamDataService } from './stream-data.service';
 import { User } from './user';
 import { UserService } from './user.service';
-import { delay } from 'rxjs/operators';
+import { BattleGpmService } from './battle-gpm.service';
+
+autoUnsubscribe();
 
 const testScheduler = new TestScheduler((actual, expected) => {
   expect(actual).toEqual(expected);
@@ -18,14 +21,17 @@ describe('RivalsService', () => {
   let service: RivalsService;
   var streamDataSpy: jasmine.SpyObj<StreamDataService>;
   var userSpy: jasmine.SpyObj<UserService>;
+  var battleGpmSpy: jasmine.SpyObj<BattleGpmService>;
 
   beforeEach(() => {
     streamDataSpy = jasmine.createSpyObj('StreamDataService', ['subscribe'])
-    userSpy = jasmine.createSpyObj('userService', ['getUser'])
+    userSpy = jasmine.createSpyObj('UserService', ['getUser'])
+    battleGpmSpy = jasmine.createSpyObj('BattleGpmService', ['getBattleGpm'])
     TestBed.configureTestingModule({
       providers: [
         { provide: StreamDataService, useValue: streamDataSpy },
         { provide: UserService, useValue: userSpy },
+        { provide: BattleGpmService, useValue: battleGpmSpy },
       ]
     });
     service = TestBed.inject(RivalsService);
@@ -47,7 +53,7 @@ describe('RivalsService', () => {
     expect(observerSpy.getValues()).toEqual([]);
   });
 
-  it('should lookup a rival with UserService', () => {
+  it('should lookup a rival with UserService and ignore -1 battle GPM', () => {
     const oneRivalName: RivalNames = {
       aheadNames: ["bob"],
       behindNames: [],
@@ -73,7 +79,43 @@ describe('RivalsService', () => {
     };
 
     streamDataSpy.subscribe.and.returnValue(of(JSON.stringify(oneRivalName)));
-    userSpy.getUser.withArgs('bob').and.returnValue(of(bob));
+    userSpy.getUser.withArgs("bob").and.returnValue(of(bob));
+    battleGpmSpy.getBattleGpm.withArgs("test_user", "bob").and.returnValue(of(-1));
+    const rivals$ = service.getRivals("test_user");
+    const observerSpy = subscribeSpyTo(rivals$);
+
+    expect(observerSpy.getValues()).toEqual([oneRival]);
+  });
+
+  it('should lookup a rival with UserService and use positive battle GPM', () => {
+    const oneRivalName: RivalNames = {
+      aheadNames: ["bob"],
+      behindNames: [],
+    };
+    const bob: User = {
+      name: "bob",
+      accumulatedGold: 100,
+      gold: 90,
+      goldPerMinuteSelf: 2.0,
+      goldPerMinuteOthers: 1.5,
+      inBattle: false,
+      wave: [0],
+      admin: false,
+    };
+    const oneRival: Rivals = {
+      aheadRivals: [{
+        name: "bob",
+        rivalGoldPerMinuteTotal: 3.5,
+        wave: [0],
+        accumulatedGold: 100,
+        battleGoldPerMinute: 2.0,
+      }],
+      behindRivals: [],
+    };
+
+    streamDataSpy.subscribe.and.returnValue(of(JSON.stringify(oneRivalName)));
+    userSpy.getUser.withArgs("bob").and.returnValue(of(bob));
+    battleGpmSpy.getBattleGpm.withArgs("test_user", "bob").and.returnValue(of(2.0));
     const rivals$ = service.getRivals("test_user");
     const observerSpy = subscribeSpyTo(rivals$);
 
@@ -123,13 +165,15 @@ describe('RivalsService', () => {
     streamDataSpy.subscribe.and.returnValue(of(JSON.stringify(twoRivalNames)));
     userSpy.getUser.withArgs('sue').and.returnValue(of(sue));
     userSpy.getUser.withArgs('bob').and.returnValue(of(bob));
+    battleGpmSpy.getBattleGpm.withArgs("test_user", "sue").and.returnValue(of(-1));
+    battleGpmSpy.getBattleGpm.withArgs("test_user", "bob").and.returnValue(of(-1));
     const rivals$ = service.getRivals("test_user");
     const observerSpy = subscribeSpyTo(rivals$);
 
     expect(observerSpy.getValues()).toEqual([twoRivals]);
   });
 
-  it('should lookup multiple rivals and return results incrementally', () => {
+  it('should lookup multiple rivals and return results incrementally', fakeAsync(() => {
     const twoRivalNames: RivalNames = {
       aheadNames: ["sue"],
       behindNames: ["bob"],
@@ -199,15 +243,19 @@ describe('RivalsService', () => {
 
     streamDataSpy.subscribe.and.returnValue(of(JSON.stringify(twoRivalNames)));
     userSpy.getUser.withArgs('sue').and.returnValue(of(sue));
-    // Delay data from bob slightly.
-    userSpy.getUser.withArgs('bob').and.returnValue(of(...bobs));
+    const delayedBob: Observable<User> = of(bobs[1]).pipe(delay(10));
+    userSpy.getUser.withArgs('bob').and.returnValue(concat(of(bobs[0]), delayedBob));
+    battleGpmSpy.getBattleGpm.withArgs("test_user", "sue").and.returnValue(of(-1));
+    battleGpmSpy.getBattleGpm.withArgs("test_user", "bob").and.returnValue(of(-1));
     const rivals$ = service.getRivals("test_user");
     const observerSpy = subscribeSpyTo(rivals$);
 
+    tick(10);
+
     expect(observerSpy.getValues()).toEqual(twoRivalsSeq);
-  });
+  }));
   
-  it('should update rivals as UserService updates', () => {
+  it('should update rivals as UserService updates', fakeAsync(() => {
     const oneRivalName: RivalNames = {
       aheadNames: ["bob"],
       behindNames: [],
@@ -256,10 +304,14 @@ describe('RivalsService', () => {
     ];
 
     streamDataSpy.subscribe.and.returnValue(of(JSON.stringify(oneRivalName)));
-    userSpy.getUser.withArgs('bob').and.returnValue(of(...bobs));
+    const delayedBob: Observable<User> = of(bobs[1]).pipe(delay(10));
+    userSpy.getUser.withArgs('bob').and.returnValue(concat(of(bobs[0]), delayedBob));
+    battleGpmSpy.getBattleGpm.withArgs("test_user", "bob").and.returnValue(of(-1));
     const rivals$ = service.getRivals("test_user");
     const observerSpy = subscribeSpyTo(rivals$);
 
+    tick(10);
+
     expect(observerSpy.getValues()).toEqual(oneRivalSeq);
-  });
+  }));
 });

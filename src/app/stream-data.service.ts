@@ -33,13 +33,12 @@ export class StreamDataService implements OnDestroy {
   }
 
   private handleMessage(msg: string) {
-    const idParts: string[] = msg.split('/', 2);
-    if (idParts.length !== 2) {
+    const msgParts = msg.split(':');
+    if (msgParts.length < 2) {
       throw new Error(`Could not find the two ID parts from data: ${msg}`);
     }
-    const id: string = `${idParts[0]}/${idParts[1]}`;
-    const prefixLength = idParts[0].length + idParts[1].length + 2;
-    const data: string = msg.slice(prefixLength);
+    const id: string = msgParts[0];
+    const data: string = msgParts.slice(1).join(':');
 
     const maybeSubject = this.subjects.get(id);
     if (maybeSubject === undefined) {
@@ -61,8 +60,8 @@ export class StreamDataService implements OnDestroy {
     });
   }
 
-  subscribe(datatype: string, dataId: string): Observable<string> {
-    const id = `${encodeURIComponent(datatype)}/${encodeURIComponent(dataId)}`;
+  subscribe(datatype: string, ...dataIds: string[]): Observable<string> {
+    const id = `${encodeURIComponent(datatype)}/${dataIds.map(encodeURIComponent).join('/')}`;
     const maybeSubj = this.subjects.get(id);
     if (maybeSubj) {
       const subj = maybeSubj;

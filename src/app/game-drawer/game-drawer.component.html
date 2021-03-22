@@ -66,9 +66,12 @@
             </mat-panel-title>
             <ng-container *ngIf="rival !== user">
               <span #spacer></span>
-              <span style="padding-right: 1em">
-                {{ rival.battleGoldPerMinute != undefined ? rival.battleGoldPerMinute : "???" }} / GPM
+              <span *ngIf="rival.battleGoldPerMinute as gpm; else unknownGpm" style="padding-right: 1em">
+                {{ (gpm * gameConfig.misc.rivalMultiplier) | goldNumber }} / GPM
               </span>
+              <ng-template #unknownGpm>
+                <span style="padding-right: 1em">??? / GPM</span>
+              </ng-template>
             </ng-container>
           </mat-expansion-panel-header>
 

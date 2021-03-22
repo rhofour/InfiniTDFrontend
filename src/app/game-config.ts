@@ -60,15 +60,18 @@ export interface BattleBonus {
 
 export interface MiscConfigData {
   sellMultiplier: number,
+  rivalMultiplier: number,
   battleBonuses: BattleBonus[],
 }
 
 export class MiscConfig {
   readonly sellMultiplier: number;
   readonly battleBonuses: Map<number, BattleBonus>;
+  readonly rivalMultiplier: number;
 
   constructor(data: MiscConfigData) {
     this.sellMultiplier = data.sellMultiplier;
+    this.rivalMultiplier = data.rivalMultiplier;
     this.battleBonuses = new Map();
     for (let bonus of data.battleBonuses) {
       if (this.battleBonuses.has(bonus.id)) {

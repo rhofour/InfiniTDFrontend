@@ -111,6 +111,7 @@ export const battleBonus = JsonDecoder.object<BattleBonus>(
 export const miscConfigData = JsonDecoder.object<MiscConfigData>(
   {
     sellMultiplier: JsonDecoder.number,
+    rivalMultiplier: JsonDecoder.number,
     battleBonuses: JsonDecoder.array<BattleBonus>(battleBonus, 'BattleBonus[]'),
   },
   'MiscConfigData');
