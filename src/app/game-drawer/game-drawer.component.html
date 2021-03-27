@@ -52,7 +52,7 @@
   </div>
 
   <mat-accordion style="overflow-y: auto">
-    <mat-expansion-panel>
+    <mat-expansion-panel expanded="true">
       <mat-expansion-panel-header>
         <mat-panel-title> Battle </mat-panel-title>
       </mat-expansion-panel-header>
@@ -66,7 +66,9 @@
             </mat-panel-title>
             <ng-container *ngIf="rival !== user">
               <span #spacer></span>
-              <span *ngIf="rival.battleGoldPerMinute as gpm; else unknownGpm" style="padding-right: 1em">
+              <span *ngIf="rival.battleGoldPerMinute as gpm; else unknownGpm"
+                style="padding-right: 1em"
+                matTooltip="{{gpm | goldNumber }} * {{gameConfig.misc.rivalMultiplier}} = {{ (gpm * gameConfig.misc.rivalMultiplier) | goldNumber }} / GPM">
                 {{ (gpm * gameConfig.misc.rivalMultiplier) | goldNumber }} / GPM
               </span>
               <ng-template #unknownGpm>
