@@ -151,7 +151,6 @@ export class SelectionService implements OnDestroy {
     }
     this.addMonsterSelection = newAddMonsterConfig;
     this.displayedMonster$.next(this.addMonsterSelection);
-    console.log(`Updated displayed monster to ${this.addMonsterSelection?.name}`)
     if (this.addMonsterSelection !== undefined) {
       // Unset any current build tower and displayed tower.
       this.buildTower$.next(undefined);

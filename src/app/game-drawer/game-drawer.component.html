@@ -119,19 +119,24 @@
                  the user whose battleground we're viewing. All of these buttons
                  stream the battles live. -->
             <!-- We need a copy with and without the shortcut directive. -->
-            <button *ngIf="!user.inBattle && user === rival"
-                (click)="startBattle(oUser, rival.name)"
-                [disabled]="rival.wave.length === 0"
-                appClickShortcut shortcutKey="e"
-                mat-stroked-button>
-              Start battl(e)
-            </button>
-            <button *ngIf="!user.inBattle && user !== rival"
-                (click)="startBattle(oUser, rival.name)"
-                [disabled]="rival.wave.length === 0"
-                mat-stroked-button>
-              Start battle
-            </button>
+            <span
+              matTooltip="Cannot start a battle with an empty wave"
+              [matTooltipDisabled]="rival.wave.length > 0"
+              >
+              <button *ngIf="!user.inBattle && user === rival"
+                  (click)="startBattle(oUser, rival.name)"
+                  [disabled]="rival.wave.length === 0"
+                  appClickShortcut shortcutKey="e"
+                  mat-stroked-button>
+                Start battl(e)
+              </button>
+              <button *ngIf="!user.inBattle && user !== rival"
+                  (click)="startBattle(oUser, rival.name)"
+                  [disabled]="rival.wave.length === 0"
+                  mat-stroked-button>
+                Start battle
+              </button>
+            </span> 
 
             <button *ngIf="user.inBattle && user === rival"
                 (click)="stopBattle(oUser, rival.name)"
