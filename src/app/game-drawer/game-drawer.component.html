@@ -269,29 +269,6 @@
             </button>
           </mat-list-item>
         </mat-selection-list>
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title>Add monsters</mat-panel-title>
-          </mat-expansion-panel-header>
-
-          <mat-selection-list #addMonsterList [multiple]="false"
-              (selectionChange)="monsterSelectionChange($event)">
-            <mat-list-option *ngFor="let monster of gameConfig.monsters | keyvalue"
-              [value]="monster.key" class="add-monster-option">
-                <img matListAvatar [src]="monster.value.url">
-                <div class="add-monster-body">
-                  <span style="flex: 0 0 auto;">{{monster.value.name}}</span>
-                  <span class="spacer"></span>
-                  <button mat-button matSuffix mat-icon-button
-                    style="flex: 0 0 auto;"
-                    [disabled]="user.inBattle"
-                    (click)="addToWave(oUser, user, monster.value); $event.stopPropagation()">
-                    <mat-icon inline="true">add</mat-icon>
-                  </button>
-                </div>
-            </mat-list-option>
-          </mat-selection-list>
-        </mat-expansion-panel>
       </ng-container>
       <ng-template #spectateWave>
         <mat-list class="monster-list">
@@ -301,6 +278,7 @@
           </mat-list-item>
         </mat-list>
       </ng-template>
+
       <div *ngIf="getWaveStats() as waveStats" class="wave-stats" style="width: 0; min-width: 100%">
         Wave contains {{waveStats.totalMonsters}} monsters with a total bounty of
         {{ waveStats.totalBounty | goldNumber }} gold.
@@ -311,6 +289,30 @@
           Clear wave
         </button>
       </ng-container>
+
+      <mat-expansion-panel *ngIf="oUser.matches(user)">
+        <mat-expansion-panel-header>
+          <mat-panel-title>Add monsters</mat-panel-title>
+        </mat-expansion-panel-header>
+
+        <mat-selection-list #addMonsterList [multiple]="false"
+            (selectionChange)="monsterSelectionChange($event)">
+          <mat-list-option *ngFor="let monster of gameConfig.monsters | keyvalue"
+            [value]="monster.key" class="add-monster-option">
+              <img matListAvatar [src]="monster.value.url">
+              <div class="add-monster-body">
+                <span style="flex: 0 0 auto;">{{monster.value.name}}</span>
+                <span class="spacer"></span>
+                <button mat-button matSuffix mat-icon-button
+                  style="flex: 0 0 auto;"
+                  [disabled]="user.inBattle"
+                  (click)="addToWave(oUser, user, monster.value); $event.stopPropagation()">
+                  <mat-icon inline="true">add</mat-icon>
+                </button>
+              </div>
+          </mat-list-option>
+        </mat-selection-list>
+      </mat-expansion-panel>
     </mat-expansion-panel>
 
     <ng-container *ngIf="debug.getMessages() | async as messages">
