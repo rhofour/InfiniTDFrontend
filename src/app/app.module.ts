@@ -54,6 +54,7 @@ import { AboutComponent } from './about/about.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { SettingsComponent } from './settings/settings.component';
 import { DisplayedTowerComponent } from './game-drawer/displayed-tower/displayed-tower.component';
+import { DisplayedMonsterComponent } from './game-drawer/displayed-monster/displayed-monster.component';
 
 @NgModule({
   declarations: [
@@ -81,6 +82,7 @@ import { DisplayedTowerComponent } from './game-drawer/displayed-tower/displayed
     PrivacyComponent,
     SettingsComponent,
     DisplayedTowerComponent,
+    DisplayedMonsterComponent,
   ],
   imports: [
     BrowserModule,

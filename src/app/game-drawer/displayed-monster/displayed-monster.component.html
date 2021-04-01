@@ -1,0 +1,16 @@
+<div class="displayedDiv" *ngIf="displayedMonster !== undefined">
+  <h1>{{displayedMonster.name}}</h1>
+  <div fxLayout=row>
+    <div>
+      <img class="selectedImg" [src]="displayedMonster.url">
+    </div>
+    <div>
+      <span class="stat">Health:</span>
+      {{displayedMonster.health}}<br />
+      <span class="stat">Speed:</span>
+      {{displayedMonster.speed}} <br />
+      <span class="stat">Bounty:</span>
+      {{displayedMonster.bounty}} <br />
+    </div>
+  </div>
+</div>

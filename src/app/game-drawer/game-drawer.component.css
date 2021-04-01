@@ -4,20 +4,6 @@
   max-height: 100%;
 }
 
-/* TODO: Make this more responsive */
-.selectedImg {
-  height: 40px;
-  width: 40px;
-  padding: 5px;
-  margin-right: 5px;
-  border-style: solid;
-  border-width: thin;
-}
-
-.stat {
-  font-weight: bold;
-}
-
 .mat-list-base {
   padding-top: 0;
 }
@@ -55,10 +41,6 @@
 
 .monster-list.cdk-drop-list-dragging .monster-list-item-dragable:not(.cdk-drag-placeholder) {
   transition: transform 250ms cubic-bezier(0, 0, 0.2, 1);
-}
-
-.displayedDiv {
-  padding: 1em;
 }
 
 .add-monster-body {
