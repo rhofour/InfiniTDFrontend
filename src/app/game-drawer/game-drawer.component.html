@@ -1,38 +1,14 @@
 <ng-container *ngIf="backend.getOuterUser() | async as oUser">
-  <div class="displayedDiv" *ngIf="displayedTower !== undefined">
-    <h1>{{displayedTower.name}}</h1>
-    <div fxLayout=row>
-      <div>
-        <img class="selectedImg" [src]="displayedTower.url">
-      </div>
-      <div>
-        <span class="stat">Damage:</span>
-        {{displayedTower.damage}}<br />
-        <span class="stat">Firing Rate:</span>
-        {{displayedTower.firingRate}} <br />
-        <span class="stat">Range:</span>
-        {{displayedTower.range}} <br />
-      </div>
-    </div>
-    <div *ngIf="oUser.matches(user)">
-      <button *ngIf="buildCost !== undefined"
-            (click)="build(oUser, displayedTower)"
-            [disabled]="user.inBattle || user.gold < buildCost || battlegroundSelection === undefined || battlegroundSelection.empty() || (battlegroundSelection | wouldBlockPath: gameConfig : towersState)"
-            appClickShortcut shortcutKey="b"
-            mat-stroked-button>
-        (B)uild ({{ buildCost | goldNumber }} gold)
-      </button>
-      <button *ngIf="sellAmount !== undefined"
-            (click)="sell(oUser)"
-            [disabled]="user.inBattle"
-            appClickShortcut shortcutKey="s"
-            mat-stroked-button>
-        (S)ell
-        ({{ sellAmount | goldNumber }} gold)
-      </button>
-    </div>
-    <mat-divider></mat-divider>
-  </div>
+  <app-displayed-tower
+    [displayedTower]="displayedTower"
+    [user]="user"
+    [outerUser]="oUser"
+    [buildDisabled]="battlegroundSelection === undefined || battlegroundSelection.empty() || (battlegroundSelection | wouldBlockPath: gameConfig : towersState)"
+    [buildCost]="buildCost"
+    [sellAmount]="sellAmount"
+    (build)="build(oUser, $event)"
+    (sell)="sell(oUser)"
+  ></app-displayed-tower>
 
   <div class="displayedDiv" *ngIf="displayedMonster !== undefined">
     <h1>{{displayedMonster.name}}</h1>

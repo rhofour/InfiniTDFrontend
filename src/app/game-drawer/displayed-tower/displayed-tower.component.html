@@ -1,0 +1,34 @@
+<div class="displayedDiv" *ngIf="displayedTower !== undefined">
+    <h1>{{displayedTower.name}}</h1>
+    <div fxLayout=row>
+        <div>
+        <img class="selectedImg" [src]="displayedTower.url">
+        </div>
+        <div>
+        <span class="stat">Damage:</span>
+        {{displayedTower.damage}}<br />
+        <span class="stat">Firing Rate:</span>
+        {{displayedTower.firingRate}} <br />
+        <span class="stat">Range:</span>
+        {{displayedTower.range}} <br />
+        </div>
+    </div>
+    <div *ngIf="outerUser.matches(user)">
+        <button *ngIf="buildCost !== undefined"
+            (click)="build.emit(displayedTower)"
+            [disabled]="user.inBattle || user.gold < buildCost || buildDisabled"
+            appClickShortcut shortcutKey="b"
+            mat-stroked-button>
+        (B)uild ({{ buildCost | goldNumber }} gold)
+        </button>
+        <button *ngIf="sellAmount !== undefined"
+            (click)="sell.emit()"
+            [disabled]="user.inBattle"
+            appClickShortcut shortcutKey="s"
+            mat-stroked-button>
+        (S)ell
+        ({{ sellAmount | goldNumber }} gold)
+        </button>
+    </div>
+    <mat-divider></mat-divider>
+</div>

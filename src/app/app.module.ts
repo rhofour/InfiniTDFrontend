@@ -53,6 +53,7 @@ import { GoldNumberPipe } from './gold-number.pipe';
 import { AboutComponent } from './about/about.component';
 import { PrivacyComponent } from './privacy/privacy.component';
 import { SettingsComponent } from './settings/settings.component';
+import { DisplayedTowerComponent } from './game-drawer/displayed-tower/displayed-tower.component';
 
 @NgModule({
   declarations: [
@@ -79,6 +80,7 @@ import { SettingsComponent } from './settings/settings.component';
     AboutComponent,
     PrivacyComponent,
     SettingsComponent,
+    DisplayedTowerComponent,
   ],
   imports: [
     BrowserModule,
