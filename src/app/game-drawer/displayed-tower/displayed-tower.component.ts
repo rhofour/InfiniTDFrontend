@@ -1,6 +1,5 @@
 import { Component, OnInit, ChangeDetectionStrategy, Input, Output, EventEmitter } from '@angular/core';
 
-
 import { GameConfig, TowerConfig, MonsterConfig } from '../../game-config';
 import { OuterUser } from '../../outer-user';
 import { User } from '../../user';
@@ -32,12 +31,6 @@ export class DisplayedTowerComponent implements OnInit {
     }
     if (this.buildDisabled === undefined) {
       throw Error("Input buildDisabled is undefined.");
-    }
-    if (this.buildCost === undefined) {
-      throw Error("Input buildCost is undefined.");
-    }
-    if (this.sellAmount === undefined) {
-      throw Error("Input sellAmount is undefined.");
     }
   }
 

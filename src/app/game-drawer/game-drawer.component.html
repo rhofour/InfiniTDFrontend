@@ -18,134 +18,32 @@
         <mat-panel-title> Battle </mat-panel-title>
       </mat-expansion-panel-header>
       <mat-accordion>
-        <mat-expansion-panel
-          *ngFor="let rival of rivals.aheadRivals.concat([user], rivals.behindRivals); trackBy: trackRivalFn"
-          [expanded]="rival === user" >
-          <mat-expansion-panel-header>
-            <mat-panel-title [class.this-user-panel-title]="rival === user">
-              {{ rival.name }}
-            </mat-panel-title>
-            <ng-container *ngIf="rival !== user">
-              <span #spacer></span>
-              <span *ngIf="rival.battleGoldPerMinute as gpm; else unknownGpm"
-                style="padding-right: 1em"
-                matTooltip="{{gpm | goldNumber }} * {{gameConfig.misc.rivalMultiplier}} = {{ (gpm * gameConfig.misc.rivalMultiplier) | goldNumber }} / GPM">
-                {{ (gpm * gameConfig.misc.rivalMultiplier) | goldNumber }} / GPM
-              </span>
-              <ng-template #unknownGpm>
-                <span style="padding-right: 1em">??? / GPM</span>
-              </ng-template>
-            </ng-container>
-          </mat-expansion-panel-header>
-
-          <div *ngIf="rival !== user" class="dont-expand">
-            <ng-container *ngIf="rival.rivalGoldPerMinuteTotal as rivalGpm">
-              <span>
-                Gold Rate: {{rivalGpm | goldNumber}} / GPM
-              </span>
-              <br />
-              <span *ngIf="user.goldPerMinuteSelf + user.goldPerMinuteOthers as userGpm">
-                Time to pass: 
-                <ng-container *ngIf="user.accumulatedGold > rival.accumulatedGold; else rivalAbove">
-                  <!-- This is a rival below the user. -->
-                  <ng-container *ngIf="rivalGpm > userGpm; else infiniteBelow">
-                    {{ Math.ceil((user.accumulatedGold - rival.accumulatedGold) / (rivalGpm - userGpm)) }}
-                    minutes
-                  </ng-container>
-                  <ng-template #infiniteBelow>
-                    never
-                  </ng-template>
-                </ng-container>
-                <ng-template #rivalAbove>
-                  <!-- This is a rival below the user. -->
-                  <ng-container *ngIf="userGpm > rivalGpm; else infiniteAbove">
-                    {{ Math.ceil((rival.accumulatedGold - user.accumulatedGold) / (userGpm - rivalGpm)) }}
-                    minutes
-                  </ng-container>
-                  <ng-template #infiniteAbove>
-                    never
-                  </ng-template>
-                </ng-template>
-              </span>
-            </ng-container>
-            <button *ngIf="user !== rival"
-              [routerLink]="'/battleground/' + encodeURIComponent(rival.name)"
-              mat-stroked-button>
-              View
-            </button>
-          </div>
-
-          <ng-container *ngIf="oUser.matches(user); else otherUser">
-            <!-- These buttons are for when the logged in user (oUser) matches
-                 the user whose battleground we're viewing. All of these buttons
-                 stream the battles live. -->
-            <!-- We need a copy with and without the shortcut directive. -->
-            <span
-              matTooltip="Cannot start a battle with an empty wave"
-              [matTooltipDisabled]="rival.wave.length > 0"
-              >
-              <button *ngIf="!user.inBattle && user === rival"
-                  (click)="startBattle(oUser, rival.name)"
-                  [disabled]="rival.wave.length === 0"
-                  appClickShortcut shortcutKey="e"
-                  mat-stroked-button>
-                Start battl(e)
-              </button>
-              <button *ngIf="!user.inBattle && user !== rival"
-                  (click)="startBattle(oUser, rival.name)"
-                  [disabled]="rival.wave.length === 0"
-                  mat-stroked-button>
-                Start battle
-              </button>
-            </span> 
-
-            <button *ngIf="user.inBattle && user === rival"
-                (click)="stopBattle(oUser, rival.name)"
-                appClickShortcut shortcutKey="e"
-                mat-stroked-button>
-              Stop battl(e)
-            </button>
-            <button *ngIf="user.inBattle && user !== rival"
-                (click)="stopBattle(oUser, rival.name)"
-                mat-stroked-button>
-              Stop battle
-            </button>
-          </ng-container>
-
-          <ng-template #otherUser>
-            <!-- We need a copy with and without the shortcut directive. -->
-            <button *ngIf="user === rival"
-                (click)="showBattle(user.name, rival.name)"
-                [disabled]="rival.wave.length === 0"
-                appClickShortcut shortcutKey="e"
-                mat-stroked-button>
-              Show battl(e)
-            </button>
-            <button *ngIf="user !== rival"
-                (click)="showBattle(user.name, rival.name)"
-                [disabled]="rival.wave.length === 0"
-                mat-stroked-button>
-              Show battle
-            </button>
+        <ng-container
+          *ngFor="let rival of rivals.aheadRivals.concat([this.user], rivals.behindRivals); trackBy: trackRivalFn">
+          <app-user-battle-controls
+            *ngIf="rival === user; else rivalBattleControls"
+            [user]="user"
+            [loggedIn]="oUser.matches(user)"
+            [battleStateMismatch]="battleState.results === undefined || battleState.attackerName !== user.name"
+            (startBattle)="startBattle(oUser, user.name)"
+            (stopBattle)="stopBattle(oUser, user.name)"
+            (showBattle)="showBattle(user.name, user.name)"
+            (showResults)="showResults(battleState.results)"
+          ></app-user-battle-controls>
+          <ng-template #rivalBattleControls>
+            <app-rival-battle-controls
+              [rival]="rival"
+              [user]="user"
+              [loggedIn]="oUser.matches(user)"
+              [battleStateMismatch]="battleState.results === undefined || battleState.attackerName !== rival.name"
+              [gameConfig]="gameConfig"
+              (startBattle)="startBattle(oUser, rival.name)"
+              (stopBattle)="stopBattle(oUser, rival.name)"
+              (showBattle)="showBattle(user.name, rival.name)"
+              (showResults)="showResults(battleState.results)"
+            ></app-rival-battle-controls>
           </ng-template>
-
-          <!-- We need a copy with and without the shortcut directive. -->
-          <button *ngIf="user === rival"
-            (click)="showResults(battleState.results)"
-            [disabled]="battleState.results === undefined || battleState.attackerName !== rival.name"
-            appClickShortcut shortcutKey="r"
-            mat-stroked-button>
-            View (R)esults
-          </button>
-          <button *ngIf="user !== rival"
-            (click)="showResults(battleState.results)"
-            [disabled]="battleState.results === undefined || battleState.attackerName !== rival.name"
-            mat-stroked-button>
-            <!-- Intentionally pretend all of them have a shortcut set. They all do the same thing. -->
-            View (R)esults
-          </button>
-
-        </mat-expansion-panel>
+        </ng-container>
 
         <!-- Challenge other players -->
         <mat-expansion-panel>

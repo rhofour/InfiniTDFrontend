@@ -1,0 +1,48 @@
+<mat-expansion-panel expanded="true">
+    <mat-expansion-panel-header>
+        <mat-panel-title class="title"> {{ user.name }} </mat-panel-title>
+    </mat-expansion-panel-header>
+
+    <ng-container *ngIf="loggedIn; else loggedOut">
+        <!-- These buttons are for when the logged in user matches
+                the user whose battleground we're viewing. All of these buttons
+                stream the battle live. -->
+        <span
+            matTooltip="Cannot start a battle with an empty wave"
+            [matTooltipDisabled]="user.wave.length > 0"
+            >
+            <button *ngIf="!user.inBattle"
+                (click)="startBattle.emit()"
+                [disabled]="user.wave.length === 0"
+                appClickShortcut shortcutKey="e"
+                mat-stroked-button>
+            Start battl(e)
+            </button>
+        </span> 
+
+        <button *ngIf="user.inBattle"
+            (click)="stopBattle.emit()"
+            appClickShortcut shortcutKey="e"
+            mat-stroked-button>
+            Stop battl(e)
+        </button>
+    </ng-container>
+
+    <ng-template #loggedOut>
+        <button
+            (click)="showBattle.emit()"
+            [disabled]="user.wave.length === 0"
+            appClickShortcut shortcutKey="e"
+            mat-stroked-button>
+            Show battl(e)
+        </button>
+    </ng-template>
+
+    <button
+        (click)="showResults.emit()"
+        [disabled]="battleStateMismatch"
+        appClickShortcut shortcutKey="r"
+        mat-stroked-button>
+        View (R)esults
+    </button>
+</mat-expansion-panel>

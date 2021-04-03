@@ -70,6 +70,7 @@ export class GameDrawerComponent implements OnChanges, OnDestroy {
   private usersSub: Subscription = Subscription.EMPTY;
   private rivalsSub: Subscription = Subscription.EMPTY;
   encodeURIComponent = encodeURIComponent;
+  console = console;
 
   constructor(
     private cdRef: ChangeDetectorRef,
@@ -89,7 +90,10 @@ export class GameDrawerComponent implements OnChanges, OnDestroy {
       throw Error("Input user is undefined.");
     }
     this.rivalsSub = this.rivalsService.getRivals(this.user.name).subscribe(
-      newRivals => { this.rivals = newRivals; });
+      rivals => { 
+        this.rivals = rivals;
+        this.cdRef.detectChanges();
+      });
     this.wave = this.waveToList(this.user.wave);
     this.filteredUsers = this.battleUsernameControl.valueChanges.pipe(
       startWith(''),

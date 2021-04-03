@@ -1,0 +1,93 @@
+<mat-expansion-panel>
+    <mat-expansion-panel-header>
+        <mat-panel-title>
+            {{rival.name}}
+        </mat-panel-title>
+        <span #spacer></span>
+        <span *ngIf="rival.battleGoldPerMinute as gpm; else unknownGpm"
+        style="padding-right: 1em"
+        matTooltip="{{gpm | goldNumber }} * {{gameConfig.misc.rivalMultiplier}} = {{ (gpm * gameConfig.misc.rivalMultiplier) | goldNumber }} / GPM">
+        {{ (gpm * gameConfig.misc.rivalMultiplier) | goldNumber }} / GPM
+        </span>
+        <ng-template #unknownGpm>
+        <span style="padding-right: 1em">??? / GPM</span>
+        </ng-template>
+    </mat-expansion-panel-header>
+
+    <div class="dont-expand">
+        <ng-container *ngIf="rival.rivalGoldPerMinuteTotal as rivalGpm">
+            <span>
+            Gold Rate: {{rivalGpm | goldNumber}} / GPM
+            </span>
+            <br />
+            <span *ngIf="user.goldPerMinuteSelf + user.goldPerMinuteOthers as userGpm">
+                Time to pass: 
+                <ng-container *ngIf="user.accumulatedGold > rival.accumulatedGold; else rivalAbove">
+                    <!-- This is a rival below the user. -->
+                    <ng-container *ngIf="rivalGpm > userGpm; else infiniteBelow">
+                    {{ Math.ceil((user.accumulatedGold - rival.accumulatedGold) / (rivalGpm - userGpm)) }}
+                    minutes
+                    </ng-container>
+                    <ng-template #infiniteBelow>
+                    never
+                    </ng-template>
+                </ng-container>
+                <ng-template #rivalAbove>
+                    <!-- This is a rival below the user. -->
+                    <ng-container *ngIf="userGpm > rivalGpm; else infiniteAbove">
+                    {{ Math.ceil((rival.accumulatedGold - user.accumulatedGold) / (userGpm - rivalGpm)) }}
+                    minutes
+                    </ng-container>
+                    <ng-template #infiniteAbove>
+                    never
+                    </ng-template>
+                </ng-template>
+            </span>
+        </ng-container>
+        <button *ngIf="user !== rival"
+            [routerLink]="'/battleground/' + encodeURIComponent(rival.name)"
+            mat-stroked-button>
+            View
+        </button>
+    </div>
+
+    <ng-container *ngIf="loggedIn; else loggedOut">
+        <!-- These buttons are for when the logged in user (oUser) matches
+                the user whose battleground we're viewing. All of these buttons
+                stream the battle live. -->
+        <span
+            matTooltip="Cannot start a battle with an empty wave"
+            [matTooltipDisabled]="rival.wave.length > 0"
+            >
+            <button *ngIf="!user.inBattle"
+                (click)="startBattle.emit()"
+                [disabled]="rival.wave.length === 0"
+                mat-stroked-button>
+            Start battle
+            </button>
+        </span> 
+
+        <button *ngIf="user.inBattle"
+            (click)="stopBattle.emit()"
+            mat-stroked-button>
+            Stop battle
+        </button>
+    </ng-container>
+
+    <ng-template #loggedOut>
+        <button
+            (click)="showBattle.emit()"
+            [disabled]="rival.wave.length === 0"
+            mat-stroked-button>
+            Show battle
+        </button>
+    </ng-template>
+
+    <button 
+        (click)="showResults.emit()"
+        [disabled]="battleStateMismatch"
+        mat-stroked-button>
+        <!-- Intentionally pretend all rivals have a shortcut set. They all do the same thing. -->
+        View (R)esults
+    </button>
+</mat-expansion-panel>

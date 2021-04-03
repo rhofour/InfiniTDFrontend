@@ -1,0 +1,8 @@
+.dont-expand {
+  width: 0;
+  min-width: 100%;
+}
+
+.mat-stroked-button {
+  width: 100%;
+}

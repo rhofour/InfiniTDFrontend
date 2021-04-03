@@ -55,6 +55,8 @@ import { PrivacyComponent } from './privacy/privacy.component';
 import { SettingsComponent } from './settings/settings.component';
 import { DisplayedTowerComponent } from './game-drawer/displayed-tower/displayed-tower.component';
 import { DisplayedMonsterComponent } from './game-drawer/displayed-monster/displayed-monster.component';
+import { UserBattleControlsComponent } from './game-drawer/user-battle-controls/user-battle-controls.component';
+import { RivalBattleControlsComponent } from './game-drawer/rival-battle-controls/rival-battle-controls.component';
 
 @NgModule({
   declarations: [
@@ -83,6 +85,8 @@ import { DisplayedMonsterComponent } from './game-drawer/displayed-monster/displ
     SettingsComponent,
     DisplayedTowerComponent,
     DisplayedMonsterComponent,
+    UserBattleControlsComponent,
+    RivalBattleControlsComponent,
   ],
   imports: [
     BrowserModule,

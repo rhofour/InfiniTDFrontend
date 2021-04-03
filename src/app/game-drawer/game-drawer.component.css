@@ -65,12 +65,3 @@
 .mat-stroked-button {
   width: 100%;
 }
-
-.this-user-panel-title {
-  font-weight: bold;
-}
-
-.dont-expand {
-  width: 0;
-  min-width: 100%;
-}
